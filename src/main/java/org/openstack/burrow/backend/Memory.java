@@ -2,14 +2,56 @@ import java.util.HashTable;
 import java.util.LinkedHashMap;
 public class Memory {
 	private HashTable<String, AccountMap> versions;
+	
+	Memory() {
+		versions = new HashTable<String, AccountMap>();
+	}
+
+	void put(Message m, String version, String acct, String queue) {
+		synchronized {
+			if (!versions.containsKey(version)) {
+				versions.put(version, new AccountMap());
+			}
+		}
+
+		accounts.get(acct).put(m, queue);
+	}
 }
 
 private class AccountMap {
 	private HashTable<String, QueueMap> accounts;
+
+	AccountMap() {
+		accounts = new HashTable<String, QueueMap>();
+	}
+
+	void put(Message m, String acct, String queue) {
+		synchronized {
+			if (!accounts.containsKey(acct)) {
+				accounts.put(acct, new QueueMap());
+			}
+		}
+
+		accounts.get(acct).put(m, queue);
+	}
 }
 
 private class QueueMap {
 	private HashTable<String, Queue> queues;
+
+	QueueMap() {
+		queues = new HashTable<String, Queue>();
+	}
+
+	void put(Message m, String queue) {
+		synchronized {
+			if (!queues.containsKey(queue)) {
+				queues.put(queue, new Queue());
+			}
+		}
+
+		queues.get(queue).enqueue(m);
+	}
 }
 
 private synchronized class Queue {
