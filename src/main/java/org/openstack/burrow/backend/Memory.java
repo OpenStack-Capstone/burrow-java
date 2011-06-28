@@ -1,10 +1,14 @@
-import java.util.HashTable;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Memory {
-	private HashTable<String, AccountMap> versions;
+	private Hashtable<String, AccountMap> versions;
 	
 	Memory() {
-		versions = new HashTable<String, AccountMap>();
+		versions = new Hashtable<String, AccountMap>();
 	}
 
 	void put(Message m, String version, String acct, String queue) {
@@ -14,15 +18,15 @@ public class Memory {
 			}
 		}
 
-		accounts.get(acct).put(m, queue);
+		version.get(acct).put(m, queue);
 	}
 }
 
-private class AccountMap {
-	private HashTable<String, QueueMap> accounts;
+class AccountMap {
+	private Hashtable<String, QueueMap> accounts;
 
 	AccountMap() {
-		accounts = new HashTable<String, QueueMap>();
+		accounts = new Hashtable<String, QueueMap>();
 	}
 
 	void put(Message m, String acct, String queue) {
@@ -36,11 +40,11 @@ private class AccountMap {
 	}
 }
 
-private class QueueMap {
-	private HashTable<String, Queue> queues;
+class QueueMap {
+	private Hashtable<String, Queue> queues;
 
 	QueueMap() {
-		queues = new HashTable<String, Queue>();
+		queues = new Hashtable<String, Queue>();
 	}
 
 	void put(Message m, String queue) {
@@ -54,7 +58,7 @@ private class QueueMap {
 	}
 }
 
-private synchronized class Queue {
+synchronized class Queue {
 	private LinkedHashMap<String, Message> queue;
 
 	Queue() {
@@ -105,16 +109,16 @@ private synchronized class Queue {
 
 	void clean() {
 		Iterator<Message> iter = queue.values().iterator();
-		long now = System.nanotime();
+		long now = System.nanoTime();
 
 		while (iter.hasNext()) {
-			Message m = iter.next();
+			Message msg = iter.next();
 
-			if ((m.hide != 0) && (m.hide + m.hiddenAt < now)) {
-				m.hide = 0;
+			if ((msg.hide != 0) && (msg.hide + msg.hiddenAt < now)) {
+				msg.hide = 0;
 			}
 
-			if ((m.ttl + m.createdAt < now)) {
+			if ((msg.ttl + msg.createdAt < now)) {
 				iter.remove();
 			}
 		}
