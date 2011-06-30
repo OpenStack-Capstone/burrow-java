@@ -19,9 +19,9 @@ package org.openstack.burrow.client;
 public interface DeleteAccountsRequest {
   public void execute();
 
-  public DeleteAccountsRequest filter(String filter, boolean value);
+  public DeleteAccountsRequest limit(long limit);
 
-  public DeleteAccountsRequest filter(String filter, int value);
+  public DeleteAccountsRequest marker(long marker);
 
-  public DeleteAccountsRequest filter(String filter, String value);
+  public DeleteAccountsRequest match_hidden(boolean match_hidden);
 }

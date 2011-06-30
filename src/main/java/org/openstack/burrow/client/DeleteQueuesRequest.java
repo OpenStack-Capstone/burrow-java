@@ -19,9 +19,9 @@ package org.openstack.burrow.client;
 public interface DeleteQueuesRequest {
   public void execute();
 
-  public DeleteQueuesRequest filter(String filter, boolean value);
+  public DeleteQueuesRequest limit(long limit);
 
-  public DeleteQueuesRequest filter(String filter, int value);
+  public DeleteQueuesRequest marker(long marker);
 
-  public DeleteQueuesRequest filter(String filter, String value);
+  public DeleteQueuesRequest match_hidden(boolean match_hidden);
 }

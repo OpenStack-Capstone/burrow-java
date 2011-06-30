@@ -21,9 +21,9 @@ import java.util.List;
 public interface GetMessagesRequest {
   public List<Message> execute();
 
-  public GetMessagesRequest filter(String filter, boolean value);
+  public GetMessagesRequest limit(long limit);
 
-  public GetMessagesRequest filter(String filter, int value);
+  public GetMessagesRequest marker(long marker);
 
-  public GetMessagesRequest filter(String filter, String value);
+  public GetMessagesRequest match_hidden(boolean match_hidden);
 }

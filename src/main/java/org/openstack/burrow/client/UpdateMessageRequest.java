@@ -17,11 +17,9 @@
 package org.openstack.burrow.client;
 
 public interface UpdateMessageRequest {
-  public UpdateMessageRequest attribute(String attribute, boolean value);
-
-  public UpdateMessageRequest attribute(String attribute, int value);
-
-  public UpdateMessageRequest attribute(String attribute, String value);
-
   public void execute();
+
+  public UpdateMessageRequest setHide(long hide);
+
+  public UpdateMessageRequest setTtl(long ttl);
 }

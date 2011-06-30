@@ -21,9 +21,9 @@ import java.util.List;
 public interface GetAccountsRequest {
   public List<Account> execute();
 
-  public GetAccountsRequest filter(String filter, boolean value);
+  public GetAccountsRequest limit(long limit);
 
-  public GetAccountsRequest filter(String filter, int value);
+  public GetAccountsRequest marker(long marker);
 
-  public GetAccountsRequest filter(String filter, String value);
+  public GetAccountsRequest match_hidden(boolean match_hidden);
 }

@@ -19,9 +19,9 @@ package org.openstack.burrow.client;
 public interface DeleteMessagesRequest {
   public void execute();
 
-  public DeleteMessagesRequest filter(String filter, boolean value);
+  public DeleteMessagesRequest limit(long limit);
 
-  public DeleteMessagesRequest filter(String filter, int value);
+  public DeleteMessagesRequest marker(long marker);
 
-  public DeleteMessagesRequest filter(String filter, String value);
+  public DeleteMessagesRequest match_hidden(boolean match_hidden);
 }

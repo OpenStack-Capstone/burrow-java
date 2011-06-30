@@ -17,11 +17,9 @@
 package org.openstack.burrow.client;
 
 public interface CreateMessageRequest {
-  public CreateMessageRequest attribute(String attribute, boolean value);
-
-  public CreateMessageRequest attribute(String attribute, int value);
-
-  public CreateMessageRequest attribute(String attribute, String value);
-
   public void execute();
+
+  public CreateMessageRequest setHide(long hide);
+
+  public CreateMessageRequest setTtl(long ttl);
 }

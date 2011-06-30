@@ -17,17 +17,15 @@
 package org.openstack.burrow.client;
 
 public interface UpdateMessagesRequest {
-  public UpdateMessagesRequest attribute(String attribute, boolean value);
-
-  public UpdateMessagesRequest attribute(String attribute, int value);
-
-  public UpdateMessagesRequest attribute(String attribute, String value);
-
   public void execute();
 
-  public UpdateMessagesRequest filter(String attribute, boolean value);
+  public UpdateMessagesRequest limit(long limit);
 
-  public UpdateMessagesRequest filter(String attribute, int value);
+  public UpdateMessagesRequest marker(long marker);
 
-  public UpdateMessagesRequest filter(String attribute, String value);
+  public UpdateMessagesRequest match_hidden(boolean match_hidden);
+
+  public UpdateMessagesRequest setHide(long hide);
+
+  public UpdateMessagesRequest setTtl(long ttl);
 }

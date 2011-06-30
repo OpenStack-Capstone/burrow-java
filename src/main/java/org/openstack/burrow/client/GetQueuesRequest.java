@@ -21,9 +21,9 @@ import java.util.List;
 public interface GetQueuesRequest {
   public List<Queue> execute();
 
-  public GetQueuesRequest filter(String filter, boolean value);
+  public GetQueuesRequest limit(long limit);
 
-  public GetQueuesRequest filter(String filter, int value);
+  public GetQueuesRequest marker(long marker);
 
-  public GetQueuesRequest filter(String filter, String value);
+  public GetQueuesRequest match_hidden(boolean match_hidden);
 }
