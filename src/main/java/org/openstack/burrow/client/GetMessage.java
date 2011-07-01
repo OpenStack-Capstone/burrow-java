@@ -16,6 +16,36 @@
 
 package org.openstack.burrow.client;
 
-public interface GetMessage {
-  public Message execute();
+import org.openstack.burrow.backend.Backend;
+
+public class GetMessage {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private String messageId;
+  private String queue;
+
+  GetMessage(Backend backend, String account, String queue, String messageId) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.messageId = messageId;
+    this.detail = null;
+  }
+
+  private GetMessage(Backend backend, String account, String queue, String messageId, String detail) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.messageId = messageId;
+    this.detail = detail;
+  }
+
+  public Message execute() {
+    return backend.getMessage(account, queue, messageId, detail);
+  }
+
+  public GetMessage requestDetail(String detail) {
+    return new GetMessage(backend, account, queue, messageId, detail);
+  }
 }

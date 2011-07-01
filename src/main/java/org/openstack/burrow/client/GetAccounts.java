@@ -17,13 +17,34 @@
 package org.openstack.burrow.client;
 
 import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-public interface GetAccounts {
-  public List<Account> execute();
+public class GetAccounts {
+  private Backend backend;
+  private Long limit;
+  private String marker;
 
-  public GetAccounts limit(long limit);
+  GetAccounts(Backend backend) {
+    this.backend = backend;
+    this.marker = null;
+    this.limit = null;
+  }
 
-  public GetAccounts marker(long marker);
+  private GetAccounts(Backend backend, String marker, Long limit) {
+    this.backend = backend;
+    this.marker = marker;
+    this.limit = limit;
+  }
 
-  public GetAccounts match_hidden(boolean match_hidden);
+  public List<Account> execute() {
+    return backend.getAccounts(marker, limit);
+  }
+
+  public GetAccounts matchLimit(long limit) {
+    return new GetAccounts(backend, marker, limit);
+  }
+
+  public GetAccounts withMarker(String marker) {
+    return new GetAccounts(backend, marker, limit);
+  }
 }

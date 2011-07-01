@@ -16,10 +16,50 @@
 
 package org.openstack.burrow.client;
 
-public interface UpdateMessage {
-  public void execute();
+import org.openstack.burrow.backend.Backend;
 
-  public UpdateMessage setHide(long hide);
-
-  public UpdateMessage setTtl(long ttl);
+public class UpdateMessage {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private Long hide;
+  private String messageId;
+  private String queue;
+  private Long ttl;
+  
+  UpdateMessage(Backend backend, String account, String queue, String messageId) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.messageId = messageId;
+    this.ttl = null;
+    this.hide = null;
+    this.detail = null;
+  }
+  
+  private UpdateMessage(Backend backend, String account, String queue, String messageId, Long ttl, Long hide, String detail) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.messageId = messageId;
+    this.ttl = ttl;
+    this.hide = hide;
+    this.detail = detail;
+  }
+  
+  public Message execute() {
+    return backend.updateMessage(account, queue, messageId, ttl, hide, detail);
+  }
+  
+  public UpdateMessage requestDetail(String detail) {
+    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  }
+  
+  public UpdateMessage setHide(long hide) {
+    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  }
+  
+  public UpdateMessage setTtl(long ttl) {
+    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  }
 }

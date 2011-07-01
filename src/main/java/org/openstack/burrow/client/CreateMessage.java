@@ -52,11 +52,11 @@ public class CreateMessage {
     this.backend.createMessage(account, queue, messageId, body, ttl, hide);
   }
 
-  public CreateMessage hide(long hide) {
+  public CreateMessage setHide(long hide) {
     return new CreateMessage(backend, account, queue, messageId, body, ttl, hide);
   }
 
-  public CreateMessage ttl(long ttl) {
+  public CreateMessage setTtl(long ttl) {
     return new CreateMessage(backend, account, queue, messageId, body, ttl, hide);
   }
 }

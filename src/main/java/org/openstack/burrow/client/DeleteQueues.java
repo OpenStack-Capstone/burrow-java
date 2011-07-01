@@ -16,12 +16,45 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteQueues {
-  public void execute();
+import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-  public DeleteQueues limit(long limit);
+public class DeleteQueues {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private Long limit;
+  private String marker;
 
-  public DeleteQueues marker(long marker);
+  DeleteQueues(Backend backend, String account) {
+    this.backend = backend;
+    this.account = account;
+    this.marker = null;
+    this.limit = null;
+    this.detail = null;
+  }
 
-  public DeleteQueues match_hidden(boolean match_hidden);
+  private DeleteQueues(Backend backend, String account, String marker, Long limit, String detail) {
+    this.backend = backend;
+    this.account = account;
+    this.marker = marker;
+    this.limit = limit;
+    this.detail = detail;
+  }
+
+  public List<Queue> execute() {
+    return backend.deleteQueues(account, marker, limit, detail);
+  }
+
+  public DeleteQueues matchLimit(Long limit) {
+    return new DeleteQueues(backend, account, marker, limit, detail);
+  }
+
+  public DeleteQueues requestDetail(String detail) {
+    return new DeleteQueues(backend, account, marker, limit, detail);
+  }
+
+  public DeleteQueues withMarker(String marker) {
+    return new DeleteQueues(backend, account, marker, limit, detail);
+  }
 }

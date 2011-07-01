@@ -16,12 +16,61 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteMessages {
-  public void execute();
+import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-  public DeleteMessages limit(long limit);
+public class DeleteMessages {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private Long limit;
+  private String marker;
+  private Boolean matchHidden;
+  private String queue;
+  private Long wait;
 
-  public DeleteMessages marker(long marker);
+  DeleteMessages(Backend backend, String account, String queue) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = null;
+    this.matchHidden = null;
+    this.detail = null;
+    this.wait = null;
+  }
 
-  public DeleteMessages match_hidden(boolean match_hidden);
+  private DeleteMessages(Backend backend, String account, String queue, String marker, Long limit,
+      Boolean matchHidden, String detail, Long wait) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = marker;
+    this.matchHidden = matchHidden;
+    this.detail = detail;
+    this.wait = wait;
+  }
+
+  public List<Message> execute() {
+    return backend.deleteMessages(account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages matchHidden(boolean matchHidden) {
+    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages matchLimit(Long limit) {
+    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages requestDetail(String detail) {
+    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages requestWait(Long wait) {
+    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages withMarker(String marker) {
+    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
 }

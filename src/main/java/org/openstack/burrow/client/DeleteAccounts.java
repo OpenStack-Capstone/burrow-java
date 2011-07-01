@@ -16,12 +16,42 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteAccounts {
-  public void execute();
+import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-  public DeleteAccounts limit(long limit);
+public class DeleteAccounts {
+  private Backend backend;
+  private String detail;
+  private Long limit;
+  private String marker;
 
-  public DeleteAccounts marker(long marker);
+  DeleteAccounts(Backend backend) {
+    this.backend = backend;
+    this.marker = null;
+    this.limit = null;
+    this.detail = null;
+  }
 
-  public DeleteAccounts match_hidden(boolean match_hidden);
+  private DeleteAccounts(Backend backend, String marker, Long limit, String detail) {
+    this.backend = backend;
+    this.marker = marker;
+    this.limit = limit;
+    this.detail = detail;
+  }
+
+  public List<Account> execute() {
+    return this.backend.deleteAccounts(marker, limit, detail);
+  }
+
+  public DeleteAccounts matchLimit(long limit) {
+    return new DeleteAccounts(backend, marker, limit, detail);
+  }
+
+  public DeleteAccounts requestDetail(String detail) {
+    return new DeleteAccounts(backend, marker, limit, detail);
+  }
+  
+  public DeleteAccounts withMarker(String marker) {
+    return new DeleteAccounts(backend, marker, limit, detail);
+  }
 }

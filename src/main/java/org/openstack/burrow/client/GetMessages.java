@@ -17,13 +17,62 @@
 package org.openstack.burrow.client;
 
 import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-public interface GetMessages {
-  public List<Message> execute();
+public class GetMessages {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private Long limit;
+  private String marker;
+  private Boolean matchHidden;
+  private String queue;
+  private Long wait;
 
-  public GetMessages limit(long limit);
+  GetMessages(Backend backend, String account, String queue) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = null;
+    this.limit = null;
+    this.matchHidden = null;
+    this.detail = null;
+    this.wait = null;
+  }
 
-  public GetMessages marker(long marker);
+  private GetMessages(Backend backend, String account, String queue, String marker, Long limit,
+      Boolean matchHidden, String detail, Long wait) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = marker;
+    this.limit = limit;
+    this.matchHidden = matchHidden;
+    this.detail = detail;
+    this.wait = wait;
+  }
 
-  public GetMessages match_hidden(boolean match_hidden);
+  public List<Message> execute() {
+    return this.backend.getMessages(account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages matchHidden(boolean matchHidden) {
+    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages matchLimit(long limit) {
+    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages requestDetail(String detail) {
+    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages requestWait(long wait) {
+    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages withMarker(String marker) {
+    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  }
 }

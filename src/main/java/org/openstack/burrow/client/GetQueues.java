@@ -17,13 +17,37 @@
 package org.openstack.burrow.client;
 
 import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-public interface GetQueues {
-  public List<Queue> execute();
+public class GetQueues {
+  private String account;
+  private Backend backend;
+  private Long limit;
+  private String marker;
 
-  public GetQueues limit(long limit);
+  GetQueues(Backend backend, String account) {
+    this.backend = backend;
+    this.account = account;
+    this.marker = null;
+    this.limit = null;
+  }
 
-  public GetQueues marker(long marker);
+  private GetQueues(Backend backend, String account, String marker, Long limit) {
+    this.backend = backend;
+    this.account = account;
+    this.marker = marker;
+    this.limit = limit;
+  }
 
-  public GetQueues matchHidden(boolean matchHidden);
+  public List<Queue> execute() {
+    return backend.getQueues(account, marker, limit);
+  }
+
+  public GetQueues matchLimit(long limit) {
+    return new GetQueues(backend, account, marker, limit);
+  }
+
+  public GetQueues withMarker(String marker) {
+    return new GetQueues(backend, account, marker, limit);
+  }
 }

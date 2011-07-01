@@ -16,16 +16,85 @@
 
 package org.openstack.burrow.client;
 
-public interface UpdateMessages {
-  public void execute();
+import java.util.List;
+import org.openstack.burrow.backend.Backend;
 
-  public UpdateMessages limit(long limit);
+public class UpdateMessages {
+  private String account;
+  private Backend backend;
+  private String detail;
+  private Long hide;
+  private Long limit;
+  private String marker;
+  private Boolean matchHidden;
+  private String queue;
+  private Long ttl;
+  private Long wait;
 
-  public UpdateMessages marker(long marker);
+  UpdateMessages(Backend backend, String account, String queue) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = null;
+    this.limit = null;
+    this.matchHidden = null;
+    this.ttl = null;
+    this.hide = null;
+    this.detail = null;
+    this.wait = null;
+  }
 
-  public UpdateMessages match_hidden(boolean match_hidden);
+  private UpdateMessages(Backend backend, String account, String queue, String marker, Long limit,
+      Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+    this.marker = marker;
+    this.limit = limit;
+    this.matchHidden = matchHidden;
+    this.ttl = ttl;
+    this.hide = hide;
+    this.detail = detail;
+    this.wait = wait;
+  }
 
-  public UpdateMessages setHide(long hide);
+  public List<Message> execute() {
+    return this.backend.updateMessages(account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
 
-  public UpdateMessages setTtl(long ttl);
+  public UpdateMessages matchHidden(boolean matchHidden) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages matchLimit(Long limit) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages requestDetail(String detail) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages requestWait(long wait) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages setHide(long hide) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages setTtl(long ttl) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
+
+  public UpdateMessages withMarker(String marker) {
+    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
+        detail, wait);
+  }
 }
