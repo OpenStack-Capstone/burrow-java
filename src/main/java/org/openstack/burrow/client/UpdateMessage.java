@@ -16,10 +16,10 @@
 
 package org.openstack.burrow.client;
 
-public interface UpdateMessageRequest {
+public interface UpdateMessage {
   public void execute();
 
-  public UpdateMessageRequest setHide(long hide);
+  public UpdateMessage setHide(long hide);
 
-  public UpdateMessageRequest setTtl(long ttl);
+  public UpdateMessage setTtl(long ttl);
 }

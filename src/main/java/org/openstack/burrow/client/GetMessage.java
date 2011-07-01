@@ -16,6 +16,6 @@
 
 package org.openstack.burrow.client;
 
-public interface GetMessageRequest {
+public interface GetMessage {
   public Message execute();
 }

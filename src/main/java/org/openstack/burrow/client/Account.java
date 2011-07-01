@@ -17,9 +17,9 @@
 package org.openstack.burrow.client;
 
 public interface Account {
-  public DeleteQueuesRequest deleteQueues();
+  public DeleteQueues deleteQueues();
 
-  public GetQueuesRequest getQueues();
+  public GetQueues getQueues();
 
   public Queue Queue(String queue);
 }

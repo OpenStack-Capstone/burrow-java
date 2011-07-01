@@ -16,12 +16,12 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteAccountsRequest {
+public interface DeleteAccounts {
   public void execute();
 
-  public DeleteAccountsRequest limit(long limit);
+  public DeleteAccounts limit(long limit);
 
-  public DeleteAccountsRequest marker(long marker);
+  public DeleteAccounts marker(long marker);
 
-  public DeleteAccountsRequest match_hidden(boolean match_hidden);
+  public DeleteAccounts match_hidden(boolean match_hidden);
 }

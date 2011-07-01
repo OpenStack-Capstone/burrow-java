@@ -16,12 +16,12 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteMessagesRequest {
+public interface DeleteMessages {
   public void execute();
 
-  public DeleteMessagesRequest limit(long limit);
+  public DeleteMessages limit(long limit);
 
-  public DeleteMessagesRequest marker(long marker);
+  public DeleteMessages marker(long marker);
 
-  public DeleteMessagesRequest match_hidden(boolean match_hidden);
+  public DeleteMessages match_hidden(boolean match_hidden);
 }

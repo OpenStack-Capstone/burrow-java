@@ -18,12 +18,12 @@ package org.openstack.burrow.client;
 
 import java.util.List;
 
-public interface GetAccountsRequest {
+public interface GetAccounts {
   public List<Account> execute();
 
-  public GetAccountsRequest limit(long limit);
+  public GetAccounts limit(long limit);
 
-  public GetAccountsRequest marker(long marker);
+  public GetAccounts marker(long marker);
 
-  public GetAccountsRequest match_hidden(boolean match_hidden);
+  public GetAccounts match_hidden(boolean match_hidden);
 }

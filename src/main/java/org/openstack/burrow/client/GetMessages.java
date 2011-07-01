@@ -18,12 +18,12 @@ package org.openstack.burrow.client;
 
 import java.util.List;
 
-public interface GetMessagesRequest {
+public interface GetMessages {
   public List<Message> execute();
 
-  public GetMessagesRequest limit(long limit);
+  public GetMessages limit(long limit);
 
-  public GetMessagesRequest marker(long marker);
+  public GetMessages marker(long marker);
 
-  public GetMessagesRequest match_hidden(boolean match_hidden);
+  public GetMessages match_hidden(boolean match_hidden);
 }

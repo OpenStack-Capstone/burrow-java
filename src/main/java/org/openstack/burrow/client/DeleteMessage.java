@@ -16,6 +16,6 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteMessageRequest {
+public interface DeleteMessage {
   public void execute();
 }

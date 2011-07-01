@@ -16,12 +16,12 @@
 
 package org.openstack.burrow.client;
 
-public interface DeleteQueuesRequest {
+public interface DeleteQueues {
   public void execute();
 
-  public DeleteQueuesRequest limit(long limit);
+  public DeleteQueues limit(long limit);
 
-  public DeleteQueuesRequest marker(long marker);
+  public DeleteQueues marker(long marker);
 
-  public DeleteQueuesRequest match_hidden(boolean match_hidden);
+  public DeleteQueues match_hidden(boolean match_hidden);
 }

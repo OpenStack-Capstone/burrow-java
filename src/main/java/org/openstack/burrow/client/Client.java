@@ -19,7 +19,7 @@ package org.openstack.burrow.client;
 public interface Client {
   public Account Account(String accountName);
 
-  public DeleteAccountsRequest deleteAccounts();
+  public DeleteAccounts deleteAccounts();
 
-  public GetAccountsRequest getAccounts();
+  public GetAccounts getAccounts();
 }

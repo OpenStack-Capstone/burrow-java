@@ -18,12 +18,12 @@ package org.openstack.burrow.client;
 
 import java.util.List;
 
-public interface GetQueuesRequest {
+public interface GetQueues {
   public List<Queue> execute();
 
-  public GetQueuesRequest limit(long limit);
+  public GetQueues limit(long limit);
 
-  public GetQueuesRequest marker(long marker);
+  public GetQueues marker(long marker);
 
-  public GetQueuesRequest match_hidden(boolean match_hidden);
+  public GetQueues matchHidden(boolean matchHidden);
 }
