@@ -17,6 +17,9 @@
 package org.openstack.burrow.backend;
 
 import java.util.List;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public interface Backend {
 
@@ -32,8 +35,8 @@ public interface Backend {
    * @param hide Optional. Create a message that is hidden for this many
    *          seconds.
    */
-  public void createMessage(String account, String queue, String messageId, String body,
-      Long ttl, Long hide);
+  public void createMessage(String account, String queue, String messageId, String body, Long ttl,
+      Long hide);
 
   /**
    * Delete accounts, including the associated queues and messages.
@@ -42,7 +45,8 @@ public interface Backend {
    *          deleted.
    * @param limit Optional. Delete at most this many accounts.
    * @param detail Optional. Return the names of the accounts deleted.
-   * @return A list of Account instances deleted, with the requested level of detail.
+   * @return A list of Account instances deleted, with the requested level of
+   *         detail.
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail);
 
@@ -86,7 +90,8 @@ public interface Backend {
    *          deleted.
    * @param limit Optional. At most this many queues will be deleted.
    * @param detail Optional. If true, return the names of the queues deleted.
-   * @return A list of Queue instances deleted, with the requested level of detail.
+   * @return A list of Queue instances deleted, with the requested level of
+   *         detail.
    */
   public List<Queue> deleteQueues(String account, String marker, Long limit, String detail);
 
@@ -149,11 +154,13 @@ public interface Backend {
    *          this many seconds.
    * @param hide Optional. Update the message to be hidden for this many
    *          seconds.
-   * @param detail Optional. Return this level of detail about the updated message.
-   * @return An updated Message with the requested level of detail, or null if detail='none'.
+   * @param detail Optional. Return this level of detail about the updated
+   *          message.
+   * @return An updated Message with the requested level of detail, or null if
+   *         detail='none'.
    */
-  public Message updateMessage(String account, String queue, String messageId, Long ttl,
-      Long hide, String detail);
+  public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide,
+      String detail);
 
   /**
    * Update messages in a queue.
