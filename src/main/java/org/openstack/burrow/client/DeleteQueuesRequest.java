@@ -14,23 +14,14 @@
  * the License.
  */
 
-package org.openstack.burrow;
+package org.openstack.burrow.client;
 
-import java.util.List;
-import java.util.ArrayList;
+public interface DeleteQueuesRequest {
+  public void execute();
 
-/**
- * Client class for Burrow.
- */
-public class Client {
+  public DeleteQueuesRequest limit(long limit);
 
-  public Client(String url) {
-  }
+  public DeleteQueuesRequest marker(long marker);
 
-  /**
-   * Get the list of accounts.
-   */
-  public List<String> getAccounts() {
-    return new ArrayList<String>();
-  }
+  public DeleteQueuesRequest match_hidden(boolean match_hidden);
 }
