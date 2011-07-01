@@ -42,9 +42,9 @@ public interface Backend {
    *          deleted.
    * @param limit Optional. Delete at most this many accounts.
    * @param detail Optional. Return the names of the accounts deleted.
-   * @return A list of account names deleted, or null if not detail=True.
+   * @return A list of Account instances deleted, with the requested level of detail.
    */
-  public List<String> deleteAccounts(String marker, Integer limit, Boolean detail);
+  public List<Account> deleteAccounts(String marker, Integer limit, String detail);
 
   /**
    * Delete a message with a known id.
@@ -86,9 +86,9 @@ public interface Backend {
    *          deleted.
    * @param limit Optional. At most this many queues will be deleted.
    * @param detail Optional. If true, return the names of the queues deleted.
-   * @return A list of queue names deleted, or null if not detail=True.
+   * @return A list of Queue instances deleted, with the requested level of detail.
    */
-  public List<String> deleteQueues(String account, String marker, Integer limit, Boolean detail);
+  public List<Queue> deleteQueues(String account, String marker, Integer limit, String detail);
 
   /**
    * List accounts.
@@ -96,9 +96,9 @@ public interface Backend {
    * @param marker Optional. Only accounts with a name after this marker will be
    *          returned.
    * @param limit Optional. Return at most this many accounts.
-   * @return A list of account names.
+   * @return A list of Accounts.
    */
-  public List<String> getAccounts(String marker, Integer limit);
+  public List<Account> getAccounts(String marker, Integer limit);
 
   /**
    * Get a message with a known id.
@@ -135,9 +135,9 @@ public interface Backend {
    * @param marker Optional. Only queues with a name after this marker will be
    *          listed.
    * @param limit Optional. At most this many queues will be listed.
-   * @return A list of queue names.
+   * @return A list of Queues.
    */
-  public List<String> getQueues(String account, String marker, Integer limit);
+  public List<Queue> getQueues(String account, String marker, Integer limit);
 
   /**
    * Update a message with a known id.
@@ -149,9 +149,11 @@ public interface Backend {
    *          this many seconds.
    * @param hide Optional. Update the message to be hidden for this many
    *          seconds.
+   * @param detail Optional. Return this level of detail about the updated message.
+   * @return An updated Message with the requested level of detail, or null if detail='none'.
    */
-  public void updateMessage(String account, String queue, String messageId, Integer ttl,
-      Integer hide);
+  public Message updateMessage(String account, String queue, String messageId, Integer ttl,
+      Integer hide, String detail);
 
   /**
    * Update messages in a queue.
