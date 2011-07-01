@@ -33,7 +33,7 @@ public interface Backend {
    *          seconds.
    */
   public void createMessage(String account, String queue, String messageId, String body,
-      Integer ttl, Integer hide);
+      Long ttl, Long hide);
 
   /**
    * Delete accounts, including the associated queues and messages.
@@ -44,7 +44,7 @@ public interface Backend {
    * @param detail Optional. Return the names of the accounts deleted.
    * @return A list of Account instances deleted, with the requested level of detail.
    */
-  public List<Account> deleteAccounts(String marker, Integer limit, String detail);
+  public List<Account> deleteAccounts(String marker, Long limit, String detail);
 
   /**
    * Delete a message with a known id.
@@ -75,8 +75,8 @@ public interface Backend {
    * @return A list of Message instances with the requested level of detail, or
    *         null if detail='none'.
    */
-  public List<Message> deleteMessages(String account, String queue, String marker, Integer limit,
-      Boolean matchHidden, String detail, Integer wait);
+  public List<Message> deleteMessages(String account, String queue, String marker, Long limit,
+      Boolean matchHidden, String detail, Long wait);
 
   /**
    * Delete queues, including associated messages.
@@ -88,7 +88,7 @@ public interface Backend {
    * @param detail Optional. If true, return the names of the queues deleted.
    * @return A list of Queue instances deleted, with the requested level of detail.
    */
-  public List<Queue> deleteQueues(String account, String marker, Integer limit, String detail);
+  public List<Queue> deleteQueues(String account, String marker, Long limit, String detail);
 
   /**
    * List accounts.
@@ -98,7 +98,7 @@ public interface Backend {
    * @param limit Optional. Return at most this many accounts.
    * @return A list of Accounts.
    */
-  public List<Account> getAccounts(String marker, Integer limit);
+  public List<Account> getAccounts(String marker, Long limit);
 
   /**
    * Get a message with a known id.
@@ -125,8 +125,8 @@ public interface Backend {
    *          would otherwise be returned.
    * @return A list of Message instances with the requested level of detail.
    */
-  public List<Message> getMessages(String account, String queue, String marker, Integer limit,
-      Boolean matchHidden, String detail, Integer wait);
+  public List<Message> getMessages(String account, String queue, String marker, Long limit,
+      Boolean matchHidden, String detail, Long wait);
 
   /**
    * List queues in an account.
@@ -137,7 +137,7 @@ public interface Backend {
    * @param limit Optional. At most this many queues will be listed.
    * @return A list of Queues.
    */
-  public List<Queue> getQueues(String account, String marker, Integer limit);
+  public List<Queue> getQueues(String account, String marker, Long limit);
 
   /**
    * Update a message with a known id.
@@ -152,8 +152,8 @@ public interface Backend {
    * @param detail Optional. Return this level of detail about the updated message.
    * @return An updated Message with the requested level of detail, or null if detail='none'.
    */
-  public Message updateMessage(String account, String queue, String messageId, Integer ttl,
-      Integer hide, String detail);
+  public Message updateMessage(String account, String queue, String messageId, Long ttl,
+      Long hide, String detail);
 
   /**
    * Update messages in a queue.
@@ -173,6 +173,6 @@ public interface Backend {
    * @return A list of updated Message instances with the requested level of
    *         detail, or null if detail='none'.
    */
-  public List<Message> updateMessages(String account, String queue, String marker, Integer limit,
-      Boolean matchHidden, Integer ttl, Integer hide, String detail, Integer wait);
+  public List<Message> updateMessages(String account, String queue, String marker, Long limit,
+      Boolean matchHidden, Long ttl, Long hide, String detail, Long wait);
 }
