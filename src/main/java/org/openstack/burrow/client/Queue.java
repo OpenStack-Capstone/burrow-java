@@ -17,17 +17,17 @@
 package org.openstack.burrow.client;
 
 public interface Queue {
-  public CreateMessageRequest createMessage(String messageId, String body);
+  public CreateMessage createMessage(String messageId, String body);
 
-  public DeleteMessageRequest deleteMessage(String messageId);
+  public DeleteMessage deleteMessage(String messageId);
 
-  public DeleteMessagesRequest deleteMessages();
+  public DeleteMessages deleteMessages();
 
-  public GetMessageRequest getMessage(String messageId);
+  public GetMessage getMessage(String messageId);
 
-  public GetMessagesRequest getMessages();
+  public GetMessages getMessages();
 
-  public UpdateMessageRequest updateMessage(String messageId);
+  public UpdateMessage updateMessage(String messageId);
 
-  public UpdateMessagesRequest updateMessages();
+  public UpdateMessages updateMessages();
 }
