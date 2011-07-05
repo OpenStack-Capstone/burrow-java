@@ -16,18 +16,15 @@
 
 package org.openstack.burrow.backend;
 
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.xml.internal.ws.wsdl.writer.document.soap.Body;
 
-public class Memory implements Backend {
-	private Hashtable<String, QueueMap> accounts;
+import java.util.*;
 
+  public class Memory implements Backend {
+	private LinkedHashMap<String, QueueMap> accountMap;
 
 	public Memory() {
-		accounts = new Hashtable<String, QueueMap>();
+		accountMap = new LinkedHashMap<String, QueueMap>(16, 0.75f, false);
 	}
 
     /**
@@ -44,12 +41,14 @@ public class Memory implements Backend {
      */
     public void createMessage(String account, String queue, String messageId, String body, Integer ttl, Integer hide) {
         synchronized(this) {
-            if (!accounts.containsKey(account)) {
-                accounts.put(account, new QueueMap());
+            if (!accountMap.containsKey(account)) {
+                accountMap.put(account, new QueueMap());
             }
+
+            QueueMap acctQueues = accountMap.get(account);
         }
 
-        accounts.get(account).put(m, queue);
+        QueueMap.put(queue, messageId, body, ttl, hide);
     }
 
     /**
@@ -208,42 +207,70 @@ public class Memory implements Backend {
 }
 
 class QueueMap {
-	private Hashtable<String, Queue> queues;
+	private LinkedHashMap<String, Queue> queueMap;
 
 	QueueMap() {
-		queues = new Hashtable<String, Queue>();
+		queueMap = new LinkedHashMap<String, Queue>(16, 0.75f, false);
 	}
 
-	void put(Message m, String queue) {
-		synchronized(this) {
-			if (!queues.containsKey(queue)) {
-				queues.put(queue, new Queue());
-			}
-		}
+	void put(String queue, String messageId, String body, Integer ttl, Integer hide) {
+        Queue q;
 
-		queues.get(queue).enqueue(m);
-	}
+        synchronized (this) {
+            if (!queueMap.containsKey(queue)) {
+                queueMap.put(queue, new Queue());
+            }
+
+            q = queueMap.get(queue);
+        }
+
+        q.put(messageId, body, ttl, hide);
+    }
 }
 
 class Queue {
-	private LinkedHashMap<String, Message> queue;
+    private class MessageRecord {
+        long ttl, createdAt;
+        long hide, hiddenAt;
+        Message msg;
+
+        private MessageRecord(long ttl, long hide, Message msg) {
+            this.ttl = ttl;
+            this.hide = hide;
+            this.msg = msg;
+
+            createdAt = System.currentTimeMillis();
+            if (hide != 0) hiddenAt = System.currentTimeMillis();
+        }
+    }
+
+	private LinkedHashMap<String, MessageRecord> queue;
 
 	Queue() {
 		//Use default size/load factor, with insertion-order iteration
-		queue = new LinkedHashMap<String, Message>(16, 0.75f, false);
+		queue = new LinkedHashMap<String, MessageRecord>(16, 0.75f, false);
 	}
 
-	synchronized void enqueue(Message msg) {
+	synchronized void put(String messageId, String body, Integer ttl, Integer hide) {
 		clean();
-		queue.put(msg.id, msg);
+		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
 	}
 
-	synchronized Message dequeue(int hide) {
+	synchronized Message get(String messageId, Integer hide) {
 		clean();
-		Iterator<Message> iter = queue.values().iterator();
+        MessageRecord message = queue.get(messageId);
+
+        if (message == null) throw new RuntimeException(); //TODO: Decide on the exception we want to throw
+
+        if (hide != 0) {
+            message.hide = hide;
+            message.hiddenAt = System.currentTimeMillis();
+        }
+
+        return message.msg;
 	}
 
-	synchronized List<Message> dequeue(int n, int hide) {
+	synchronized List<Message> get(int n, int hide) {
 		clean();
 		Iterator<Message> iter = queue.values().iterator();
 		ArrayList<Message> results = new ArrayList<Message>();
@@ -258,6 +285,11 @@ class Queue {
 		return results;
 	}
 
+    synchronized Message get(String id) {
+		clean();
+		return queue.get(id);
+	}
+
 	synchronized boolean remove(String id) {
 		Message m = queue.remove(id);
 		clean();
@@ -267,11 +299,6 @@ class Queue {
 		}
 
 		return false;
-	}
-
-	synchronized Message get(String id) {
-		clean();
-		return queue.get(id);
 	}
 
 	synchronized void clean() {
