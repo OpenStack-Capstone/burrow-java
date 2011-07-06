@@ -16,18 +16,44 @@
 
 package org.openstack.burrow.client;
 
-public interface Queue {
-  public CreateMessage createMessage(String messageId, String body);
+import org.openstack.burrow.backend.Backend;
 
-  public DeleteMessage deleteMessage(String messageId);
+public class Queue {
+  private String account;
+  private Backend backend;
+  private String queue;
 
-  public DeleteMessages deleteMessages();
+  Queue(Backend backend, String account, String queue) {
+    this.backend = backend;
+    this.account = account;
+    this.queue = queue;
+  }
 
-  public GetMessage getMessage(String messageId);
+  public CreateMessage createMessage(String messageId, String body) {
+    return new CreateMessage(backend, account, queue, messageId, body);
+  }
 
-  public GetMessages getMessages();
+  public DeleteMessage deleteMessage(String messageId) {
+    return new DeleteMessage(backend, account, queue, messageId);
+  }
 
-  public UpdateMessage updateMessage(String messageId);
+  public DeleteMessages deleteMessages() {
+    return new DeleteMessages(backend, account, queue);
+  }
 
-  public UpdateMessages updateMessages();
+  public GetMessage getMessage(String messageId) {
+    return new GetMessage(backend, account, queue, messageId);
+  }
+
+  public GetMessages getMessages() {
+    return new GetMessages(backend, account, queue);
+  }
+
+  public UpdateMessage updateMessage(String messageId) {
+    return new UpdateMessage(backend, account, queue, messageId);
+  }
+
+  public UpdateMessages updateMessages() {
+    return new UpdateMessages(backend, account, queue);
+  }
 }

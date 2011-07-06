@@ -16,10 +16,26 @@
 
 package org.openstack.burrow.client;
 
-public interface Account {
-  public DeleteQueues deleteQueues();
+import org.openstack.burrow.backend.Backend;
 
-  public GetQueues getQueues();
+public class Account {
+  private String account;
+  private Backend backend;
 
-  public Queue Queue(String queue);
+  Account(Backend backend, String account) {
+    this.backend = backend;
+    this.account = account;
+  }
+
+  public DeleteQueues deleteQueues() {
+    return new DeleteQueues(backend, account);
+  }
+
+  public GetQueues getQueues() {
+    return new GetQueues(backend, account);
+  }
+
+  public Queue Queue(String queue) {
+    return new Queue(backend, account, queue);
+  }
 }
