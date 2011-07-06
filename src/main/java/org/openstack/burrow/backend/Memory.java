@@ -16,15 +16,20 @@
 
 package org.openstack.burrow.backend;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.soap.Body;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
   public class Memory implements Backend {
 	private LinkedHashMap<String, QueueMap> accountMap;
 
 	public Memory() {
-		accountMap = new LinkedHashMap<String, QueueMap>(16, 0.75f, false);
+		accountMap = new LinkedHashMap<String, QueueMap>();
 	}
 
     /**
@@ -39,32 +44,35 @@ import java.util.*;
      * @param hide      Optional. Create a message that is hidden for this many
      *                  seconds.
      */
-    public void createMessage(String account, String queue, String messageId, String body, Integer ttl, Integer hide) {
+    public void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
+        QueueMap acctQueues;
+
         synchronized(this) {
             if (!accountMap.containsKey(account)) {
                 accountMap.put(account, new QueueMap());
             }
 
-            QueueMap acctQueues = accountMap.get(account);
+            acctQueues = accountMap.get(account);
         }
 
-        QueueMap.put(queue, messageId, body, ttl, hide);
+        acctQueues.put(queue, messageId, body, ttl, hide);
     }
 
-    /**
-     * Delete accounts, including the associated queues and messages.
-     *
-     * @param marker Optional. Only accounts with a name after this marker will be
-     *               deleted.
-     * @param limit  Optional. Delete at most this many accounts.
-     * @param detail Optional. Return the names of the accounts deleted.
-     * @return A list of account names deleted, or null if not detail=True.
-     */
-    public List<String> deleteAccounts(String marker, Integer limit, Boolean detail) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+      /**
+       * Delete accounts, including the associated queues and messages.
+       *
+       * @param marker Optional. Only accounts with a name after this marker will be
+       *               deleted.
+       * @param limit  Optional. Delete at most this many accounts.
+       * @param detail Optional. Return the names of the accounts deleted.
+       * @return A list of Account instances deleted, with the requested level of
+       *         detail.
+       */
+      public List<Account> deleteAccounts(String marker, Long limit, String detail) {
+          return null;  //To change body of implemented methods use File | Settings | File Templates.
+      }
 
-    /**
+      /**
      * Delete a message with a known id.
      *
      * @param account   Delete a message in this account.
@@ -79,7 +87,7 @@ import java.util.*;
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    /**
+      /**
      * Delete messages in a queue.
      *
      * @param account     Delete messages in this account.
@@ -94,7 +102,7 @@ import java.util.*;
      * @return A list of Message instances with the requested level of detail, or
      *         null if detail='none'.
      */
-    public List<Message> deleteMessages(String account, String queue, String marker, Integer limit, Boolean matchHidden, String detail, Integer wait) {
+    public List<Message> deleteMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -108,7 +116,7 @@ import java.util.*;
      * @param detail  Optional. If true, return the names of the queues deleted.
      * @return A list of queue names deleted, or null if not detail=True.
      */
-    public List<String> deleteQueues(String account, String marker, Integer limit, Boolean detail) {
+    public List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -120,7 +128,7 @@ import java.util.*;
      * @param limit  Optional. Return at most this many accounts.
      * @return A list of account names.
      */
-    public List<String> getAccounts(String marker, Integer limit) {
+    public List<Account> getAccounts(String marker, Long limit) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -151,7 +159,7 @@ import java.util.*;
      *                    would otherwise be returned.
      * @return A list of Message instances with the requested level of detail.
      */
-    public List<Message> getMessages(String account, String queue, String marker, Integer limit, Boolean matchHidden, String detail, Integer wait) {
+    public List<Message> getMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -164,7 +172,7 @@ import java.util.*;
      * @param limit   Optional. At most this many queues will be listed.
      * @return A list of queue names.
      */
-    public List<String> getQueues(String account, String marker, Integer limit) {
+    public List<Queue> getQueues(String account, String marker, Long limit) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -179,8 +187,9 @@ import java.util.*;
      * @param hide      Optional. Update the message to be hidden for this many
      *                  seconds.
      */
-    public void updateMessage(String account, String queue, String messageId, Integer ttl, Integer hide) {
+    public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide, String detail) {
         //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     /**
@@ -201,24 +210,24 @@ import java.util.*;
      * @return A list of updated Message instances with the requested level of
      *         detail, or null if detail='none'.
      */
-    public List<Message> updateMessages(String account, String queue, String marker, Integer limit, Boolean matchHidden, Integer ttl, Integer hide, String detail, Integer wait) {
+    public List<Message> updateMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
 
 class QueueMap {
-	private LinkedHashMap<String, Queue> queueMap;
+	private LinkedHashMap<String, MemoryQueue> queueMap;
 
 	QueueMap() {
-		queueMap = new LinkedHashMap<String, Queue>(16, 0.75f, false);
+		queueMap = new LinkedHashMap<String, MemoryQueue>();
 	}
 
-	void put(String queue, String messageId, String body, Integer ttl, Integer hide) {
-        Queue q;
+	void put(String queue, String messageId, String body, long ttl, long hide) {
+        MemoryQueue q;
 
         synchronized (this) {
             if (!queueMap.containsKey(queue)) {
-                queueMap.put(queue, new Queue());
+                queueMap.put(queue, new MemoryQueue());
             }
 
             q = queueMap.get(queue);
@@ -228,7 +237,7 @@ class QueueMap {
     }
 }
 
-class Queue {
+class MemoryQueue {
     private class MessageRecord {
         long ttl, createdAt;
         long hide, hiddenAt;
@@ -246,17 +255,16 @@ class Queue {
 
 	private LinkedHashMap<String, MessageRecord> queue;
 
-	Queue() {
-		//Use default size/load factor, with insertion-order iteration
-		queue = new LinkedHashMap<String, MessageRecord>(16, 0.75f, false);
+	MemoryQueue() {
+		queue = new LinkedHashMap<String, MessageRecord>();
 	}
 
-	synchronized void put(String messageId, String body, Integer ttl, Integer hide) {
+	synchronized void put(String messageId, String body, long ttl, long hide) {
 		clean();
 		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
 	}
 
-	synchronized Message get(String messageId, Integer hide) {
+	synchronized Message get(String messageId, Long hide) {
 		clean();
         MessageRecord message = queue.get(messageId);
 
@@ -270,15 +278,19 @@ class Queue {
         return message.msg;
 	}
 
-	synchronized List<Message> get(int n, int hide) {
+	synchronized List<Message> get(String marker, int n, long hide) {
 		clean();
-		Iterator<Message> iter = queue.values().iterator();
+		Iterator<Map.Entry<String, MessageRecord>> iter = queue.entrySet().iterator();
 		ArrayList<Message> results = new ArrayList<Message>();
-		
+
+		while ((marker != null) && (iter.hasNext())) {
+			if (iter.next().getKey().equals(marker)) break;
+		}
+
 		while (iter.hasNext() && (n > 0)) {
-			Message m = iter.next();
+			MessageRecord m = iter.next().getValue();
 			if (m.hide == 0) {
-				results.add(m);
+				results.add(m.msg);
 				n--;
 			}
 		}
@@ -287,26 +299,32 @@ class Queue {
 
     synchronized Message get(String id) {
 		clean();
-		return queue.get(id);
+		MessageRecord m = queue.get(id);
+
+        if (m != null) {
+			return m.msg;
+		}
+
+		return null;
 	}
 
-	synchronized boolean remove(String id) {
-		Message m = queue.remove(id);
+	synchronized Message remove(String id) {
+		MessageRecord m = queue.remove(id);
 		clean();
 
 		if (m != null) {
-			return true;
+			return m.msg;
 		}
 
-		return false;
+		return null;
 	}
 
 	synchronized void clean() {
-		Iterator<Message> iter = queue.values().iterator();
-		long now = System.nanoTime();
+		Iterator<MessageRecord> iter = queue.values().iterator();
+		long now = System.currentTimeMillis();
 
 		while (iter.hasNext()) {
-			Message msg = iter.next();
+			MessageRecord msg = iter.next();
 
 			if ((msg.hide != 0) && (msg.hide + msg.hiddenAt < now)) {
 				msg.hide = 0;
