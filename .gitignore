@@ -3,3 +3,4 @@ target/
 .project
 .idea/
 burrow-client.iml
+.DS_Store
