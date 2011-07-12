@@ -16,30 +16,31 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.openstack.burrow.client.GetAccounts;
 
 /**
  * Unit tests for the Burrow Client.
  */
-public class ClientTest extends TestCase {
+public class GetAccountsTest extends TestCase {
+  private Backend backend = null;
 
-  public ClientTest(String testName) {
+  public GetAccountsTest(String testName) {
     super(testName);
   }
 
   public static Test suite() {
-    return new TestSuite(ClientTest.class);
+    return new TestSuite(GetAccountsTest.class);
   }
 
   /**
    * Test that a new memory-backed Client has no accounts.
    */
-  public void testClient() {
-    Client client = new HttpClient();
-    client.Account("newAccount").Queue("newQueue").Message("messageId", "messageBody").execute();
+  public void testDeleteMessages() {
+    GetAccounts ga = new GetAccounts(backend);
+    GetAccounts ga2 = ga.withMarker("marker");
+    assertEquals("withMarker should not return the same GetAccounts object", ga, ga2); //test should fail
   }
 }

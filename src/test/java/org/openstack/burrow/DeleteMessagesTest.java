@@ -16,30 +16,34 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.openstack.burrow.client.DeleteMessages;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests for the Burrow Client.
  */
-public class ClientTest extends TestCase {
+public class DeleteMessagesTest extends TestCase {
+  private Backend backend = null;
 
-  public ClientTest(String testName) {
+  public DeleteMessagesTest(String testName) {
     super(testName);
   }
 
   public static Test suite() {
-    return new TestSuite(ClientTest.class);
+    return new TestSuite(DeleteMessagesTest.class);
   }
 
   /**
    * Test that a new memory-backed Client has no accounts.
    */
-  public void testClient() {
-    Client client = new HttpClient();
-    client.Account("newAccount").Queue("newQueue").Message("messageId", "messageBody").execute();
+  public void testDeleteMessages() {
+    DeleteMessages dm = new DeleteMessages(backend, "account", "queue");
+    DeleteMessages dm2 = dm.matchHidden(false);
+    assertEquals("matchHidden should not return same DeleteMessages object", dm, dm2); //test should fail
   }
 }

@@ -16,8 +16,6 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -25,21 +23,23 @@ import junit.framework.TestSuite;
 /**
  * Unit tests for the Burrow Client.
  */
-public class ClientTest extends TestCase {
+public class GetMessageTest extends TestCase {
+    private Backend backend = null;
 
-  public ClientTest(String testName) {
+  public GetMessageTest(String testName) {
     super(testName);
   }
 
   public static Test suite() {
-    return new TestSuite(ClientTest.class);
+    return new TestSuite(GetMessageTest.class);
   }
 
   /**
    * Test that a new memory-backed Client has no accounts.
    */
-  public void testClient() {
-    Client client = new HttpClient();
-    client.Account("newAccount").Queue("newQueue").Message("messageId", "messageBody").execute();
+  public void testDeleteMessages() {
+    GetMessage gm = new GetMessage(backend, "account", "queue", "messageId");
+    GetMessage gm2 = gm.requestDetail("detail");
+    assertEquals("requestDetail should not return same GetMessage object", um, um2); //test should fail
   }
 }
