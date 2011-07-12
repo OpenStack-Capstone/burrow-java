@@ -91,21 +91,17 @@ public class Http implements Backend {
           params.add(new BasicNameValuePair("hide", hide.toString()));
       }
       URI uri = getUri(account, queue, messageId, params);
-      // HttpPut request = new HttpPut(uri);
-      HttpPut request = new HttpPut("");
+      HttpPut request = new HttpPut(uri);
       request.setEntity(new StringEntity(body, "UTF-8"));
       HttpResponse response = client.execute(request);
       StatusLine status = response.getStatusLine();
       switch (status.getStatusCode()) {
         case HttpStatus.SC_CREATED:
         case HttpStatus.SC_NO_CONTENT:
-        if (1 != 1)
           return;
-        else
-          throw new RuntimeException();
         default:
-          throw new RuntimeException();
           // TODO: Throw something
+          System.exit(1);
       }
     } catch (URISyntaxException e) {
       // Failed to construct the URI for this request.
@@ -148,82 +144,47 @@ public class Http implements Backend {
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail) {
     /*
-    List<NameValuePair> params = null;
-    if ((marker != null) || (limit != null) || (detail != null)) {
-      params = new ArrayList<NameValuePair>();
-      if (marker != null)
-        params.add(new BasicNameValuePair("marker", marker));
-      if (limit != null)
-        params.add(new BasicNameValuePair("limit", limit.toString()));
-      if (detail != null)
-        params.add(new BasicNameValuePair("detail", detail));
-    }
-    URI uri = null;
-    try {
-      uri = getUri(null, null, null, params);
-    } catch (URISyntaxException e) {
-      // Failed to construct a URI for the request.
-      // This should never happen unless the configuration is completely bogus.
-      // TODO: Raise an appropriate exception, perhaps inside getUri.
-      e.printStackTrace();
-    }
-    HttpDelete request = new HttpDelete(uri);
-
-    HttpResponse response = null;
-    try {
-      response = client.execute(request);
-    } catch (IOException e) {
-      // Failed to execute the http request.
-      // TODO: Raise an appropriate exception
-      e.printStackTrace();
-    }
-    StatusLine status = response.getStatusLine();
-    HttpEntity responseEntity = response.getEntity();
-    if (status.getStatusCode() == 200) {
-      try {
-        String responseBody = EntityUtils.toString(responseEntity, "UTF-8");
-        JSONArray accountsJson = new JSONArray(responseBody);
-        if (accountsJson.length() == 0)
-          return Collections.emptyList();
-        else {
-          List<Account> accounts = new ArrayList<Account>(accountsJson.length());
-          try {
-            // Initially assume the response is a list of strings.
-            for (int idx = 0; idx < accountsJson.length(); idx++) {
-              // This getString will throw JSONException if we have objects.
-              String name = accountsJson.getString(idx);
-              accounts.add(idx, new AccountResponse(this, name));
-            }
-
-          } catch (JSONException e) {
-            // The response is not a list of strings. Assume it is a list of
-            // objects.
-            for (int idx = 0; idx < accountsJson.length(); idx++) {
-              JSONObject accountJson = accountsJson.getJSONObject(idx);
-              try {
-                AccountResponse account = new AccountResponse(this, accountJson);
-                accounts.add(idx, account);
-              } catch (JSONException e2) {
-                // Failed to retrieve needed details from the JSON object.
-                // TODO: Raise an appropriate exception
-                e2.printStackTrace();
-              }
-            }
-          }
-        }
-      } catch (IOException e) {
-        // Failed to get a string from the responseEntity.
-        // TODO: Re-raise appropriate exception
-        e.printStackTrace();
-      } catch (JSONException e) {
-        // The response body could not be decoded as a JSON array,
-        // or the array is not entirely of strings or entirely of objects,
-        // or
-        // TODO: Raise an appropriate exception
-        e.printStackTrace();
-      }
-    }
-    */
+     * List<NameValuePair> params = null; if ((marker != null) || (limit !=
+     * null) || (detail != null)) { params = new ArrayList<NameValuePair>(); if
+     * (marker != null) params.add(new BasicNameValuePair("marker", marker)); if
+     * (limit != null) params.add(new BasicNameValuePair("limit",
+     * limit.toString())); if (detail != null) params.add(new
+     * BasicNameValuePair("detail", detail)); } URI uri = null; try { uri =
+     * getUri(null, null, null, params); } catch (URISyntaxException e) { //
+     * Failed to construct a URI for the request. // This should never happen
+     * unless the configuration is completely bogus. // TODO: Raise an
+     * appropriate exception, perhaps inside getUri. e.printStackTrace(); }
+     * HttpDelete request = new HttpDelete(uri);
+     * 
+     * HttpResponse response = null; try { response = client.execute(request); }
+     * catch (IOException e) { // Failed to execute the http request. // TODO:
+     * Raise an appropriate exception e.printStackTrace(); } StatusLine status =
+     * response.getStatusLine(); HttpEntity responseEntity =
+     * response.getEntity(); if (status.getStatusCode() == 200) { try { String
+     * responseBody = EntityUtils.toString(responseEntity, "UTF-8"); JSONArray
+     * accountsJson = new JSONArray(responseBody); if (accountsJson.length() ==
+     * 0) return Collections.emptyList(); else { List<Account> accounts = new
+     * ArrayList<Account>(accountsJson.length()); try { // Initially assume the
+     * response is a list of strings. for (int idx = 0; idx <
+     * accountsJson.length(); idx++) { // This getString will throw
+     * JSONException if we have objects. String name =
+     * accountsJson.getString(idx); accounts.add(idx, new AccountResponse(this,
+     * name)); }
+     * 
+     * } catch (JSONException e) { // The response is not a list of strings.
+     * Assume it is a list of // objects. for (int idx = 0; idx <
+     * accountsJson.length(); idx++) { JSONObject accountJson =
+     * accountsJson.getJSONObject(idx); try { AccountResponse account = new
+     * AccountResponse(this, accountJson); accounts.add(idx, account); } catch
+     * (JSONException e2) { // Failed to retrieve needed details from the JSON
+     * object. // TODO: Raise an appropriate exception e2.printStackTrace(); } }
+     * } } } catch (IOException e) { // Failed to get a string from the
+     * responseEntity. // TODO: Re-raise appropriate exception
+     * e.printStackTrace(); } catch (JSONException e) { // The response body
+     * could not be decoded as a JSON array, // or the array is not entirely of
+     * strings or entirely of objects, // or // TODO: Raise an appropriate
+     * exception e.printStackTrace(); } }
+     */
     return null;
   }
 
