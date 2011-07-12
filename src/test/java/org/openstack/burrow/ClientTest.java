@@ -28,22 +28,47 @@ import junit.framework.TestSuite;
  * Unit tests for the Burrow Client.
  */
 public class ClientTest extends TestCase {
-
   public static Test suite() {
     return new TestSuite(ClientTest.class);
   }
 
+  private Client client;
+
   public ClientTest(String testName) {
     super(testName);
+    Backend backend = new Http("localhost", 8080); // TODO: Parameterize this
+    client = new Client(backend);
   }
 
   /**
    * Create a message.
    */
   public void testCreateMessage() {
-    Backend backend = new Http("localhost", 8080);
-    Client client = new Client(backend);
     client.Account("newAccount").Queue("newQueue").createMessage("messageId", "messageBody")
         .execute();
+  }
+
+  /**
+   * Create a message with a hide.
+   */
+  public void testCreateMessageWithHide() {
+    client.Account("newAccount").Queue("newQueue")
+        .createMessage("messageIdWithHide", "messageBody").setHide(900).execute();
+  }
+
+  /**
+   * Create a message with a ttl.
+   */
+  public void testCreateMessageWithTtl() {
+    client.Account("newAccount").Queue("newQueue").createMessage("messageIdWithTtl", "messageBody")
+        .setTtl(900).execute();
+  }
+
+  /**
+   * Create a message with a ttl and a hide.
+   */
+  public void testCreateMessageWithTtlAndHide() {
+    client.Account("newAccount").Queue("newQueue").createMessage("messageIdWithHideAndTtl",
+        "messageBody").setTtl(900).setHide(20).execute();
   }
 }
