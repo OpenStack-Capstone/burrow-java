@@ -45,4 +45,22 @@ public class ClientTest extends TestCase {
     client.Account("newAccount").Queue("newQueue").createMessage("messageId", "messageBody")
         .execute();
   }
+
+  public void testDeleteMessage() {
+    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
+    Client client = new Client(backend);
+    client.Account("newAccount").Queue("newQueue").deleteMessage("messageId").execute();
+  } 
+
+  public void testDeleteQueues() {
+    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
+    Client client = new Client(backend);
+    client.Account("newAccount").deleteQueues().execute();
+  }
+
+  public void testAccount() {
+    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
+    Client client = new Client(backend);
+    client.Account("newAccount").matchLimit(limit).execute();
+  }
 }
