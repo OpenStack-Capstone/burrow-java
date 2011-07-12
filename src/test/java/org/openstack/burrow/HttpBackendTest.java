@@ -16,8 +16,10 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-import java.util.ArrayList;
+
+import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.backend.Http;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -25,9 +27,8 @@ import junit.framework.TestSuite;
 /**
  * Unit tests for the Burrow Client.
  */
-public class ClientTest extends TestCase {
-
-  public ClientTest(String testName) {
+public class HttpBackendTest extends TestCase {
+  public HttpBackendTest(String testName) {
     super(testName);
   }
 
@@ -38,12 +39,10 @@ public class ClientTest extends TestCase {
   /**
    * Test that a new memory-backed Client has no accounts.
    */
-  public void testClient() {
-    /*
-    Client client = new Client("memory://");
-    List<String> accounts = client.getAccounts();
-    assertEquals("New memory-backed Client has unexpected accounts.", new ArrayList<String>(),
-        accounts);
-    */
+  public void testCreateMessage() {
+    Backend backend = new Http("127.0.0.1", 8080);
+    backend.createMessage("my_account", "my_queue", "my_message_id", "my_message_body", null, null);
+    backend.createMessage("my_account", "my_queue", "my_message_id", "my_message_body", null, null);
+    backend.createMessage("my_account", "my_queue", "my_message_id", "my_message_body", null, null);
   }
 }
