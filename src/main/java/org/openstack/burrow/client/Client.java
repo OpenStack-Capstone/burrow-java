@@ -16,10 +16,24 @@
 
 package org.openstack.burrow.client;
 
-public interface Client {
-  public Account Account(String accountName);
+import org.openstack.burrow.backend.Backend;
 
-  public DeleteAccounts deleteAccounts();
+public class Client {
+  private Backend backend;
 
-  public GetAccounts getAccounts();
+  public Client(Backend backend) {
+    this.backend = backend;
+  }
+
+  public Account Account(String accountName) {
+    return new Account(backend, accountName);
+  }
+
+  public DeleteAccounts deleteAccounts() {
+    return new DeleteAccounts(backend);
+  }
+
+  public GetAccounts getAccounts() {
+    return new GetAccounts(backend);
+  }
 }

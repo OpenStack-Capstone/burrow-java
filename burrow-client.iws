@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="650ec2a5-e352-4a8c-97c0-c7801310758b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AUTHORS.TXT" afterPath="$PROJECT_DIR$/AUTHORS.TXT" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/DeleteMessagesTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetAccountsTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetMessageTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/UpdateMessageTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/getMessageTest2.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/burrow-client.iws" afterPath="$PROJECT_DIR$/burrow-client.iws" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java" />
     </list>
     <ignored path="burrow-client.iws" />
@@ -201,10 +206,82 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="GetAccounts.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="GetAccountsTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetAccountsTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="43" column="77" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ClientTest.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="28" column="0" selection-start="869" selection-end="869" vertical-scroll-proportion="0.19596542">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GetMessageTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetMessageTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="41" column="27" selection-start="1225" selection-end="1225" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UpdateMessageTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/UpdateMessageTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="43" column="71" selection-start="1380" selection-end="1380" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Message.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Message.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="17" selection-start="657" selection-end="657" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GetMessage.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetMessage.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="getMessageTest2.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/getMessageTest2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="34" selection-start="988" selection-end="988" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DeleteMessagesTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/DeleteMessagesTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="46" column="77" selection-start="1431" selection-end="1431" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GetAccounts.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetAccounts.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.03768844">
+            <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -230,6 +307,11 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/getMessageTest2.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetMessageTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/UpdateMessageTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetAccountsTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/openstack/burrow/DeleteMessagesTest.java" />
       </list>
     </option>
   </component>
@@ -431,6 +513,11 @@
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.openstack.burrow" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -579,7 +666,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32887974" sideWeight="0.0" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32682425" sideWeight="0.0" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -680,83 +767,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Queue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Message.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="17" selection-start="657" selection-end="657" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/UpdateMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/UpdateMessages.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/backend/Backend.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="17" selection-start="812" selection-end="812" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/CreateMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetMessages.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="0" selection-start="1155" selection-end="1155" vertical-scroll-proportion="1.6426513">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Account.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.041666668">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="17" selection-start="657" selection-end="657" vertical-scroll-proportion="0.48387095">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/DeleteAccounts.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="-0.74351585">
@@ -771,13 +781,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/DeleteMessages.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="-1.5">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/DeleteQueues.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.040983606">
@@ -785,9 +788,93 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/CreateMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/DeleteMessages.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/UpdateMessages.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/UpdateMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="-0.987013">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetAccounts.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.03768844">
+        <state line="21" column="13" selection-start="722" selection-end="722" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/Message.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="17" selection-start="657" selection-end="657" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/openstack/burrow/client/GetMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="13" selection-start="699" selection-end="699" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/DeleteMessagesTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="77" selection-start="1431" selection-end="1431" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetAccountsTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="77" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/GetMessageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="27" selection-start="1225" selection-end="1225" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/getMessageTest2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="34" selection-start="988" selection-end="988" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/UpdateMessageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="71" selection-start="1380" selection-end="1380" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/openstack/burrow/ClientTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="0" selection-start="869" selection-end="869" vertical-scroll-proportion="0.19596542">
           <folding />
         </state>
       </provider>
