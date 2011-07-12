@@ -16,15 +16,14 @@
 
 package org.openstack.burrow;
 
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.Http;
-import org.openstack.burrow.client.Client;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Queue;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.backend.Http;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Client;
+import org.openstack.burrow.client.Queue;
 
 /**
  * Unit tests for the Burrow Client.
@@ -56,21 +55,21 @@ public class ClientTest extends TestCase {
   /**
    * Create a message with a hide.
    */
-  public void testCreateMessageWithHide() {
+  public void testCreateMessageSetHide() {
     queue.createMessage("messageIdWithHide", "messageBody").setHide(900).execute();
   }
 
   /**
    * Create a message with a ttl.
    */
-  public void testCreateMessageWithTtl() {
+  public void testCreateMessageSetTtl() {
     queue.createMessage("messageIdWithTtl", "messageBody").setTtl(900).execute();
   }
 
   /**
    * Create a message with a ttl and a hide.
    */
-  public void testCreateMessageWithTtlAndHide() {
+  public void testCreateMessageSetTtlSetHide() {
     queue.createMessage("messageIdWithHideAndTtl", "messageBody").setTtl(900).setHide(20).execute();
   }
 
@@ -78,7 +77,43 @@ public class ClientTest extends TestCase {
     queue.deleteMessage("messageId").execute();
   }
 
+  public void testDeleteMessageMatchHidden() {
+    queue.deleteMessage("messageId").matchHidden(true).execute();
+  }
+
   public void testDeleteQueues() {
     account.deleteQueues().execute();
+  }
+
+  public void testDeleteQueuesRequestDetail() {
+     account.deleteQueues().requestDetail("detail").execute();
+  }
+
+  public void testDeleteQueuesWithMarker() {
+     account.deleteQueues().withMarker("marker").execute();
+  }
+
+  public void testDeleteMessages() {
+      queue.deleteMessages().execute();
+  }
+
+  public void testDeleteMessagesRequestWait() {
+      queue.deleteMessages().requestWait(18932038403L).execute();
+  }
+
+  public void testDeleteMessagesRequestDetail() {
+      queue.deleteMessages().requestDetail("detail").execute();
+  }
+
+  public void testGetAccounts(){
+      client.getAccounts().execute();
+  }
+
+  public void testGetAccountsMatchLimit(){
+      client.getAccounts().matchLimit(1892L).execute();
+  }
+
+  public void testGetAccountsWithMarker(){
+      client.getAccounts().withMarker("marker").execute();
   }
 }
