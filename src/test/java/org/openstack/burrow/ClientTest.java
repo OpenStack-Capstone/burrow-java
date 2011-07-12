@@ -88,6 +88,5 @@ public class ClientTest extends TestCase {
   public void testCreateMessageWithTtlAndHide() {
     client.Account("newAccount").Queue("newQueue").createMessage("messageIdWithHideAndTtl",
         "messageBody").setTtl(900).setHide(20).execute();
->>>>>>> e9ae4e4951f41233a2f5ba98229317de95928c92
   }
 }
