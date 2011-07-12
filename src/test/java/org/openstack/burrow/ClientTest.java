@@ -16,8 +16,9 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Client;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -27,19 +28,21 @@ import junit.framework.TestSuite;
  */
 public class ClientTest extends TestCase {
 
-  public ClientTest(String testName) {
-    super(testName);
-  }
-
   public static Test suite() {
     return new TestSuite(ClientTest.class);
   }
 
+  public ClientTest(String testName) {
+    super(testName);
+  }
+
   /**
-   * Test that a new memory-backed Client has no accounts.
+   * Create a message.
    */
-  public void testClient() {
-    Client client = new HttpClient();
-    client.Account("newAccount").Queue("newQueue").Message("messageId", "messageBody").execute();
+  public void testCreateMessage() {
+    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
+    Client client = new Client(backend);
+    client.Account("newAccount").Queue("newQueue").createMessage("messageId", "messageBody")
+        .execute();
   }
 }
