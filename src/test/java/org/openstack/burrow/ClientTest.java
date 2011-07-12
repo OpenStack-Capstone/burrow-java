@@ -19,6 +19,8 @@ package org.openstack.burrow;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.Http;
 import org.openstack.burrow.client.Client;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Queue;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -32,61 +34,51 @@ public class ClientTest extends TestCase {
     return new TestSuite(ClientTest.class);
   }
 
+  private Account account;
   private Client client;
+  private Queue queue;
 
   public ClientTest(String testName) {
     super(testName);
     Backend backend = new Http("localhost", 8080); // TODO: Parameterize this
     client = new Client(backend);
+    account = client.Account("testAccount");
+    queue = account.Queue("testQueue");
   }
 
   /**
    * Create a message.
    */
   public void testCreateMessage() {
-    client.Account("newAccount").Queue("newQueue").createMessage("messageId", "messageBody")
-        .execute();
+    queue.createMessage("messageId", "messageBody").execute();
   }
-
-
-  public void testDeleteMessage() {
-    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
-    Client client = new Client(backend);
-    client.Account("newAccount").Queue("newQueue").deleteMessage("messageId").execute();
-  } 
-
-  public void testDeleteQueues() {
-    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
-    Client client = new Client(backend);
-    client.Account("newAccount").deleteQueues().execute();
-  }
-
-  public void testAccount() {
-    Backend backend = null; // TODO: TEST AGAINST AN ACTUAL BACKEND
-    Client client = new Client(backend);
-    client.Account("newAccount").matchLimit(limit).execute();
 
   /**
    * Create a message with a hide.
    */
   public void testCreateMessageWithHide() {
-    client.Account("newAccount").Queue("newQueue")
-        .createMessage("messageIdWithHide", "messageBody").setHide(900).execute();
+    queue.createMessage("messageIdWithHide", "messageBody").setHide(900).execute();
   }
 
   /**
    * Create a message with a ttl.
    */
   public void testCreateMessageWithTtl() {
-    client.Account("newAccount").Queue("newQueue").createMessage("messageIdWithTtl", "messageBody")
-        .setTtl(900).execute();
+    queue.createMessage("messageIdWithTtl", "messageBody").setTtl(900).execute();
   }
 
   /**
    * Create a message with a ttl and a hide.
    */
   public void testCreateMessageWithTtlAndHide() {
-    client.Account("newAccount").Queue("newQueue").createMessage("messageIdWithHideAndTtl",
-        "messageBody").setTtl(900).setHide(20).execute();
+    queue.createMessage("messageIdWithHideAndTtl", "messageBody").setTtl(900).setHide(20).execute();
+  }
+
+  public void testDeleteMessage() {
+    queue.deleteMessage("messageId").execute();
+  }
+
+  public void testDeleteQueues() {
+    account.deleteQueues().execute();
   }
 }
