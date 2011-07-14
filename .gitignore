@@ -2,5 +2,6 @@ target/
 .classpath
 .project
 .idea/
+.settings/
 burrow-client.iml
 .DS_Store
