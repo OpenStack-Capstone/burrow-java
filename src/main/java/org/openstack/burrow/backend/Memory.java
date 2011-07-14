@@ -21,9 +21,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.*;
+import sun.applet.resources.MsgAppletViewer;
 
   public class Memory implements Backend {
 	private LinkedHashMap<String, QueueMap> accountMap;
@@ -264,21 +263,19 @@ class MemoryQueue {
 		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
 	}
 
-	synchronized Message get(String messageId, Long hide) {
+	synchronized Message get(String messageId, long hide, boolean getHidden) {
 		clean();
         MessageRecord message = queue.get(messageId);
 
-        if (message == null) throw new RuntimeException(); //TODO: Decide on the exception we want to throw
+        if (message == null) throw new NoSuchMessageException(); //TODO: Decide on the exception we want to throw
 
-        if (hide != 0) {
-            message.hide = hide;
-            message.hiddenAt = System.currentTimeMillis();
-        }
+        if ((message.hide != 0) && (!getHidden)) throw new MessageHiddenException();
 
-        return message.msg;
+        message.hide = hide;
+        message.hiddenAt = System.currentTimeMillis();
 	}
 
-	synchronized List<Message> get(String marker, int n, long hide) {
+	synchronized List<Message> get(String marker, int n, long hide, boolean getHidden) {
 		clean();
 		Iterator<Map.Entry<String, MessageRecord>> iter = queue.entrySet().iterator();
 		ArrayList<Message> results = new ArrayList<Message>();
