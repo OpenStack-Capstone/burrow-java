@@ -18,18 +18,31 @@ package org.openstack.burrow.backend;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.openstack.burrow.client.*;
-import sun.applet.resources.MsgAppletViewer;
 
   public class Memory implements Backend {
-	private LinkedHashMap<String, QueueMap> accountMap;
+	private HashedList<String, HashedList<String, MemoryQueue>> accountMap;
 
 	public Memory() {
-		accountMap = new LinkedHashMap<String, QueueMap>();
+		accountMap = new HashedList<String, HashedList<String, MemoryQueue>>();
 	}
+
+
+    private void ensurePresent(String account, String queue) {
+        HashedList<String, MemoryQueue> ensureAccount;
+
+        if (!accountMap.containsKey(account)) {
+            ensureAccount = new HashedList<String, MemoryQueue>();
+            accountMap.put(account, ensureAccount);
+        } else {
+            ensureAccount = accountMap.get(account);
+        }
+
+        if (!ensureAccount.containsKey(queue) && (queue != null)) {
+             ensureAccount.put(account, new MemoryQueue());
+        }
+    }
 
     /**
      * Create a message with a given id.
@@ -43,18 +56,9 @@ import sun.applet.resources.MsgAppletViewer;
      * @param hide      Optional. Create a message that is hidden for this many
      *                  seconds.
      */
-    public void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
-        QueueMap acctQueues;
-
-        synchronized(this) {
-            if (!accountMap.containsKey(account)) {
-                accountMap.put(account, new QueueMap());
-            }
-
-            acctQueues = accountMap.get(account);
-        }
-
-        acctQueues.put(queue, messageId, body, ttl, hide);
+    public synchronized void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
+        ensurePresent(account, queue);
+        accountMap.get(account).get(queue).put(messageId, body, ttl, hide);
     }
 
       /**
@@ -62,13 +66,29 @@ import sun.applet.resources.MsgAppletViewer;
        *
        * @param marker Optional. Only accounts with a name after this marker will be
        *               deleted.
-       * @param limit  Optional. Delete at most this many accounts.
+       * @param limit  Optional. Delete at most this many accounts. A limit of less than 0
+       *        is equivalent to unlimited.
        * @param detail Optional. Return the names of the accounts deleted.
        * @return A list of Account instances deleted, with the requested level of
        *         detail.
        */
-      public List<Account> deleteAccounts(String marker, Long limit, String detail) {
-          return null;  //To change body of implemented methods use File | Settings | File Templates.
+      public synchronized List<Account> deleteAccounts(String marker, Long limit, String detail) {
+          List<Account> deleted = new ArrayList<Account>();
+
+          Iterator<HashedList.Entry> iter;
+          if (marker != null) iter = accountMap.newIteratorFrom(marker);
+          else iter = accountMap.newIterator();
+
+          if (limit == null) limit = -1l;
+
+          while ((limit != 0) && (iter.hasNext())) {
+              HashedList.Entry e = iter.next();
+              deleted.add(new Account(this, (String) e.getKey()));
+              iter.remove();
+              limit--;
+          }
+
+          return deleted;
       }
 
       /**
@@ -77,13 +97,10 @@ import sun.applet.resources.MsgAppletViewer;
      * @param account   Delete a message in this account.
      * @param queue     Delete a message in this queue.
      * @param messageId Delete a message with this id.
-     * @param detail    Optional. Return this level of detail about the deleted
-     *                  message.
-     * @return A Message instance with the requested level of detail, or null if
-     *         detail='none'.
      */
-    public Message deleteMessage(String account, String queue, String messageId, Boolean matchHidden, String detail) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized void deleteMessage(String account, String queue, String messageId) {
+        ensurePresent(account, queue);
+        accountMap.get(account).get(queue).remove(messageId);
     }
 
       /**
@@ -101,8 +118,9 @@ import sun.applet.resources.MsgAppletViewer;
      * @return A list of Message instances with the requested level of detail, or
      *         null if detail='none'.
      */
-    public List<Message> deleteMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized List<Message> deleteMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
+        ensurePresent(account, queue);
+        return accountMap.get(account).get(queue).remove(marker, limit, matchHidden, wait);
     }
 
     /**
@@ -115,8 +133,24 @@ import sun.applet.resources.MsgAppletViewer;
      * @param detail  Optional. If true, return the names of the queues deleted.
      * @return A list of queue names deleted, or null if not detail=True.
      */
-    public List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
+          List<Queue> deleted = new ArrayList<Queue>();
+          ensurePresent(account, null);
+
+          Iterator<HashedList.Entry> iter;
+          if (marker != null) iter = accountMap.newIteratorFrom(marker);
+          else iter = accountMap.newIterator();
+
+          if (limit == null) limit = -1l;
+
+          while ((limit != 0) && (iter.hasNext())) {
+              HashedList.Entry e = iter.next();
+              deleted.add(new Queue(this, account, (String) e.getKey()));
+              iter.remove();
+              limit--;
+          }
+
+          return deleted;
     }
 
     /**
@@ -127,8 +161,22 @@ import sun.applet.resources.MsgAppletViewer;
      * @param limit  Optional. Return at most this many accounts.
      * @return A list of account names.
      */
-    public List<Account> getAccounts(String marker, Long limit) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized List<Account> getAccounts(String marker, Long limit) {
+          List<Account> accts = new ArrayList<Account>();
+
+          Iterator<HashedList.Entry> iter;
+          if (marker != null) iter = accountMap.newIteratorFrom(marker);
+          else iter = accountMap.newIterator();
+
+          if (limit == null) limit = -1l;
+
+          while ((limit != 0) && (iter.hasNext())) {
+              HashedList.Entry e = iter.next();
+              accts.add(new Account(this, (String) e.getKey()));
+              limit--;
+          }
+
+          return accts;
     }
 
     /**
@@ -141,8 +189,12 @@ import sun.applet.resources.MsgAppletViewer;
      * @return A Message instance with the requested level of detail, or null if
      *         detail='none'.
      */
-    public Message getMessage(String account, String queue, String messageId, String detail) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized Message getMessage(String account, String queue, String messageId, String detail) {
+        ensurePresent(account, queue);
+        Message msg = accountMap.get(account).get(queue).get(messageId);
+        if (msg == null) throw new NoSuchMessageException();
+
+        return msg;
     }
 
     /**
@@ -158,8 +210,9 @@ import sun.applet.resources.MsgAppletViewer;
      *                    would otherwise be returned.
      * @return A list of Message instances with the requested level of detail.
      */
-    public List<Message> getMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized List<Message> getMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
+        ensurePresent(account, queue);
+        return accountMap.get(account).get(queue).get(marker, limit, matchHidden, wait);
     }
 
     /**
@@ -171,8 +224,23 @@ import sun.applet.resources.MsgAppletViewer;
      * @param limit   Optional. At most this many queues will be listed.
      * @return A list of queue names.
      */
-    public List<Queue> getQueues(String account, String marker, Long limit) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized List<Queue> getQueues(String account, String marker, Long limit) {
+        List<Queue> queues = new ArrayList<Queue>();
+        ensurePresent(account, null);
+
+        Iterator<HashedList.Entry> iter;
+        if (marker != null) iter = accountMap.newIteratorFrom(marker);
+        else iter = accountMap.newIterator();
+
+        if (limit == null) limit = -1l;
+
+        while ((limit != 0) && (iter.hasNext())) {
+              HashedList.Entry e = iter.next();
+              queues.add(new Queue(this, account, (String) e.getKey()));
+              limit--;
+        }
+
+        return queues;
     }
 
     /**
@@ -186,9 +254,9 @@ import sun.applet.resources.MsgAppletViewer;
      * @param hide      Optional. Update the message to be hidden for this many
      *                  seconds.
      */
-    public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide, String detail) {
-        //To change body of implemented methods use File | Settings | File Templates.
-        return null;
+    public synchronized Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide, String detail) {
+        ensurePresent(account, queue);
+        return accountMap.get(account).get(queue).update(messageId, ttl, hide);
     }
 
     /**
@@ -209,226 +277,166 @@ import sun.applet.resources.MsgAppletViewer;
      * @return A list of updated Message instances with the requested level of
      *         detail, or null if detail='none'.
      */
-    public List<Message> updateMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-}
-
-class QueueMap {
-	private LinkedHashMap<String, MemoryQueue> queueMap;
-
-	QueueMap() {
-		queueMap = new LinkedHashMap<String, MemoryQueue>();
-	}
-
-	void put(String queue, String messageId, String body, long ttl, long hide) {
-        MemoryQueue q;
-
-        synchronized (this) {
-            if (!queueMap.containsKey(queue)) {
-                queueMap.put(queue, new MemoryQueue());
-            }
-
-            q = queueMap.get(queue);
-        }
-
-        q.put(messageId, body, ttl, hide);
+    public synchronized List<Message> updateMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
+        ensurePresent(account, queue);
+        return accountMap.get(account).get(queue).update(marker, limit, matchHidden, ttl, hide, wait);
     }
 }
 
 class MemoryQueue {
-    private class MessageRecord {
-        long ttl, createdAt;
-        long hide, hiddenAt;
-        Message msg;
+    private class MessageRecord extends Message {
+        long createdAt;
+        long hiddenAt;
 
-        private MessageRecord(long ttl, long hide, Message msg) {
+        private MessageRecord(String id, String body, Long ttl, Long hide) {
             this.ttl = ttl;
             this.hide = hide;
-            this.msg = msg;
+            this.body = body;
+            this.id = id;
+
 
             createdAt = System.currentTimeMillis();
             if (hide != 0) hiddenAt = System.currentTimeMillis();
+            else hiddenAt = 0l;
+        }
+
+        private void update(Long ttl, Long hide) {
+            if (ttl != null) {
+                this.ttl = ttl;
+            }
+
+            if (hide != null) {
+                if (hide == 0) {
+                    this.hide = 0l;
+                    this.hiddenAt = 0l;
+                } else if (this.hide == 0) {
+                    hiddenAt = System.currentTimeMillis();
+                    this.hide = hide;
+                }
+            }
         }
     }
 
-	private LinkedHashMap<String, MessageRecord> queue;
+	private HashedList<String, MessageRecord> queue;
 
 	MemoryQueue() {
-		queue = new LinkedHashMap<String, MessageRecord>();
+		queue = new HashedList<String, MessageRecord>();
 	}
 
-	synchronized void put(String messageId, String body, long ttl, long hide) {
+	synchronized void put(String messageId, String body, Long ttl, Long hide) {
 		clean();
-		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
-	}
+		queue.put(messageId, new MessageRecord(messageId, body, ttl, hide));
+    }
 
-	synchronized Message get(String messageId, long hide, boolean getHidden) {
+	synchronized Message get(String messageId) {
 		clean();
         MessageRecord message = queue.get(messageId);
 
-        if (message == null) throw new NoSuchMessageException(); //TODO: Decide on the exception we want to throw
+        if (message == null) throw new NoSuchMessageException();
 
-        if ((message.hide != 0) && (!getHidden)) throw new MessageHiddenException();
+        if (message.getHide() != 0) throw new MessageHiddenException();
 
-        message.hide = hide;
-        message.hiddenAt = System.currentTimeMillis();
+        return message;
 	}
 
-	synchronized List<Message> get(String marker, int n, long hide, boolean getHidden) {
+	synchronized List<Message> get(String marker, Long limit, boolean matchHidden, Long wait) {
 		clean();
-		Iterator<Map.Entry<String, MessageRecord>> iter = queue.entrySet().iterator();
-		ArrayList<Message> results = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<Message>();
 
-		while ((marker != null) && (iter.hasNext())) {
-			if (iter.next().getKey().equals(marker)) break;
-		}
+        Iterator<HashedList.Entry> iter;
+        if (marker != null) iter = queue.newIteratorFrom(marker);
+        else iter = queue.newIterator();
 
-		while (iter.hasNext() && (n > 0)) {
-			MessageRecord m = iter.next().getValue();
-			if (m.hide == 0) {
-				results.add(m.msg);
-				n--;
-			}
-		}
-		return results;
-	}
+        if (limit == null) limit = -1l;
 
-    synchronized Message get(String id) {
-		clean();
-		MessageRecord m = queue.get(id);
+        while ((limit != 0) && (iter.hasNext())) {
+              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              if (matchHidden || (msg.getHide() != 0)) {
+                messages.add(msg);
+                limit--;
+              }
+        }
 
-        if (m != null) {
-			return m.msg;
-		}
-
-		return null;
+		return messages;
 	}
 
 	synchronized Message remove(String id) {
-		MessageRecord m = queue.remove(id);
 		clean();
+        MessageRecord m = queue.remove(id);
 
-		if (m != null) {
-			return m.msg;
-		}
+		if (m == null) throw new NoSuchMessageException();
 
-		return null;
+    	return m;
 	}
 
-	synchronized void clean() {
-		Iterator<MessageRecord> iter = queue.values().iterator();
+    synchronized List<Message> remove(String marker, Long limit, boolean matchHidden, Long wait) {
+		clean();
+        List<Message> messages = new ArrayList<Message>();
+
+        Iterator<HashedList.Entry> iter;
+        if (marker != null) iter = queue.newIteratorFrom(marker);
+        else iter = queue.newIterator();
+
+        if (limit == null) limit = -1l;
+
+        while ((limit != 0) && (iter.hasNext())) {
+              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              if (matchHidden || (msg.getHide() != 0)) {
+                messages.add(msg);
+                limit--;
+                iter.remove();
+              }
+        }
+
+		return messages;
+    }
+
+    synchronized List<Message> update(String marker, Long limit, boolean matchHidden, Long ttl, Long hide, Long wait) {
+		clean();
+        List<Message> messages = new ArrayList<Message>();
+
+        Iterator<HashedList.Entry> iter;
+        if (marker != null) iter = queue.newIteratorFrom(marker);
+        else iter = queue.newIterator();
+
+        if (limit == null) limit = -1l;
+
+        while ((limit != 0) && (iter.hasNext())) {
+              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              if (matchHidden || (msg.getHide() != 0)) {
+                messages.add(msg);
+                limit--;
+                msg.update(ttl, hide);
+              }
+        }
+
+		return messages;
+    }
+
+    synchronized Message update(String messageId, Long ttl, Long hide) {
+         MessageRecord msg = queue.get(messageId);
+
+         if (msg == null) throw new NoSuchMessageException();
+
+         msg.update(ttl, hide);
+
+         return msg;
+    }
+	void clean() {
+		Iterator<HashedList.Entry> iter = queue.newIterator();
 		long now = System.currentTimeMillis();
 
 		while (iter.hasNext()) {
-			MessageRecord msg = iter.next();
+			MessageRecord msg = (MessageRecord) iter.next().getValue();
 
-			if ((msg.hide != 0) && (msg.hide + msg.hiddenAt < now)) {
-				msg.hide = 0;
+			if ((msg.getHide() != 0) && (msg.getHide() * 1000 + msg.hiddenAt < now)) {
+				msg.update(null, 0l);
 			}
 
-			if ((msg.ttl + msg.createdAt < now)) {
+			if ((msg.getTtl() * 1000 + msg.createdAt < now)) {
 				iter.remove();
 			}
 		}
 	}
 }
 
-//******************************************************
-class Queue {
-    private class MessageRecord {
-        long ttl, createdAt;
-        long hide, hiddenAt;
-        Message msg;
-
-        private MessageRecord(long ttl, long hide, Message msg) {
-            this.ttl = ttl;
-            this.hide = hide;
-            this.msg = msg;
-
-            createdAt = System.currentTimeMillis();
-            if (hide != 0) hiddenAt = System.currentTimeMillis();
-        }
-    }
-
-	private LinkedHashMap<String, MessageRecord> queue;
-
-	MemoryQueue() {
-		queue = new LinkedHashMap<String, MessageRecord>();
-	}
-
-	synchronized void put(String messageId, String body, long ttl, long hide) {
-		clean();
-		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
-	}
-
-	synchronized Message get(String messageId, long hide, boolean getHidden) {
-		clean();
-        MessageRecord message = queue.get(messageId);
-
-        if (message == null) throw new NoSuchMessageException(); //TODO: Decide on the exception we want to throw
-
-        if ((message.hide != 0) && (!getHidden)) throw new MessageHiddenException();
-
-        message.hide = hide;
-        message.hiddenAt = System.currentTimeMillis();
-	}
-
-	synchronized List<Message> get(String marker, int n, long hide, boolean getHidden) {
-		clean();
-		Iterator<Map.Entry<String, MessageRecord>> iter = queue.entrySet().iterator();
-		ArrayList<Message> results = new ArrayList<Message>();
-
-		while ((marker != null) && (iter.hasNext())) {
-			if (iter.next().getKey().equals(marker)) break;
-		}
-
-		while (iter.hasNext() && (n > 0)) {
-			MessageRecord m = iter.next().getValue();
-			if (m.hide == 0) {
-				results.add(m.msg);
-				n--;
-			}
-		}
-		return results;
-	}
-
-    synchronized Message get(String id) {
-		clean();
-		MessageRecord m = queue.get(id);
-
-        if (m != null) {
-			return m.msg;
-		}
-
-		return null;
-	}
-
-	synchronized Message remove(String id) {
-		MessageRecord m = queue.remove(id);
-		clean();
-
-		if (m != null) {
-			return m.msg;
-		}
-
-		return null;
-	}
-
-	synchronized void clean() {
-		Iterator<MessageRecord> iter = queue.values().iterator();
-		long now = System.currentTimeMillis();
-
-		while (iter.hasNext()) {
-			MessageRecord msg = iter.next();
-
-			if ((msg.hide != 0) && (msg.hide + msg.hiddenAt < now)) {
-				msg.hide = 0;
-			}
-
-			if ((msg.ttl + msg.createdAt < now)) {
-				iter.remove();
-			}
-		}
-	}
-}
