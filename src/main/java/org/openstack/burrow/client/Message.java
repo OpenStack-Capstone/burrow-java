@@ -16,10 +16,49 @@
 
 package org.openstack.burrow.client;
 
-public interface Message {
-  public String getBody();
+public class Message {
+  // TODO Add more attributes.
+  private String body;
+  private Long hide;
+  private String id;
+  private Long ttl;
 
-  public String getId();
+  protected Message() {
+    this.id = null;
+    this.body = null;
+    this.ttl = null;
+    this.hide = null;
+  }
 
-  // TODO Add methods to retrieve other attributes?
+  public String getBody() {
+    return body;
+  }
+
+  public long getHide() {
+    return hide;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public long getTtl() {
+    return ttl;
+  }
+
+  protected void setBody(String body) {
+    this.body = body;
+  }
+
+  protected void setHide(Long hide) {
+    this.hide = hide;
+  }
+
+  protected void setId(String id) {
+    this.id = id;
+  }
+
+  protected void setTtl(Long ttl) {
+    this.ttl = ttl;
+  }
 }

@@ -14,24 +14,21 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.backend;
 
-import org.openstack.burrow.backend.Backend;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openstack.burrow.client.Message;
 
-public class DeleteMessage {
-  private String account;
-  private Backend backend;
-  private String messageId;
-  private String queue;
+class MessageResponse extends Message {
 
-  DeleteMessage(Backend backend, String account, String queue, String messageId) {
-    this.backend = backend;
-    this.account = account;
-    this.queue = queue;
-    this.messageId = messageId;
-  }
-
-  public void execute() throws NoSuchMessageException {
-    backend.deleteMessage(account, queue, messageId);
+  MessageResponse(JSONObject message) throws JSONException {
+    super();
+    setId(message.optString("id", null));
+    setBody(message.optString("body", null));
+    if (message.has("ttl"))
+      setTtl(message.getLong("ttl"));
+    if (message.has("hide"))
+      setTtl(message.getLong("hide"));
   }
 }
