@@ -27,6 +27,7 @@ import org.openstack.burrow.backend.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 
 /**
@@ -47,6 +48,22 @@ public class ClientTest extends TestCase {
     client = new Client(backend);
     account = client.Account("testAccount");
     queue = account.Queue("testQueue");
+  }
+
+  /**
+   * Create then delete a message, then verify that a second delete fails.
+   */
+  public void testCreateDeleteMessage() {
+    String id = "testCreateDeleteGetMessage";
+    String body = "testCreateDeleteGetMessageBody";
+    queue.createMessage(id, body).execute();
+    queue.deleteMessage(id).execute();
+    try {
+      queue.deleteMessage(id).execute();
+      fail("deleteMessage should have failed");
+    } catch (NoSuchMessageException e) {
+      // This is expected.
+    }
   }
 
   /**

@@ -21,8 +21,6 @@ import org.openstack.burrow.backend.Backend;
 public class DeleteMessage {
   private String account;
   private Backend backend;
-  private String detail;
-  private Boolean matchHidden;
   private String messageId;
   private String queue;
 
@@ -31,29 +29,9 @@ public class DeleteMessage {
     this.account = account;
     this.queue = queue;
     this.messageId = messageId;
-    this.matchHidden = null;
-    this.detail = null;
   }
 
-  private DeleteMessage(Backend backend, String account, String queue, String messageId,
-      Boolean matchHidden, String detail) {
-    this.backend = backend;
-    this.account = account;
-    this.queue = queue;
-    this.messageId = messageId;
-    this.matchHidden = matchHidden;
-    this.detail = detail;
-  }
-
-  public Message execute() {
-    return backend.deleteMessage(account, queue, messageId, matchHidden, detail);
-  }
-
-  public DeleteMessage matchHidden(boolean matchHidden) {
-    return new DeleteMessage(backend, account, queue, messageId, matchHidden, detail);
-  }
-
-  public DeleteMessage requestDetail(String detail) {
-    return new DeleteMessage(backend, account, queue, messageId, matchHidden, detail);
+  public void execute() throws NoSuchMessageException {
+    backend.deleteMessage(account, queue, messageId);
   }
 }

@@ -30,6 +30,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
@@ -98,7 +99,6 @@ public class Http implements Backend {
       // Failed to construct the URI for this request.
       // TODO: Throw something
       e.printStackTrace();
-      System.exit(1);
       throw new RuntimeException();
     } catch (UnsupportedEncodingException e) {
       // Thrown by the StringEntity constructor.
@@ -106,19 +106,16 @@ public class Http implements Backend {
       // encoding is chosen statically and should always be supported.
       // TODO: Throw something (DoesOnePlusOneEqualTwoInThisUniverse?)
       e.printStackTrace();
-      System.exit(1);
       throw new RuntimeException();
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
       // TODO: Throw something
       e.printStackTrace();
-      System.exit(1);
       throw new RuntimeException();
     } catch (IOException e) {
       // Thrown by client.execute()
       // TODO: Throw something
       e.printStackTrace();
-      System.exit(1);
       throw new RuntimeException();
     }
   }
@@ -143,14 +140,38 @@ public class Http implements Backend {
    * @param account Delete a message in this account.
    * @param queue Delete a message in this queue.
    * @param messageId Delete a message with this id.
-   * @param detail Optional. Return this level of detail about the deleted
-   *          message.
-   * @return A Message instance with the requested level of detail, or null if
-   *         detail='none'.
    */
-  public Message deleteMessage(String account, String queue, String messageId, Boolean matchHidden,
-      String detail) {
-    return null;
+  public void deleteMessage(String account, String queue, String messageId) {
+    try {
+      URI uri = getUri(account, queue, messageId, null);
+      HttpDelete request = new HttpDelete(uri);
+      HttpResponse response = client.execute(request);
+      StatusLine status = response.getStatusLine();
+      switch (status.getStatusCode()) {
+        case HttpStatus.SC_NO_CONTENT:
+          return;
+        case HttpStatus.SC_NOT_FOUND:
+          throw new NoSuchMessageException();
+        default:
+          // TODO: Throw something more appropriate
+          throw new RuntimeException();
+      }
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    }
   }
 
   /**

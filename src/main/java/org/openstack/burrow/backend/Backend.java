@@ -55,16 +55,13 @@ public interface Backend {
   /**
    * Delete a message with a known id.
    * 
+   * 
    * @param account Delete a message in this account.
    * @param queue Delete a message in this queue.
    * @param messageId Delete a message with this id.
-   * @param detail Optional. Return this level of detail about the deleted
-   *          message.
-   * @return A Message instance with the requested level of detail, or null if
-   *         detail='none'.
    */
-  public Message deleteMessage(String account, String queue, String messageId, Boolean matchHidden,
-      String detail);
+  public void deleteMessage(String account, String queue, String messageId)
+      throws NoSuchMessageException;
 
   /**
    * Delete messages in a queue.
