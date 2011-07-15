@@ -38,6 +38,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.client.Account;
@@ -217,7 +218,7 @@ public class Http implements Backend {
     try {
       List<NameValuePair> params = null;
       if (detail != null) {
-        params = new ArrayList<NameValuePair>(2);
+        params = new ArrayList<NameValuePair>(1);
         params.add(new BasicNameValuePair("detail", detail));
       }
       URI uri = getUri(account, queue, messageId, params);
@@ -281,8 +282,66 @@ public class Http implements Backend {
    */
   public List<Message> getMessages(String account, String queue, String marker, Long limit,
       Boolean matchHidden, String detail, Long wait) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    try {
+      List<NameValuePair> params = null;
+      if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
+          || (wait != null)) {
+        params = new ArrayList<NameValuePair>(5);
+        if (marker != null)
+          params.add(new BasicNameValuePair("marker", marker));
+        if (limit != null)
+          params.add(new BasicNameValuePair("limit", limit.toString()));
+        if (matchHidden != null)
+          params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+        if (detail != null)
+          params.add(new BasicNameValuePair("detail", detail));
+        if (wait != null)
+          params.add(new BasicNameValuePair("wait", wait.toString()));
+      }
+      URI uri = getUri(account, queue, null, params);
+      HttpGet request = new HttpGet(uri);
+      HttpResponse response = client.execute(request);
+      StatusLine status = response.getStatusLine();
+      switch (status.getStatusCode()) {
+        case HttpStatus.SC_OK:
+          HttpEntity responseEntity = response.getEntity();
+          String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
+          if (responseMimeType.equals("application/json")) {
+            String responseBody = EntityUtils.toString(responseEntity);
+            JSONArray responseJson = new JSONArray(responseBody);
+            List<Message> messages = new ArrayList<Message>(responseJson.length());
+            for (int idx = 0; idx < responseJson.length(); idx++) {
+              JSONObject messageJson = responseJson.getJSONObject(idx);
+              Message message = new MessageResponse(messageJson);
+              messages.add(idx, message);
+            }
+            return messages;
+          } else {
+            // TODO: Throw something. We *can't* handle this, ever.
+            throw new RuntimeException();
+          }
+        default:
+          // TODO: Throw something!
+          throw new RuntimeException();
+      }
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (ClientProtocolException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (JSONException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException();
+    }
   }
 
   /**
