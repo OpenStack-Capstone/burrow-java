@@ -333,3 +333,102 @@ class MemoryQueue {
 		}
 	}
 }
+
+//******************************************************
+class Queue {
+    private class MessageRecord {
+        long ttl, createdAt;
+        long hide, hiddenAt;
+        Message msg;
+
+        private MessageRecord(long ttl, long hide, Message msg) {
+            this.ttl = ttl;
+            this.hide = hide;
+            this.msg = msg;
+
+            createdAt = System.currentTimeMillis();
+            if (hide != 0) hiddenAt = System.currentTimeMillis();
+        }
+    }
+
+	private LinkedHashMap<String, MessageRecord> queue;
+
+	MemoryQueue() {
+		queue = new LinkedHashMap<String, MessageRecord>();
+	}
+
+	synchronized void put(String messageId, String body, long ttl, long hide) {
+		clean();
+		queue.put(messageId, new MessageRecord(ttl, hide, null)); //TODO: Actually insert a message once Message def'd
+	}
+
+	synchronized Message get(String messageId, long hide, boolean getHidden) {
+		clean();
+        MessageRecord message = queue.get(messageId);
+
+        if (message == null) throw new NoSuchMessageException(); //TODO: Decide on the exception we want to throw
+
+        if ((message.hide != 0) && (!getHidden)) throw new MessageHiddenException();
+
+        message.hide = hide;
+        message.hiddenAt = System.currentTimeMillis();
+	}
+
+	synchronized List<Message> get(String marker, int n, long hide, boolean getHidden) {
+		clean();
+		Iterator<Map.Entry<String, MessageRecord>> iter = queue.entrySet().iterator();
+		ArrayList<Message> results = new ArrayList<Message>();
+
+		while ((marker != null) && (iter.hasNext())) {
+			if (iter.next().getKey().equals(marker)) break;
+		}
+
+		while (iter.hasNext() && (n > 0)) {
+			MessageRecord m = iter.next().getValue();
+			if (m.hide == 0) {
+				results.add(m.msg);
+				n--;
+			}
+		}
+		return results;
+	}
+
+    synchronized Message get(String id) {
+		clean();
+		MessageRecord m = queue.get(id);
+
+        if (m != null) {
+			return m.msg;
+		}
+
+		return null;
+	}
+
+	synchronized Message remove(String id) {
+		MessageRecord m = queue.remove(id);
+		clean();
+
+		if (m != null) {
+			return m.msg;
+		}
+
+		return null;
+	}
+
+	synchronized void clean() {
+		Iterator<MessageRecord> iter = queue.values().iterator();
+		long now = System.currentTimeMillis();
+
+		while (iter.hasNext()) {
+			MessageRecord msg = iter.next();
+
+			if ((msg.hide != 0) && (msg.hide + msg.hiddenAt < now)) {
+				msg.hide = 0;
+			}
+
+			if ((msg.ttl + msg.createdAt < now)) {
+				iter.remove();
+			}
+		}
+	}
+}
