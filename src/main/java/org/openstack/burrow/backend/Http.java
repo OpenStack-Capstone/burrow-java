@@ -20,6 +20,7 @@ import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -41,30 +42,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class Http implements Backend {
-  private String scheme = "http";
+  private HttpClient client;
   private String host;
   private int port;
-  private HttpClient client;
+  private String scheme = "http";
 
   public Http(String host, int port) {
     this.host = host;
     this.port = port;
     this.client = new DefaultHttpClient();
-  }
-
-  private URI getUri(String account, String queue, String message, List<NameValuePair> params)
-      throws URISyntaxException {
-    String path = "/v1.0";
-    if (account != null)
-      path += "/" + account;
-    if (queue != null)
-      path += "/" + queue;
-    if (message != null)
-      path += "/" + message;
-    String encodedParams = null;
-    if (params != null)
-      encodedParams = URLEncodedUtils.format(params, "UTF-8");
-    return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
   }
 
   /**
@@ -143,48 +129,6 @@ public class Http implements Backend {
    *         detail.
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail) {
-    /*
-     * List<NameValuePair> params = null; if ((marker != null) || (limit !=
-     * null) || (detail != null)) { params = new ArrayList<NameValuePair>(); if
-     * (marker != null) params.add(new BasicNameValuePair("marker", marker)); if
-     * (limit != null) params.add(new BasicNameValuePair("limit",
-     * limit.toString())); if (detail != null) params.add(new
-     * BasicNameValuePair("detail", detail)); } URI uri = null; try { uri =
-     * getUri(null, null, null, params); } catch (URISyntaxException e) { //
-     * Failed to construct a URI for the request. // This should never happen
-     * unless the configuration is completely bogus. // TODO: Raise an
-     * appropriate exception, perhaps inside getUri. e.printStackTrace(); }
-     * HttpDelete request = new HttpDelete(uri);
-     * 
-     * HttpResponse response = null; try { response = client.execute(request); }
-     * catch (IOException e) { // Failed to execute the http request. // TODO:
-     * Raise an appropriate exception e.printStackTrace(); } StatusLine status =
-     * response.getStatusLine(); HttpEntity responseEntity =
-     * response.getEntity(); if (status.getStatusCode() == 200) { try { String
-     * responseBody = EntityUtils.toString(responseEntity, "UTF-8"); JSONArray
-     * accountsJson = new JSONArray(responseBody); if (accountsJson.length() ==
-     * 0) return Collections.emptyList(); else { List<Account> accounts = new
-     * ArrayList<Account>(accountsJson.length()); try { // Initially assume the
-     * response is a list of strings. for (int idx = 0; idx <
-     * accountsJson.length(); idx++) { // This getString will throw
-     * JSONException if we have objects. String name =
-     * accountsJson.getString(idx); accounts.add(idx, new AccountResponse(this,
-     * name)); }
-     * 
-     * } catch (JSONException e) { // The response is not a list of strings.
-     * Assume it is a list of // objects. for (int idx = 0; idx <
-     * accountsJson.length(); idx++) { JSONObject accountJson =
-     * accountsJson.getJSONObject(idx); try { AccountResponse account = new
-     * AccountResponse(this, accountJson); accounts.add(idx, account); } catch
-     * (JSONException e2) { // Failed to retrieve needed details from the JSON
-     * object. // TODO: Raise an appropriate exception e2.printStackTrace(); } }
-     * } } } catch (IOException e) { // Failed to get a string from the
-     * responseEntity. // TODO: Re-raise appropriate exception
-     * e.printStackTrace(); } catch (JSONException e) { // The response body
-     * could not be decoded as a JSON array, // or the array is not entirely of
-     * strings or entirely of objects, // or // TODO: Raise an appropriate
-     * exception e.printStackTrace(); } }
-     */
     return null;
   }
 
@@ -201,8 +145,7 @@ public class Http implements Backend {
    */
   public Message deleteMessage(String account, String queue, String messageId, Boolean matchHidden,
       String detail) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    return null;
   }
 
   /**
@@ -266,8 +209,53 @@ public class Http implements Backend {
    *         detail='none'.
    */
   public Message getMessage(String account, String queue, String messageId, String detail) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    try {
+      List<NameValuePair> params = null;
+      if (detail != null) {
+        params = new ArrayList<NameValuePair>(2);
+        params.add(new BasicNameValuePair("detail", detail));
+      }
+      URI uri = getUri(account, queue, messageId, params);
+      HttpGet request = new HttpGet(uri);
+      HttpResponse response = client.execute(request);
+      StatusLine status = response.getStatusLine();
+      if (status.getStatusCode() == HttpStatus.SC_OK) {
+        HttpEntity responseEntity = response.getEntity();
+        String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
+        if (responseMimeType.equals("application/json")) {
+          String responseBody = EntityUtils.toString(responseEntity);
+          JSONObject messageJson = new JSONObject(responseBody);
+          return new MessageResponse(messageJson);
+        } else {
+          // TODO: Handle body-only responses.
+          throw new RuntimeException();
+        }
+      } else {
+        // TODO: THROW SOMETHING
+        throw new RuntimeException();
+      }
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    } catch (JSONException e) {
+      // Thrown by creating the JSONObject from the response body,
+      // or potentially by creating the MessageResponse from the json.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException();
+    }
   }
 
   /**
@@ -301,6 +289,21 @@ public class Http implements Backend {
   public List<Queue> getQueues(String account, String marker, Long limit) {
     return null; // To change body of implemented methods use File | Settings |
                  // File Templates.
+  }
+
+  private URI getUri(String account, String queue, String message, List<NameValuePair> params)
+      throws URISyntaxException {
+    String path = "/v1.0";
+    if (account != null)
+      path += "/" + account;
+    if (queue != null)
+      path += "/" + queue;
+    if (message != null)
+      path += "/" + message;
+    String encodedParams = null;
+    if (params != null)
+      encodedParams = URLEncodedUtils.format(params, "UTF-8");
+    return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
   }
 
   /**

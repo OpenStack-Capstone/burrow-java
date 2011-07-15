@@ -23,11 +23,11 @@ public class Message {
   private String id;
   private Long ttl;
 
-  protected Message(String id, String body, Long ttl, Long hide) {
-    this.id = id;
-    this.body = body;
-    this.ttl = ttl;
-    this.hide = hide;
+  protected Message() {
+    this.id = null;
+    this.body = null;
+    this.ttl = null;
+    this.hide = null;
   }
 
   public String getBody() {
@@ -44,5 +44,21 @@ public class Message {
 
   public long getTtl() {
     return ttl;
+  }
+
+  protected void setBody(String body) {
+    this.body = body;
+  }
+
+  protected void setHide(Long hide) {
+    this.hide = hide;
+  }
+
+  protected void setId(String id) {
+    this.id = id;
+  }
+
+  protected void setTtl(Long ttl) {
+    this.ttl = ttl;
   }
 }

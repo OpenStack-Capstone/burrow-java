@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2011 OpenStack LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -23,6 +23,7 @@ import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
+import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
 
 /**
@@ -46,10 +47,14 @@ public class ClientTest extends TestCase {
   }
 
   /**
-   * Create a message.
+   * Create and then get message.
    */
-  public void testCreateMessage() {
-    queue.createMessage("messageId", "messageBody").execute();
+  public void testCreateGetMessage() {
+    String id = "testCreateGetMessage";
+    String body = "testCreateGetMessageBody";
+    queue.createMessage(id, body).execute();
+    Message message = queue.getMessage(id).execute();
+    assertEquals(message.getBody(), body);
   }
 
   /**
@@ -129,12 +134,13 @@ public class ClientTest extends TestCase {
     client.getAccounts().withMarker("marker").execute();
   }
 
+
   public void testGetMessage(){
-    queue.getMessage("MessageId").execute();
+    // queue.getMessage("MessageId").execute();
   }
 
   public void testGetMessageRequestDetail(){
-    queue.getMessage("MessageId").requestDetail("detail").execute();
+    // queue.getMessage("MessageId").requestDetail("detail").execute();
   }
 
   public void testGetMessages(){
