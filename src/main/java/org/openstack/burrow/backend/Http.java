@@ -16,10 +16,20 @@
 
 package org.openstack.burrow.backend;
 
-import org.apache.http.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
@@ -28,18 +38,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.client.*;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.Queue;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -208,7 +212,8 @@ public class Http implements Backend {
    * @return A Message instance with the requested level of detail, or null if
    *         detail='none'.
    */
-  public Message getMessage(String account, String queue, String messageId, String detail) {
+  public Message getMessage(String account, String queue, String messageId, String detail)
+      throws NoSuchMessageException {
     try {
       List<NameValuePair> params = null;
       if (detail != null) {
@@ -219,20 +224,23 @@ public class Http implements Backend {
       HttpGet request = new HttpGet(uri);
       HttpResponse response = client.execute(request);
       StatusLine status = response.getStatusLine();
-      if (status.getStatusCode() == HttpStatus.SC_OK) {
-        HttpEntity responseEntity = response.getEntity();
-        String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
-        if (responseMimeType.equals("application/json")) {
-          String responseBody = EntityUtils.toString(responseEntity);
-          JSONObject messageJson = new JSONObject(responseBody);
-          return new MessageResponse(messageJson);
-        } else {
-          // TODO: Handle body-only responses.
+      switch (status.getStatusCode()) {
+        case HttpStatus.SC_OK:
+          HttpEntity responseEntity = response.getEntity();
+          String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
+          if (responseMimeType.equals("application/json")) {
+            String responseBody = EntityUtils.toString(responseEntity);
+            JSONObject messageJson = new JSONObject(responseBody);
+            return new MessageResponse(messageJson);
+          } else {
+            // TODO: Handle body-only responses.
+            throw new RuntimeException();
+          }
+        case HttpStatus.SC_NOT_FOUND:
+          throw new NoSuchMessageException();
+        default:
+          // TODO: Throw something
           throw new RuntimeException();
-        }
-      } else {
-        // TODO: THROW SOMETHING
-        throw new RuntimeException();
       }
     } catch (URISyntaxException e) {
       // Failed to construct the URI for this request.

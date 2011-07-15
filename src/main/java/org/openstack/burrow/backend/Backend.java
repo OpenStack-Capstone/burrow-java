@@ -17,8 +17,10 @@
 package org.openstack.burrow.backend;
 
 import java.util.List;
+
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 
 public interface Backend {
@@ -115,7 +117,8 @@ public interface Backend {
    * @return A Message instance with the requested level of detail, or null if
    *         detail='none'.
    */
-  public Message getMessage(String account, String queue, String messageId, String detail);
+  public Message getMessage(String account, String queue, String messageId, String detail)
+      throws NoSuchMessageException;
 
   /**
    * Get messages from a queue.
