@@ -73,6 +73,18 @@ public class ClientTest extends TestCase {
     queue.createMessage("messageIdWithHideAndTtl", "messageBody").setTtl(900).setHide(20).execute();
   }
 
+  public void testDeleteAccounts() {
+    client.deleteAccounts().execute();
+  }
+
+  public void testDeleteAccountsMatchLimit() {
+    client.deleteAccounts().matchLimit(1892L).execute();
+  }
+
+  public void testDeleteAccountsWithMarker() {
+    client.deleteAccounts().withMarker("marker").execute();
+  }
+
   public void testDeleteMessage() {
     queue.deleteMessage("messageId").execute();
   }
@@ -81,39 +93,107 @@ public class ClientTest extends TestCase {
     queue.deleteMessage("messageId").matchHidden(true).execute();
   }
 
+  public void testDeleteMessages() {
+    queue.deleteMessages().execute();
+  }
+
+  public void testDeleteMessagesRequestWait() {
+    queue.deleteMessages().requestWait(18932038403L).execute();
+  }
+
+  public void testDeleteMessagesRequestDetail() {
+    queue.deleteMessages().requestDetail("detail").execute();
+  }
+
   public void testDeleteQueues() {
     account.deleteQueues().execute();
   }
 
   public void testDeleteQueuesRequestDetail() {
-     account.deleteQueues().requestDetail("detail").execute();
+    account.deleteQueues().requestDetail("detail").execute();
   }
 
   public void testDeleteQueuesWithMarker() {
-     account.deleteQueues().withMarker("marker").execute();
-  }
-
-  public void testDeleteMessages() {
-      queue.deleteMessages().execute();
-  }
-
-  public void testDeleteMessagesRequestWait() {
-      queue.deleteMessages().requestWait(18932038403L).execute();
-  }
-
-  public void testDeleteMessagesRequestDetail() {
-      queue.deleteMessages().requestDetail("detail").execute();
+    account.deleteQueues().withMarker("marker").execute();
   }
 
   public void testGetAccounts(){
-      client.getAccounts().execute();
+    client.getAccounts().execute();
   }
 
   public void testGetAccountsMatchLimit(){
-      client.getAccounts().matchLimit(1892L).execute();
+    client.getAccounts().matchLimit(1892L).execute();
   }
 
   public void testGetAccountsWithMarker(){
-      client.getAccounts().withMarker("marker").execute();
+    client.getAccounts().withMarker("marker").execute();
+  }
+
+  public void testGetMessage(){
+    queue.getMessage("MessageId").execute();
+  }
+
+  public void testGetMessageRequestDetail(){
+    queue.getMessage("MessageId").requestDetail("detail").execute();
+  }
+
+  public void testGetMessages(){
+    queue.getMessages().execute();
+  }
+
+  public void testGetMessagesMatchHidden(){
+    queue.getMessages().matchHidden(true).execute();
+  }
+
+  public void testGetMessagesMatchLimit(){
+    queue.getMessages().matchLimit(1892L).execute();
+  }
+
+  public void testGetMessagesWithMarker(){
+    queue.getMessages().withMarker("marker").execute();
+  }
+
+  public void testGetQueues(){
+    account.getQueues().execute();
+  }
+
+  public void testGetQueuesMatchLimit(){
+    account.getQueues().matchLimit(172L).execute();
+  }
+
+  public void testGetQueuesWithMarker(){
+    account.getQueues().withMarker("marker").execute();
+  }
+
+  public void testUpdateMessage(){
+    queue.updateMessage("messageId").execute();
+  }
+
+  public void testUpdateMessageSetHide(){
+    queue.updateMessage("messageId").setHide(900).execute();
+  }
+
+  public void testUpdateMessageSetTtl(){
+    queue.updateMessage("messageId").setTtl(900).execute();
+  }
+
+  public void testUpdateMessageSetTtlSetHide(){
+    queue.updateMessage("messageId").setTtl(900).setHide(900).execute();
+  }
+
+  public void testUpdateMessages(){
+    queue.updateMessages().execute();
+  }
+
+  public void testUpdateMessagesSetHide(){
+    queue.updateMessages().setHide(00).execute();
+  }
+
+  public void testUpdateMessagesSetTtl(){
+    queue.updateMessages().setTtl(100).execute();
+  }
+
+  public void testUpdateMessagesSetHideSetTtl(){
+    queue.updateMessages().setHide(900).setTtl(100).execute();
   }
 }
