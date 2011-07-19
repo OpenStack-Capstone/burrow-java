@@ -18,10 +18,10 @@ package org.openstack.burrow.client;
 
 public class Message {
   // TODO Add more attributes.
-  private String body;
-  private Long hide;
-  private String id;
-  private Long ttl;
+  protected String body;
+  protected Long hide;
+  protected String id;
+  protected Long ttl;
 
   protected Message() {
     this.id = null;

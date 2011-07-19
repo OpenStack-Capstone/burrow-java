@@ -22,7 +22,7 @@ public class Account {
   private String account;
   private Backend backend;
 
-  Account(Backend backend, String account) {
+  public Account(Backend backend, String account) {
     this.backend = backend;
     this.account = account;
   }

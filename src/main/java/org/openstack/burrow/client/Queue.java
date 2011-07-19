@@ -23,7 +23,7 @@ public class Queue {
   private Backend backend;
   private String queue;
 
-  Queue(Backend backend, String account, String queue) {
+  public Queue(Backend backend, String account, String queue) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;
