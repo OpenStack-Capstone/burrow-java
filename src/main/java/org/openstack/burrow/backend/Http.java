@@ -32,6 +32,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -496,8 +497,35 @@ public class Http implements Backend {
    */
   public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide,
       String detail) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    try {
+      List<NameValuePair> params = null;
+      if ((ttl != null) || (hide != null) || (detail != null)) {
+        params = new ArrayList<NameValuePair>(3);
+        if (ttl != null)
+          params.add(new BasicNameValuePair("ttl", ttl.toString()));
+        if (hide != null)
+          params.add(new BasicNameValuePair("hide", hide.toString()));
+        if (detail != null)
+          params.add(new BasicNameValuePair("detail", detail));
+      }
+      URI uri = getUri(account, queue, messageId, params);
+      HttpPost request = new HttpPost(uri);
+      HttpResponse response = client.execute(request);
+      return handleSingleMessageHttpResponse(response);
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to construct request URI " + e);
+    } catch (ClientProtocolException e) {
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
+    } catch (IOException e) {
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
+    }
   }
 
   /**

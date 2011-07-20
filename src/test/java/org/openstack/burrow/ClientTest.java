@@ -54,8 +54,8 @@ public class ClientTest extends TestCase {
    * Create then delete a message, then verify that a second delete fails.
    */
   public void testCreateDeleteMessage() {
-    String id = "testCreateDeleteGetMessage";
-    String body = "testCreateDeleteGetMessageBody";
+    String id = "testCreateDeleteMessage";
+    String body = "testCreateDeleteMessageBody";
     queue.createMessage(id, body).execute();
     queue.deleteMessage(id).execute();
     try {
@@ -96,5 +96,30 @@ public class ClientTest extends TestCase {
         seen_id2 = true;
     }
     assertTrue(seen_id1 && seen_id2);
+  }
+
+  /**
+   * Create a message with a long hide, check that it is not visible, update it
+   * with hide=0 and check that it is visible.
+   */
+  public void testUpdateHide() {
+    String id = "testUpdateHideMessage";
+    String body = "testUpdateHideMessageBody";
+    queue.createMessage(id, body).setHide(99999).execute();
+    Boolean seen_1 = false;
+    List<Message> messages_1 = queue.getMessages().execute();
+    for (Message message : messages_1) {
+      if (message.getId().equals(id))
+        seen_1 = true;
+    }
+    assertFalse(seen_1);
+    queue.updateMessage(id).setHide(0).execute();
+    Boolean seen_2 = false;
+    List<Message> messages_2 = queue.getMessages().execute();
+    for (Message message : messages_2) {
+      if (message.getId().equals(id))
+        seen_2 = true;
+    }
+    assertTrue(seen_2);
   }
 }
