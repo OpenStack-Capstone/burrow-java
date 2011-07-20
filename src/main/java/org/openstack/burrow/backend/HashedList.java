@@ -1,5 +1,4 @@
 package org.openstack.burrow.backend;
-import sun.plugin.javascript.navig4.Link;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
