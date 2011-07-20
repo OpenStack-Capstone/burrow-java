@@ -22,18 +22,18 @@ import java.util.List;
 import org.openstack.burrow.client.*;
 
   public class Memory implements Backend {
-	private HashedList<String, HashedList<String, MemoryQueue>> accountMap;
+	private HashedList<String, MemoryAccount> accountMap;
 
 	public Memory() {
-		accountMap = new HashedList<String, HashedList<String, MemoryQueue>>();
+		accountMap = new HashedList<String, MemoryAccount>();
 	}
 
 
     private void ensurePresent(String account, String queue) {
-        HashedList<String, MemoryQueue> ensureAccount;
+        MemoryAccount ensureAccount;
 
         if (!accountMap.containsKey(account)) {
-            ensureAccount = new HashedList<String, MemoryQueue>();
+            ensureAccount = new MemoryAccount();
             accountMap.put(account, ensureAccount);
         } else {
             ensureAccount = accountMap.get(account);
@@ -75,15 +75,15 @@ import org.openstack.burrow.client.*;
       public synchronized List<Account> deleteAccounts(String marker, Long limit, String detail) {
           List<Account> deleted = new ArrayList<Account>();
 
-          Iterator<HashedList.Entry> iter;
+          Iterator<Entry<String, MemoryAccount>> iter;
           if (marker != null) iter = accountMap.newIteratorFrom(marker);
           else iter = accountMap.newIterator();
 
           if (limit == null) limit = -1l;
 
           while ((limit != 0) && (iter.hasNext())) {
-              HashedList.Entry e = iter.next();
-              deleted.add(new Account(this, (String) e.getKey()));
+              Entry<String, MemoryAccount> e = iter.next();
+              deleted.add(new Account(this, e.getKey()));
               iter.remove();
               limit--;
           }
@@ -137,15 +137,16 @@ import org.openstack.burrow.client.*;
           List<Queue> deleted = new ArrayList<Queue>();
           ensurePresent(account, null);
 
-          Iterator<HashedList.Entry> iter;
-          if (marker != null) iter = accountMap.newIteratorFrom(marker);
-          else iter = accountMap.newIterator();
+
+          Iterator<Entry<String, MemoryQueue>> iter;
+          if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
+          else iter = accountMap.get(account).newIterator();
 
           if (limit == null) limit = -1l;
 
           while ((limit != 0) && (iter.hasNext())) {
-              HashedList.Entry e = iter.next();
-              deleted.add(new Queue(this, account, (String) e.getKey()));
+              Entry<String, MemoryQueue> e = iter.next();
+              deleted.add(new Queue(this, account, e.getKey()));
               iter.remove();
               limit--;
           }
@@ -164,15 +165,15 @@ import org.openstack.burrow.client.*;
     public synchronized List<Account> getAccounts(String marker, Long limit) {
           List<Account> accts = new ArrayList<Account>();
 
-          Iterator<HashedList.Entry> iter;
+          Iterator<Entry<String, MemoryAccount>> iter;
           if (marker != null) iter = accountMap.newIteratorFrom(marker);
           else iter = accountMap.newIterator();
 
           if (limit == null) limit = -1l;
 
           while ((limit != 0) && (iter.hasNext())) {
-              HashedList.Entry e = iter.next();
-              accts.add(new Account(this, (String) e.getKey()));
+              Entry<String, MemoryAccount> e = iter.next();
+              accts.add(new Account(this, e.getKey()));
               limit--;
           }
 
@@ -228,15 +229,15 @@ import org.openstack.burrow.client.*;
         List<Queue> queues = new ArrayList<Queue>();
         ensurePresent(account, null);
 
-        Iterator<HashedList.Entry> iter;
-        if (marker != null) iter = accountMap.newIteratorFrom(marker);
-        else iter = accountMap.newIterator();
+        Iterator<Entry<String, MemoryQueue>> iter;
+        if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
+        else iter = accountMap.get(account).newIterator();
 
         if (limit == null) limit = -1l;
 
         while ((limit != 0) && (iter.hasNext())) {
-              HashedList.Entry e = iter.next();
-              queues.add(new Queue(this, account, (String) e.getKey()));
+              Entry<String, MemoryQueue> e = iter.next();
+              queues.add(new Queue(this, account, e.getKey()));
               limit--;
         }
 
@@ -281,9 +282,15 @@ import org.openstack.burrow.client.*;
         ensurePresent(account, queue);
         return accountMap.get(account).get(queue).update(marker, limit, matchHidden, ttl, hide, wait);
     }
-}
 
-class MemoryQueue {
+
+    private class MemoryAccount extends HashedList<String, MemoryQueue> {
+        //Any auth logic will be here, in overridden methods.
+    }
+
+
+
+private class MemoryQueue {
     private class MessageRecord extends Message {
         long createdAt;
         long hiddenAt;
@@ -343,14 +350,14 @@ class MemoryQueue {
 		clean();
         List<Message> messages = new ArrayList<Message>();
 
-        Iterator<HashedList.Entry> iter;
+        Iterator<Entry<String, MessageRecord>> iter;
         if (marker != null) iter = queue.newIteratorFrom(marker);
         else iter = queue.newIterator();
 
         if (limit == null) limit = -1l;
 
         while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              MessageRecord msg = iter.next().getValue();
               if (matchHidden || (msg.getHide() != 0)) {
                 messages.add(msg);
                 limit--;
@@ -373,14 +380,14 @@ class MemoryQueue {
 		clean();
         List<Message> messages = new ArrayList<Message>();
 
-        Iterator<HashedList.Entry> iter;
+        Iterator<Entry<String, MessageRecord>> iter;
         if (marker != null) iter = queue.newIteratorFrom(marker);
         else iter = queue.newIterator();
 
         if (limit == null) limit = -1l;
 
         while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              MessageRecord msg = iter.next().getValue();
               if (matchHidden || (msg.getHide() != 0)) {
                 messages.add(msg);
                 limit--;
@@ -395,14 +402,14 @@ class MemoryQueue {
 		clean();
         List<Message> messages = new ArrayList<Message>();
 
-        Iterator<HashedList.Entry> iter;
+        Iterator<Entry<String, MessageRecord>> iter;
         if (marker != null) iter = queue.newIteratorFrom(marker);
         else iter = queue.newIterator();
 
         if (limit == null) limit = -1l;
 
         while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = (MessageRecord) iter.next().getValue();
+              MessageRecord msg = iter.next().getValue();
               if (matchHidden || (msg.getHide() != 0)) {
                 messages.add(msg);
                 limit--;
@@ -423,11 +430,11 @@ class MemoryQueue {
          return msg;
     }
 	void clean() {
-		Iterator<HashedList.Entry> iter = queue.newIterator();
+		Iterator<Entry<String, MessageRecord>> iter = queue.newIterator();
 		long now = System.currentTimeMillis();
 
 		while (iter.hasNext()) {
-			MessageRecord msg = (MessageRecord) iter.next().getValue();
+			MessageRecord msg = iter.next().getValue();
 
 			if ((msg.getHide() != 0) && (msg.getHide() * 1000 + msg.hiddenAt < now)) {
 				msg.update(null, 0l);
@@ -440,3 +447,4 @@ class MemoryQueue {
 	}
 }
 
+  }

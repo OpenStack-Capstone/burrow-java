@@ -1,4 +1,6 @@
 package org.openstack.burrow.backend;
+import sun.plugin.javascript.navig4.Link;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -150,7 +152,7 @@ public class HashedList<K, V> {
 		put(key, value);
 	}
 
-	public  V peek() {
+	public V peek() {
 		if (front == null) return null;
 		return front.value;
 	}
@@ -160,7 +162,7 @@ public class HashedList<K, V> {
 	}
 
     public  boolean contains(V value) {
-        Iterator<V> iter = newIterator();
+        Iterator<Entry<K,V>> iter = newIterator();
 
         while (iter.hasNext())
             if (iter.next().equals(value))
@@ -172,20 +174,8 @@ public class HashedList<K, V> {
     public  boolean containsKey(K key) {
         return getEntry(key) != null;
     }
-    public class Entry {
-        protected K key;
-        protected V value;
 
-        public V getValue() {
-            return value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-    }
-
-	protected class PrivEntry extends Entry{
+	protected class PrivEntry extends Entry<K,V> {
 		int ind;
 		PrivEntry chainNext, chainPrev;
 		PrivEntry listNext, listPrev;
@@ -201,7 +191,7 @@ public class HashedList<K, V> {
 		}
 	}
 
-	protected class IteratorFrom implements Iterator<Entry> {
+	protected class IteratorFrom implements Iterator<Entry<K, V>> {
 		PrivEntry nextEntry, curr;
         boolean removed;
 		
@@ -239,11 +229,24 @@ public class HashedList<K, V> {
 		}
 	}
 
-    public Iterator<Entry> newIterator() {
+    public Iterator<Entry<K,V>> newIterator() {
         return new IteratorFrom();
     }
 
-	public Iterator<Entry> newIteratorFrom(K key) {
+	public Iterator<Entry<K,V>> newIteratorFrom(K key) {
 		return new IteratorFrom(key);
 	}
 }
+
+class Entry<L, W> {
+        protected L key;
+        protected W value;
+
+        public W getValue() {
+            return value;
+        }
+
+        public L getKey() {
+            return key;
+        }
+    }
