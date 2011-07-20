@@ -86,20 +86,8 @@ public class Http implements Backend {
       HttpPut request = new HttpPut(uri);
       request.setEntity(new StringEntity(body, "UTF-8"));
       HttpResponse response = client.execute(request);
-      StatusLine status = response.getStatusLine();
-      switch (status.getStatusCode()) {
-        case HttpStatus.SC_CREATED:
-        case HttpStatus.SC_NO_CONTENT:
-          return;
-        default:
-          // TODO: Throw something
-          System.exit(1);
-      }
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException();
+      // TODO: Update interface to return the message.
+      handleSingleMessageHttpResponse(response);
     } catch (UnsupportedEncodingException e) {
       // Thrown by the StringEntity constructor.
       // This should never happen under any circumstances because the UTF-8
@@ -107,16 +95,19 @@ public class Http implements Backend {
       // TODO: Throw something (DoesOnePlusOneEqualTwoInThisUniverse?)
       e.printStackTrace();
       throw new RuntimeException();
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to construct request URI " + e);
     } catch (ClientProtocolException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
     } catch (IOException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
     }
   }
 
@@ -146,31 +137,21 @@ public class Http implements Backend {
       URI uri = getUri(account, queue, messageId, null);
       HttpDelete request = new HttpDelete(uri);
       HttpResponse response = client.execute(request);
-      StatusLine status = response.getStatusLine();
-      switch (status.getStatusCode()) {
-        case HttpStatus.SC_NO_CONTENT:
-          return;
-        case HttpStatus.SC_NOT_FOUND:
-          throw new NoSuchMessageException();
-        default:
-          // TODO: Throw something more appropriate
-          throw new RuntimeException();
-      }
+      // TODO: update interface to return any message received.
+      handleSingleMessageHttpResponse(response);
     } catch (URISyntaxException e) {
       // Failed to construct the URI for this request.
       // TODO: Throw something
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to construct request URI " + e);
     } catch (ClientProtocolException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
     } catch (IOException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
     }
   }
 
@@ -245,46 +226,20 @@ public class Http implements Backend {
       URI uri = getUri(account, queue, messageId, params);
       HttpGet request = new HttpGet(uri);
       HttpResponse response = client.execute(request);
-      StatusLine status = response.getStatusLine();
-      switch (status.getStatusCode()) {
-        case HttpStatus.SC_OK:
-          HttpEntity responseEntity = response.getEntity();
-          String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
-          if (responseMimeType.equals("application/json")) {
-            String responseBody = EntityUtils.toString(responseEntity);
-            JSONObject messageJson = new JSONObject(responseBody);
-            return new MessageResponse(messageJson);
-          } else {
-            // TODO: Handle body-only responses.
-            throw new RuntimeException();
-          }
-        case HttpStatus.SC_NOT_FOUND:
-          throw new NoSuchMessageException();
-        default:
-          // TODO: Throw something
-          throw new RuntimeException();
-      }
+      return handleSingleMessageHttpResponse(response);
     } catch (URISyntaxException e) {
       // Failed to construct the URI for this request.
       // TODO: Throw something
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to construct request URI " + e);
     } catch (ClientProtocolException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
     } catch (IOException e) {
-      // Thrown by client.execute()
-      // TODO: Throw something
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
-    } catch (JSONException e) {
-      // Thrown by creating the JSONObject from the response body,
-      // or potentially by creating the MessageResponse from the json.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
     }
   }
 
@@ -322,46 +277,20 @@ public class Http implements Backend {
       URI uri = getUri(account, queue, null, params);
       HttpGet request = new HttpGet(uri);
       HttpResponse response = client.execute(request);
-      StatusLine status = response.getStatusLine();
-      switch (status.getStatusCode()) {
-        case HttpStatus.SC_OK:
-          HttpEntity responseEntity = response.getEntity();
-          String responseMimeType = EntityUtils.getContentMimeType(responseEntity);
-          if (responseMimeType.equals("application/json")) {
-            String responseBody = EntityUtils.toString(responseEntity);
-            JSONArray responseJson = new JSONArray(responseBody);
-            List<Message> messages = new ArrayList<Message>(responseJson.length());
-            for (int idx = 0; idx < responseJson.length(); idx++) {
-              JSONObject messageJson = responseJson.getJSONObject(idx);
-              Message message = new MessageResponse(messageJson);
-              messages.add(idx, message);
-            }
-            return messages;
-          } else {
-            // TODO: Throw something. We *can't* handle this, ever.
-            throw new RuntimeException();
-          }
-        default:
-          // TODO: Throw something!
-          throw new RuntimeException();
-      }
+      return handleMultipleMessageHttpResponse(response);
     } catch (URISyntaxException e) {
       // Failed to construct the URI for this request.
       // TODO: Throw something
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to construct request URI " + e);
     } catch (ClientProtocolException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new RuntimeException();
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
     }
   }
 
@@ -392,6 +321,162 @@ public class Http implements Backend {
     if (params != null)
       encodedParams = URLEncodedUtils.format(params, "UTF-8");
     return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
+  }
+
+  private List<Message> handleMultipleMessageHttpResponse(HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    String mimeType = EntityUtils.getContentMimeType(entity);
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+        if (mimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONArray arrayJson = new JSONArray(body);
+            List<Message> messages = new ArrayList<Message>(arrayJson.length());
+            for (int idx = 0; idx < arrayJson.length(); idx++) {
+              JSONObject messageJson = arrayJson.getJSONObject(idx);
+              Message message = new MessageResponse(messageJson);
+              messages.add(idx, message);
+            }
+            return messages;
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("IOException reading http response");
+          } catch (JSONException e) {
+            // It is not necessary to consume the entity because at the
+            // first point where this exception can be thrown,
+            // the entity has already been consumed by toString();
+            // TODO: throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("JSONException reading response");
+          }
+        } else {
+          // This situation cannot be handled.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e1) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Throw something appropriate.
+          throw new RuntimeException("Non-Json response");
+        }
+      case HttpStatus.SC_NO_CONTENT:
+        // This is not an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e) {
+          // TODO: Throw something more appropriate.
+          e.printStackTrace();
+          throw new RuntimeException("Failed to consume HttpEntity");
+        }
+        return null;
+      default:
+        // This is probably an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        // TODO: Throw something appropriate.
+        throw new RuntimeException("Unhandled http response code" + status.getStatusCode());
+    }
+  }
+
+  private Message handleSingleMessageHttpResponse(HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+      case HttpStatus.SC_CREATED:
+        String responseMimeType = EntityUtils.getContentMimeType(entity);
+        if (responseMimeType == null) {
+          try {
+            EntityUtils.consume(entity);
+          } catch (IOException e) {
+            // TODO: Throw something more appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("Failed to consume HttpEntity");
+          }
+          return null;
+        } else if (responseMimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONObject messageJson = new JSONObject(body);
+            return new MessageResponse(messageJson);
+          } catch (JSONException e) {
+            // At the first place this could be thrown,
+            // the entity has already been consumed by toString(entity);
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("Failed to decode json");
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("Failed to convert the entity to a " + "string");
+          }
+        } else {
+          // We can't do anything sensible yet.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Handle body-only responses.
+          throw new RuntimeException("Unhandled response mime type " + responseMimeType);
+        }
+      case HttpStatus.SC_NO_CONTENT:
+        try {
+          EntityUtils.consume(entity);
+        } catch (IOException e) {
+          // TODO: Throw something more appropriate.
+          e.printStackTrace();
+          throw new RuntimeException("Failed to consume HttpEntity");
+        }
+        return null;
+      case HttpStatus.SC_NOT_FOUND:
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        throw new NoSuchMessageException();
+      default:
+        // There was an error or an unexpected return condition.
+        // TODO: Throw something more appropriate for each error condition.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        throw new RuntimeException("Unhandled return code");
+    }
   }
 
   /**
