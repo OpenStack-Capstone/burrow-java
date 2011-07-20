@@ -173,8 +173,40 @@ public class Http implements Backend {
    */
   public List<Message> deleteMessages(String account, String queue, String marker, Long limit,
       Boolean matchHidden, String detail, Long wait) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    try {
+      List<NameValuePair> params = null;
+      if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
+          || (wait != null)) {
+        params = new ArrayList<NameValuePair>(5);
+        if (marker != null)
+          params.add(new BasicNameValuePair("marker", marker));
+        if (limit != null)
+          params.add(new BasicNameValuePair("limit", limit.toString()));
+        if (matchHidden != null)
+          params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+        if (detail != null)
+          params.add(new BasicNameValuePair("detail", detail));
+        if (wait != null)
+          params.add(new BasicNameValuePair("wait", wait.toString()));
+      }
+      URI uri = getUri(account, queue, null, params);
+      HttpDelete request = new HttpDelete(uri);
+      HttpResponse response = client.execute(request);
+      return handleMultipleMessageHttpResponse(response);
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to construct request URI " + e);
+    } catch (ClientProtocolException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
+    }
   }
 
   /**
@@ -327,6 +359,8 @@ public class Http implements Backend {
   private List<Message> handleMultipleMessageHttpResponse(HttpResponse response) {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
+    if (entity == null)
+      return null;
     String mimeType = EntityUtils.getContentMimeType(entity);
     switch (status.getStatusCode()) {
       case HttpStatus.SC_OK:
@@ -393,7 +427,7 @@ public class Http implements Backend {
           // this needs to be handled.
         }
         // TODO: Throw something appropriate.
-        throw new RuntimeException("Unhandled http response code" + status.getStatusCode());
+        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
     }
   }
 
@@ -434,7 +468,7 @@ public class Http implements Backend {
             }
             // TODO: Throw something appropriate.
             e.printStackTrace();
-            throw new RuntimeException("Failed to convert the entity to a " + "string");
+            throw new RuntimeException("Failed to convert the entity to a string");
           }
         } else {
           // We can't do anything sensible yet.
@@ -548,7 +582,43 @@ public class Http implements Backend {
    */
   public List<Message> updateMessages(String account, String queue, String marker, Long limit,
       Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
+    try {
+      List<NameValuePair> params = null;
+      if ((marker != null) || (limit != null) || (matchHidden != null) || (ttl != null)
+          || (hide != null) || (detail != null) || (wait != null)) {
+        params = new ArrayList<NameValuePair>(7);
+        if (marker != null)
+          params.add(new BasicNameValuePair("marker", marker));
+        if (limit != null)
+          params.add(new BasicNameValuePair("limit", limit.toString()));
+        if (matchHidden != null)
+          params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+        if (ttl != null)
+          params.add(new BasicNameValuePair("ttl", ttl.toString()));
+        if (hide != null)
+          params.add(new BasicNameValuePair("hide", hide.toString()));
+        if (detail != null)
+          params.add(new BasicNameValuePair("detail", detail));
+        if (wait != null)
+          params.add(new BasicNameValuePair("wait", wait.toString()));
+      }
+      URI uri = getUri(account, queue, null, params);
+      HttpPost request = new HttpPost(uri);
+      HttpResponse response = client.execute(request);
+      return handleMultipleMessageHttpResponse(response);
+    } catch (URISyntaxException e) {
+      // Failed to construct the URI for this request.
+      // TODO: Throw something
+      e.printStackTrace();
+      throw new RuntimeException("Failed to construct request URI " + e);
+    } catch (ClientProtocolException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
+    }
   }
 }

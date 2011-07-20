@@ -99,13 +99,86 @@ public class ClientTest extends TestCase {
   }
 
   /**
-   * Create a message with a long hide, check that it is not visible, update it
-   * with hide=0 and check that it is visible.
+   * Create a visible and a hidden message, then delete all non-hidden messages
+   * in the queue.
+   */
+  public void testDeleteMessages() {
+    String id1 = "testDeleteMessages1";
+    String id2 = "testDeleteMessages2";
+    String body = "testDeleteMessagesBody";
+    boolean seen_1;
+    boolean seen_2;
+    queue.createMessage(id1, body).setHide(9999).execute();
+    queue.createMessage(id2, body).setHide(0).execute();
+    seen_1 = false;
+    seen_2 = false;
+    for (Message message : queue.getMessages().execute()) {
+      String id = message.getId();
+      if (id.equals(id1))
+        seen_1 = true;
+      else if (id.equals(id2))
+        seen_2 = true;
+    }
+    assertFalse(seen_1);
+    assertTrue(seen_2);
+    queue.deleteMessages().matchHidden(false).execute();
+    // TODO: Remove when getMessages no longer 404s on queues with only hidden messages!
+    queue.createMessage("404workaround", "404workaround").execute();
+    seen_1 = false;
+    seen_2 = false;
+    for (Message message : queue.getMessages().matchHidden(true).execute()) {
+      String id = message.getId();
+      if (id.equals(id1))
+        seen_1 = true;
+      else if (id.equals(id2))
+        seen_2 = true;
+    }
+    assertTrue(seen_1);
+    assertFalse(seen_2);
+  }
+
+  /**
+   * Create hidden messages then use updateMessages to reveal them.
+   */
+  public void testMultipleUpdateHide() {
+    String id1 = "testMultipleUpdateHideMessage1";
+    String id2 = "testMultipleUpdateHideMessage2";
+    String body = "testMultipleUpdateHideMessageBody";
+    boolean seen_1 = false;
+    boolean seen_2 = false;
+    queue.createMessage(id1, body).setHide(9999).execute();
+    queue.createMessage(id2, body).setHide(9999).execute();
+    // TODO: Remove when getMessages no longer 404s on queues with only hidden messages!
+    queue.createMessage("404workaround", "404workaround").execute();
+    for (Message message : queue.getMessages().execute()) {
+      if (message.getId().equals(id1))
+        seen_1 = true;
+      else if (message.getId().equals(id2))
+        seen_2 = true;
+    }
+    assertFalse(seen_1);
+    assertFalse(seen_2);
+    queue.updateMessages().setHide(0).matchHidden(true).execute();
+    for (Message message : queue.getMessages().execute()) {
+      if (message.getId().equals(id1))
+        seen_1 = true;
+      else if (message.getId().equals(id2))
+        seen_2 = true;
+    }
+    assertTrue(seen_1);
+    assertTrue(seen_2);
+  }
+
+  /**
+   * Create a hidden message then use updateMessage to reveal it.
    */
   public void testUpdateHide() {
     String id = "testUpdateHideMessage";
     String body = "testUpdateHideMessageBody";
     queue.createMessage(id, body).setHide(99999).execute();
+    // TODO: Remove when getMessages no longer 404s on queues with only hidden
+    // messages!
+    queue.createMessage("404workaround", "404workaround").execute();
     Boolean seen_1 = false;
     List<Message> messages_1 = queue.getMessages().execute();
     for (Message message : messages_1) {
