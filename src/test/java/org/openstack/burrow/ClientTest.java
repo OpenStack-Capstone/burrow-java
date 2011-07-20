@@ -18,12 +18,9 @@ package org.openstack.burrow;
 
 import java.util.List;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
@@ -33,18 +30,13 @@ import org.openstack.burrow.client.Queue;
 /**
  * Unit tests for the Burrow Client.
  */
-public class ClientTest extends TestCase {
-  public static Test suite() {
-    return new TestSuite(ClientTest.class);
-  }
+abstract class ClientTest extends TestCase {
+  protected Account account;
+  protected Client client;
+  protected Queue queue;
 
-  private Account account;
-  private Client client;
-  private Queue queue;
-
-  public ClientTest(String testName) {
+  protected ClientTest(String testName, Backend backend) {
     super(testName);
-    Backend backend = new Http("localhost", 8080); // TODO: Parameterize this
     client = new Client(backend);
     account = client.Account("testAccount");
     queue = account.Queue("testQueue");
@@ -122,7 +114,8 @@ public class ClientTest extends TestCase {
     assertFalse(seen_1);
     assertTrue(seen_2);
     queue.deleteMessages().matchHidden(false).execute();
-    // TODO: Remove when getMessages no longer 404s on queues with only hidden messages!
+    // TODO: Remove when getMessages no longer 404s on queues with only hidden
+    // messages!
     queue.createMessage("404workaround", "404workaround").execute();
     seen_1 = false;
     seen_2 = false;
@@ -148,7 +141,8 @@ public class ClientTest extends TestCase {
     boolean seen_2 = false;
     queue.createMessage(id1, body).setHide(9999).execute();
     queue.createMessage(id2, body).setHide(9999).execute();
-    // TODO: Remove when getMessages no longer 404s on queues with only hidden messages!
+    // TODO: Remove when getMessages no longer 404s on queues with only hidden
+    // messages!
     queue.createMessage("404workaround", "404workaround").execute();
     for (Message message : queue.getMessages().execute()) {
       if (message.getId().equals(id1))
