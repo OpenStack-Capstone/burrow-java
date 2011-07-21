@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.openstack.burrow.backend;
+package org.openstack.burrow.backend.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -43,6 +43,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;

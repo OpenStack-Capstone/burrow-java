@@ -19,7 +19,7 @@ package org.openstack.burrow;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.openstack.burrow.backend.Http;
+import org.openstack.burrow.backend.http.Http;
 
 public class HttpClientTest extends ClientTest {
   public static Test suite() {

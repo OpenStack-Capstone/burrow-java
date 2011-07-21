@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.openstack.burrow.backend;
+package org.openstack.burrow.backend.http;
 
 import org.json.JSONException;
 import org.json.JSONObject;
