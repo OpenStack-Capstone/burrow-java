@@ -17,6 +17,8 @@
 package org.openstack.burrow.client;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetQueues;
 
 public class Account {
   private String account;

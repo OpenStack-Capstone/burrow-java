@@ -14,9 +14,10 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Message;
 
 public class UpdateMessage {
   private String account;
@@ -26,8 +27,8 @@ public class UpdateMessage {
   private String messageId;
   private String queue;
   private Long ttl;
-  
-  UpdateMessage(Backend backend, String account, String queue, String messageId) {
+
+  public UpdateMessage(Backend backend, String account, String queue, String messageId) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;
@@ -36,8 +37,9 @@ public class UpdateMessage {
     this.hide = null;
     this.detail = null;
   }
-  
-  private UpdateMessage(Backend backend, String account, String queue, String messageId, Long ttl, Long hide, String detail) {
+
+  private UpdateMessage(Backend backend, String account, String queue, String messageId, Long ttl,
+      Long hide, String detail) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;
@@ -46,19 +48,19 @@ public class UpdateMessage {
     this.hide = hide;
     this.detail = detail;
   }
-  
+
   public Message execute() {
     return backend.updateMessage(account, queue, messageId, ttl, hide, detail);
   }
-  
+
   public UpdateMessage requestDetail(String detail) {
     return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
   }
-  
+
   public UpdateMessage setHide(long hide) {
     return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
   }
-  
+
   public UpdateMessage setTtl(long ttl) {
     return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
   }

@@ -14,10 +14,12 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import java.util.List;
+
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Message;
 
 public class UpdateMessages {
   private String account;
@@ -31,7 +33,7 @@ public class UpdateMessages {
   private Long ttl;
   private Long wait;
 
-  UpdateMessages(Backend backend, String account, String queue) {
+  public UpdateMessages(Backend backend, String account, String queue) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;

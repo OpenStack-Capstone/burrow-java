@@ -17,6 +17,13 @@
 package org.openstack.burrow.client;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.UpdateMessage;
+import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Queue {
   private String account;

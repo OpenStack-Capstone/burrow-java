@@ -14,10 +14,12 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import java.util.List;
+
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Account;
 
 public class DeleteAccounts {
   private Backend backend;
@@ -25,7 +27,7 @@ public class DeleteAccounts {
   private Long limit;
   private String marker;
 
-  DeleteAccounts(Backend backend) {
+  public DeleteAccounts(Backend backend) {
     this.backend = backend;
     this.marker = null;
     this.limit = null;
@@ -50,7 +52,7 @@ public class DeleteAccounts {
   public DeleteAccounts requestDetail(String detail) {
     return new DeleteAccounts(backend, marker, limit, detail);
   }
-  
+
   public DeleteAccounts withMarker(String marker) {
     return new DeleteAccounts(backend, marker, limit, detail);
   }

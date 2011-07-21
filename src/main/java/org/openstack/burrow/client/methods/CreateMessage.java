@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.backend.Backend;
 
@@ -27,7 +27,7 @@ public class CreateMessage {
   private String queue;
   private Long ttl;
 
-  CreateMessage(Backend backend, String account, String queue, String messageId, String body) {
+  public CreateMessage(Backend backend, String account, String queue, String messageId, String body) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;

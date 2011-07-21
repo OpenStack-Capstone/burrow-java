@@ -17,6 +17,8 @@
 package org.openstack.burrow.client;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.methods.DeleteAccounts;
+import org.openstack.burrow.client.methods.GetAccounts;
 
 public class Client {
   private Backend backend;

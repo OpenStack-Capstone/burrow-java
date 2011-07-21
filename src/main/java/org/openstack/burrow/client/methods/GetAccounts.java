@@ -14,17 +14,19 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import java.util.List;
+
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Account;
 
 public class GetAccounts {
   private Backend backend;
   private Long limit;
   private String marker;
 
-  GetAccounts(Backend backend) {
+  public GetAccounts(Backend backend) {
     this.backend = backend;
     this.marker = null;
     this.limit = null;

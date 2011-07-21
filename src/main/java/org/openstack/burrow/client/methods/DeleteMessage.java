@@ -14,9 +14,10 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.NoSuchMessageException;
 
 public class DeleteMessage {
   private String account;
@@ -24,7 +25,7 @@ public class DeleteMessage {
   private String messageId;
   private String queue;
 
-  DeleteMessage(Backend backend, String account, String queue, String messageId) {
+  public DeleteMessage(Backend backend, String account, String queue, String messageId) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;

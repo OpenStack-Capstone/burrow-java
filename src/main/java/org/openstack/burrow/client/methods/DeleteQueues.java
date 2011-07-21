@@ -14,10 +14,12 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import java.util.List;
+
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Queue;
 
 public class DeleteQueues {
   private String account;
@@ -26,7 +28,7 @@ public class DeleteQueues {
   private Long limit;
   private String marker;
 
-  DeleteQueues(Backend backend, String account) {
+  public DeleteQueues(Backend backend, String account) {
     this.backend = backend;
     this.account = account;
     this.marker = null;

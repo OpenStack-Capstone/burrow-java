@@ -14,9 +14,10 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Message;
 
 public class GetMessage {
   private String account;
@@ -25,7 +26,7 @@ public class GetMessage {
   private String messageId;
   private String queue;
 
-  GetMessage(Backend backend, String account, String queue, String messageId) {
+  public GetMessage(Backend backend, String account, String queue, String messageId) {
     this.backend = backend;
     this.account = account;
     this.queue = queue;

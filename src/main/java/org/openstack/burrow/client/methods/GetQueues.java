@@ -14,10 +14,12 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.client.methods;
 
 import java.util.List;
+
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Queue;
 
 public class GetQueues {
   private String account;
@@ -25,7 +27,7 @@ public class GetQueues {
   private Long limit;
   private String marker;
 
-  GetQueues(Backend backend, String account) {
+  public GetQueues(Backend backend, String account) {
     this.backend = backend;
     this.account = account;
     this.marker = null;
