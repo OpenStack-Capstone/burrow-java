@@ -4,4 +4,6 @@ target/
 .idea/
 .settings/
 burrow-client.iml
+burrow-client.ipr
+burrow-client.iws
 .DS_Store
