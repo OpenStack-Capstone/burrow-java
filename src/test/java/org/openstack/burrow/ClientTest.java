@@ -31,6 +31,24 @@ import org.openstack.burrow.client.Queue;
  * Unit tests for the Burrow Client.
  */
 abstract class ClientTest extends TestCase {
+  /**
+   * Scan a list of messages for the presence of one or more message ids.
+   * 
+   * @param messages The messages to scan.
+   * @param ids The message ids to scan for.
+   * @return for each id, true if the message id was seen and false otherwise.
+   */
+  static boolean[] scanMessages(List<Message> messages, String[] ids) {
+    boolean[] seen = new boolean[ids.length];
+    for (int idx = 0; idx < seen.length; idx++)
+      seen[idx] = false;
+    for (Message message : messages)
+      for (int idx = 0; idx < ids.length; idx++)
+        if (message.getId().equals(ids[idx]))
+          seen[idx] = true;
+    return seen;
+  }
+
   protected Account account;
   protected Client client;
   protected Queue queue;
@@ -73,21 +91,13 @@ abstract class ClientTest extends TestCase {
    * Create two messages and then verify their presence in getMessages.
    */
   public void testCreateGetMessages() {
-    String id1 = "testCreateGetMessages1";
-    String id2 = "testCreateGetMessages2";
+    String[] ids = {"testCreateGetMessages1", "testCreateGetMessages2"};
     String body = "testCreateGetMessagesBody";
-    boolean seen_id1 = false;
-    boolean seen_id2 = false;
-    queue.createMessage(id1, body).execute();
-    queue.createMessage(id2, body).execute();
+    queue.createMessage(ids[0], body).execute();
+    queue.createMessage(ids[1], body).execute();
     List<Message> messages = queue.getMessages().execute();
-    for (Message message : messages) {
-      if (message.getId().equals(id1))
-        seen_id1 = true;
-      else if (message.getId().equals(id2))
-        seen_id2 = true;
-    }
-    assertTrue(seen_id1 && seen_id2);
+    boolean[] seen = scanMessages(messages, ids);
+    assertTrue(seen[0] && seen[1]);
   }
 
   /**
@@ -95,98 +105,59 @@ abstract class ClientTest extends TestCase {
    * in the queue.
    */
   public void testDeleteMessages() {
-    String id1 = "testDeleteMessages1";
-    String id2 = "testDeleteMessages2";
+    String[] ids = {"testDeleteMessages1", "testDeleteMessages2"};
     String body = "testDeleteMessagesBody";
-    boolean seen_1;
-    boolean seen_2;
-    queue.createMessage(id1, body).setHide(9999).execute();
-    queue.createMessage(id2, body).setHide(0).execute();
-    seen_1 = false;
-    seen_2 = false;
-    for (Message message : queue.getMessages().execute()) {
-      String id = message.getId();
-      if (id.equals(id1))
-        seen_1 = true;
-      else if (id.equals(id2))
-        seen_2 = true;
-    }
-    assertFalse(seen_1);
-    assertTrue(seen_2);
+    boolean[] seen;
+    queue.createMessage(ids[0], body).setHide(9999).execute();
+    queue.createMessage(ids[1], body).setHide(0).execute();
+    seen = scanMessages(queue.getMessages().execute(), ids);
+    assertFalse(seen[0]);
+    assertTrue(seen[1]);
     queue.deleteMessages().matchHidden(false).execute();
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     queue.createMessage("404workaround", "404workaround").execute();
-    seen_1 = false;
-    seen_2 = false;
-    for (Message message : queue.getMessages().matchHidden(true).execute()) {
-      String id = message.getId();
-      if (id.equals(id1))
-        seen_1 = true;
-      else if (id.equals(id2))
-        seen_2 = true;
-    }
-    assertTrue(seen_1);
-    assertFalse(seen_2);
+    seen = scanMessages(queue.getMessages().matchHidden(true).execute(), ids);
+    assertTrue(seen[0]);
+    assertFalse(seen[1]);
   }
 
   /**
    * Create hidden messages then use updateMessages to reveal them.
    */
   public void testMultipleUpdateHide() {
-    String id1 = "testMultipleUpdateHideMessage1";
-    String id2 = "testMultipleUpdateHideMessage2";
+    String[] ids = {"testMultipleUpdateHideMessage1", "testMultipleUpdateHideMessage2"};
     String body = "testMultipleUpdateHideMessageBody";
-    boolean seen_1 = false;
-    boolean seen_2 = false;
-    queue.createMessage(id1, body).setHide(9999).execute();
-    queue.createMessage(id2, body).setHide(9999).execute();
+    boolean[] seen;
+    queue.createMessage(ids[0], body).setHide(9999).execute();
+    queue.createMessage(ids[1], body).setHide(9999).execute();
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     queue.createMessage("404workaround", "404workaround").execute();
-    for (Message message : queue.getMessages().execute()) {
-      if (message.getId().equals(id1))
-        seen_1 = true;
-      else if (message.getId().equals(id2))
-        seen_2 = true;
-    }
-    assertFalse(seen_1);
-    assertFalse(seen_2);
+    seen = scanMessages(queue.getMessages().execute(), ids);
+    assertFalse(seen[0]);
+    assertFalse(seen[1]);
     queue.updateMessages().setHide(0).matchHidden(true).execute();
-    for (Message message : queue.getMessages().execute()) {
-      if (message.getId().equals(id1))
-        seen_1 = true;
-      else if (message.getId().equals(id2))
-        seen_2 = true;
-    }
-    assertTrue(seen_1);
-    assertTrue(seen_2);
+    seen = scanMessages(queue.getMessages().execute(), ids);
+    assertTrue(seen[0]);
+    assertTrue(seen[1]);
   }
 
   /**
    * Create a hidden message then use updateMessage to reveal it.
    */
   public void testUpdateHide() {
-    String id = "testUpdateHideMessage";
+    String ids[] = {"testUpdateHideMessage"};
     String body = "testUpdateHideMessageBody";
-    queue.createMessage(id, body).setHide(99999).execute();
+    boolean[] seen;
+    queue.createMessage(ids[0], body).setHide(99999).execute();
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     queue.createMessage("404workaround", "404workaround").execute();
-    Boolean seen_1 = false;
-    List<Message> messages_1 = queue.getMessages().execute();
-    for (Message message : messages_1) {
-      if (message.getId().equals(id))
-        seen_1 = true;
-    }
-    assertFalse(seen_1);
-    queue.updateMessage(id).setHide(0).execute();
-    Boolean seen_2 = false;
-    List<Message> messages_2 = queue.getMessages().execute();
-    for (Message message : messages_2) {
-      if (message.getId().equals(id))
-        seen_2 = true;
-    }
-    assertTrue(seen_2);
+    seen = scanMessages(queue.getMessages().execute(), ids);
+    assertFalse(seen[0]);
+    queue.updateMessage(ids[0]).setHide(0).execute();
+    seen = scanMessages(queue.getMessages().execute(), ids);
+    assertTrue(seen[0]);
   }
 }
