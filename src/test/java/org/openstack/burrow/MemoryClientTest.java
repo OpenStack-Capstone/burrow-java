@@ -19,7 +19,7 @@ package org.openstack.burrow;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.openstack.burrow.backend.Memory;
+import org.openstack.burrow.backend.memory.Memory;
 
 public class MemoryClientTest extends ClientTest {
   public static Test suite() {

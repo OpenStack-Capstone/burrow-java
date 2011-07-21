@@ -1,4 +1,4 @@
-package org.openstack.burrow.backend;
+package org.openstack.burrow.backend.memory;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

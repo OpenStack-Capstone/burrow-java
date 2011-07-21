@@ -14,11 +14,13 @@
  * the License.
  */
 
-package org.openstack.burrow.backend;
+package org.openstack.burrow.backend.memory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.*;
 
   public class Memory implements Backend {
