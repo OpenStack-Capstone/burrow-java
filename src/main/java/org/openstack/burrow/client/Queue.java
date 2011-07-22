@@ -26,41 +26,55 @@ import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Queue {
-  private String account;
+  private Account account;
   private Backend backend;
-  private String queue;
+  private String id;
 
-  public Queue(Backend backend, String account, String queue) {
+  public String getId() {
+    return id;
+  }
+
+  public Queue(Backend backend, Account account, String queue) {
     this.backend = backend;
     this.account = account;
-    this.queue = queue;
+    this.id = queue;
+  }
+
+  public Queue(Backend backend, String account, String id) {
+    this.backend = backend;
+    this.account = new Account(backend, account);
+    this.id = id;
   }
 
   public CreateMessage createMessage(String messageId, String body) {
-    return new CreateMessage(backend, account, queue, messageId, body);
+    return new CreateMessage(this, messageId, body);
   }
 
   public DeleteMessage deleteMessage(String messageId) {
-    return new DeleteMessage(backend, account, queue, messageId);
+    return new DeleteMessage(backend, account.getId(), id, messageId);
   }
 
   public DeleteMessages deleteMessages() {
-    return new DeleteMessages(backend, account, queue);
+    return new DeleteMessages(backend, account.getId(), id);
   }
 
   public GetMessage getMessage(String messageId) {
-    return new GetMessage(backend, account, queue, messageId);
+    return new GetMessage(backend, account.getId(), id, messageId);
   }
 
   public GetMessages getMessages() {
-    return new GetMessages(backend, account, queue);
+    return new GetMessages(backend, account.getId(), id);
   }
 
   public UpdateMessage updateMessage(String messageId) {
-    return new UpdateMessage(backend, account, queue, messageId);
+    return new UpdateMessage(backend, account.getId(), id, messageId);
   }
 
   public UpdateMessages updateMessages() {
-    return new UpdateMessages(backend, account, queue);
+    return new UpdateMessages(backend, account.getId(), id);
+  }
+
+  public Account getAccount() {
+    return account;
   }
 }

@@ -22,23 +22,10 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.CreateMessage;
 
 public interface Backend {
-
-  /**
-   * Create a message with a given id.
-   * 
-   * @param account Create a message in this account.
-   * @param queue Create a message in this queue.
-   * @param messageId Create a message with this id.
-   * @param body Create a message with this body.
-   * @param ttl Optional. Create a message that will remain in the queue for up
-   *          to this many seconds.
-   * @param hide Optional. Create a message that is hidden for this many
-   *          seconds.
-   */
-  public void createMessage(String account, String queue, String messageId, String body, Long ttl,
-      Long hide);
+  public Message execute(CreateMessage request);
 
   /**
    * Delete accounts, including the associated queues and messages.

@@ -48,6 +48,7 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.CreateMessage;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -620,6 +621,58 @@ public class Http implements Backend {
       // TODO Auto-generated catch block
       e.printStackTrace();
       throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
+    }
+  }
+
+  @Override
+  public Message execute(CreateMessage request) {
+    URI uri = getUri(request);
+    HttpPut httpRequest = new HttpPut(uri);
+    try {
+      HttpEntity body = new StringEntity(request.getBody(), "UTF-8");
+      httpRequest.setEntity(body);
+    } catch (UnsupportedEncodingException e) {
+      // This should be impossible for any legal String.
+      throw new RuntimeException("Unable to create body HttpEntity: " + e);
+    }
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleSingleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  private URI getUri(CreateMessage request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(CreateMessage request) {
+    Long ttl = request.getTtl();
+    Long hide = request.getHide();
+    if ((ttl != null) || (hide != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+      if (ttl != null)
+        params.add(new BasicNameValuePair("ttl", ttl.toString()));
+      if (hide != null)
+        params.add(new BasicNameValuePair("hide", hide.toString()));
+      return params;
+    } else {
+      return null;
     }
   }
 }
