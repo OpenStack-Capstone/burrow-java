@@ -16,24 +16,17 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public class DeleteMessages {
-  private String account;
-  private Backend backend;
   private String detail;
   private Long limit;
   private String marker;
   private Boolean matchHidden;
-  private String queue;
+  private Queue queue;
   private Long wait;
 
-  public DeleteMessages(Backend backend, String account, String queue) {
-    this.backend = backend;
-    this.account = account;
+  public DeleteMessages(Queue queue) {
     this.queue = queue;
     this.marker = null;
     this.matchHidden = null;
@@ -41,10 +34,8 @@ public class DeleteMessages {
     this.wait = null;
   }
 
-  private DeleteMessages(Backend backend, String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait) {
-    this.backend = backend;
-    this.account = account;
+  private DeleteMessages(Queue queue, String marker, Long limit, Boolean matchHidden,
+      String detail, Long wait) {
     this.queue = queue;
     this.marker = marker;
     this.matchHidden = matchHidden;
@@ -52,27 +43,47 @@ public class DeleteMessages {
     this.wait = wait;
   }
 
-  public List<Message> execute() {
-    return backend.deleteMessages(account, queue, marker, limit, matchHidden, detail, wait);
+  public String getDetail() {
+    return detail;
   }
 
-  public DeleteMessages matchHidden(boolean matchHidden) {
-    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Long getLimit() {
+    return limit;
   }
 
-  public DeleteMessages matchLimit(Long limit) {
-    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public String getMarker() {
+    return marker;
   }
 
-  public DeleteMessages requestDetail(String detail) {
-    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Boolean getMatchHidden() {
+    return matchHidden;
   }
 
-  public DeleteMessages requestWait(Long wait) {
-    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public Long getWait() {
+    return wait;
+  }
+
+  public DeleteMessages withDetail(String detail) {
+    return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages withLimit(Long limit) {
+    return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
   public DeleteMessages withMarker(String marker) {
-    return new DeleteMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+    return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages withMatchHidden(boolean matchHidden) {
+    return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public DeleteMessages withWait(Long wait) {
+    return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 }

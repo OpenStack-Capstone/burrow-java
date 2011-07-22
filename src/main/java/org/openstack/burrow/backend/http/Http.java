@@ -50,6 +50,7 @@ import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -76,60 +77,6 @@ public class Http implements Backend {
   @Override
   public List<Account> deleteAccounts(String marker, Long limit, String detail) {
     return null;
-  }
-
-  /**
-   * Delete messages in a queue.
-   * 
-   * @param account Delete messages in this account.
-   * @param queue Delete messages in this queue.
-   * @param marker Optional. Delete messages with ids after this marker.
-   * @param limit Optional. Delete at most this many messages.
-   * @param matchHidden Optional. Delete messages that are hidden.
-   * @param detail Optional. Return this level of detail about the deleted
-   *          messages.
-   * @param wait Optional. Wait up to this many seconds to delete a message if
-   *          none would otherwise be deleted.
-   * @return A list of Message instances with the requested level of detail, or
-   *         null if detail='none'.
-   */
-  @Override
-  public List<Message> deleteMessages(String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait) {
-    try {
-      List<NameValuePair> params = null;
-      if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
-          || (wait != null)) {
-        params = new ArrayList<NameValuePair>(5);
-        if (marker != null)
-          params.add(new BasicNameValuePair("marker", marker));
-        if (limit != null)
-          params.add(new BasicNameValuePair("limit", limit.toString()));
-        if (matchHidden != null)
-          params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
-        if (detail != null)
-          params.add(new BasicNameValuePair("detail", detail));
-        if (wait != null)
-          params.add(new BasicNameValuePair("wait", wait.toString()));
-      }
-      URI uri = getUri(account, queue, null, params);
-      HttpDelete request = new HttpDelete(uri);
-      HttpResponse response = client.execute(request);
-      return handleMultipleMessageHttpResponse(response);
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to construct request URI " + e);
-    } catch (ClientProtocolException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
-    }
   }
 
   /**
@@ -187,6 +134,25 @@ public class Http implements Backend {
     }
   }
 
+  @Override
+  public List<Message> execute(DeleteMessages request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
   /**
    * List accounts.
    * 
@@ -221,6 +187,12 @@ public class Http implements Backend {
   }
 
   private HttpDelete getHttpRequest(DeleteMessage request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
+    return httpRequest;
+  }
+
+  private HttpDelete getHttpRequest(DeleteMessages request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
@@ -343,6 +315,31 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(DeleteMessages request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    Boolean matchHidden = request.getMatchHidden();
+    String detail = request.getDetail();
+    Long wait = request.getWait();
+    if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
+        || (wait != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(5);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (matchHidden != null)
+        params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      if (wait != null)
+        params.add(new BasicNameValuePair("wait", wait.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * List queues in an account.
    * 
@@ -373,6 +370,16 @@ public class Http implements Backend {
     Account account = queue.getAccount();
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(DeleteMessages request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
     }

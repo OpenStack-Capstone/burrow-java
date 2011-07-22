@@ -24,6 +24,7 @@ import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
 
 public interface Backend {
   /**
@@ -37,24 +38,6 @@ public interface Backend {
    *         detail.
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail);
-
-  /**
-   * Delete messages in a queue.
-   * 
-   * @param account Delete messages in this account.
-   * @param queue Delete messages in this queue.
-   * @param marker Optional. Delete messages with ids after this marker.
-   * @param limit Optional. Delete at most this many messages.
-   * @param matchHidden Optional. Delete messages that are hidden.
-   * @param detail Optional. Return this level of detail about the deleted
-   *          messages.
-   * @param wait Optional. Wait up to this many seconds to delete a message if
-   *          none would otherwise be deleted.
-   * @return A list of Message instances with the requested level of detail, or
-   *         null if detail='none'.
-   */
-  public List<Message> deleteMessages(String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait);
 
   /**
    * Delete queues, including associated messages.
@@ -88,6 +71,16 @@ public interface Backend {
    *         return any information.
    */
   public Message execute(DeleteMessage request);
+
+  /**
+   * Execute a DeleteMessages request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Message instances populated with any information returned
+   *         by the queue about the deleted messages, or null if the queue did
+   *         not return any information.
+   */
+  public List<Message> execute(DeleteMessages request);
 
   /**
    * List accounts.

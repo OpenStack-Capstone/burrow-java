@@ -115,7 +115,7 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(queue.getMessages().execute(), ids);
     assertFalse(seen[0]);
     assertTrue(seen[1]);
-    queue.deleteMessages().matchHidden(false).execute();
+    backend.execute(queue.deleteMessages().withMatchHidden(false));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));

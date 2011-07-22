@@ -30,10 +30,6 @@ public class Queue {
   private Backend backend;
   private String id;
 
-  public String getId() {
-    return id;
-  }
-
   public Queue(Backend backend, Account account, String queue) {
     this.backend = backend;
     this.account = account;
@@ -55,7 +51,15 @@ public class Queue {
   }
 
   public DeleteMessages deleteMessages() {
-    return new DeleteMessages(backend, account.getId(), id);
+    return new DeleteMessages(this);
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public GetMessage getMessage(String messageId) {
@@ -72,9 +76,5 @@ public class Queue {
 
   public UpdateMessages updateMessages() {
     return new UpdateMessages(backend, account.getId(), id);
-  }
-
-  public Account getAccount() {
-    return account;
   }
 }
