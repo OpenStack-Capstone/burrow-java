@@ -42,6 +42,6 @@ public class Account {
   }
 
   public Queue Queue(String queue) {
-    return new Queue(backend, this, queue);
+    return new Queue(this, queue);
   }
 }

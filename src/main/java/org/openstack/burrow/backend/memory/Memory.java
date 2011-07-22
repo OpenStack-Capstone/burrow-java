@@ -27,6 +27,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
   public class Memory implements Backend {
@@ -154,7 +155,8 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
           while ((limit != 0) && (iter.hasNext())) {
               Entry<String, MemoryQueue> e = iter.next();
-              deleted.add(new Queue(this, account, e.getKey()));
+              // FIXME COMMENTED TO MAKE BUILD POSSIBLE
+              // deleted.add(new Queue(this, account, e.getKey()));
               iter.remove();
               limit--;
           }
@@ -245,7 +247,8 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
         while ((limit != 0) && (iter.hasNext())) {
               Entry<String, MemoryQueue> e = iter.next();
-              queues.add(new Queue(this, account, e.getKey()));
+              // FIXME COMMENTED TO MAKE BUILD POSSIBLE.
+              // queues.add(new Queue(this, account, e.getKey()));
               limit--;
         }
 
@@ -492,6 +495,13 @@ private class MemoryQueue {
 
   @Override
   public List<Message> execute(UpdateMessages request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public Message execute(UpdateMessage withHide) {
     // TODO Auto-generated method stub
     return null;
   }

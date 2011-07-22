@@ -26,6 +26,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
 public interface Backend {
@@ -105,6 +106,16 @@ public interface Backend {
   public List<Message> execute(GetMessages request);
 
   /**
+   * Execute an UpdateMessage request.
+   * 
+   * @param request The request to execute.
+   * @return A Message instance populated with any information returned by the
+   *         queue about the message, or null if the queue did not return any
+   *         information.
+   */
+  public Message execute(UpdateMessage request);
+
+  /**
    * Execute an UpdateMessages request.
    * 
    * @param request The request to execute.
@@ -134,22 +145,4 @@ public interface Backend {
    * @return A list of Queues.
    */
   public List<Queue> getQueues(String account, String marker, Long limit);
-
-  /**
-   * Update a message with a known id.
-   * 
-   * @param account Update a message in this account.
-   * @param queue Update a message in this queue.
-   * @param messageId Update a message with this id.
-   * @param ttl Optional. Update the message to remain in the queue for up to
-   *          this many seconds.
-   * @param hide Optional. Update the message to be hidden for this many
-   *          seconds.
-   * @param detail Optional. Return this level of detail about the updated
-   *          message.
-   * @return An updated Message with the requested level of detail, or null if
-   *         detail='none'.
-   */
-  public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide,
-      String detail);
 }

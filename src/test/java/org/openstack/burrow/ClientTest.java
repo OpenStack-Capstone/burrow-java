@@ -158,7 +158,7 @@ abstract class ClientTest extends TestCase {
     backend.execute(queue.createMessage("404workaround", "404workaround"));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
-    queue.updateMessage(ids[0]).setHide(0).execute();
+    backend.execute(queue.updateMessage(ids[0]).withHide(0));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
   }

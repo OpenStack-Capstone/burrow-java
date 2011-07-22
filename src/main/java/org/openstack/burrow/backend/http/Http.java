@@ -53,6 +53,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Http implements Backend {
@@ -195,6 +196,25 @@ public class Http implements Backend {
   }
 
   @Override
+  public Message execute(UpdateMessage request) {
+    HttpPost httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleSingleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
   public List<Message> execute(UpdateMessages request) {
     HttpPost httpRequest = getHttpRequest(request);
     try {
@@ -267,6 +287,12 @@ public class Http implements Backend {
   private HttpGet getHttpRequest(GetMessages request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
+    return httpRequest;
+  }
+
+  private HttpPost getHttpRequest(UpdateMessage request) {
+    URI uri = getUri(request);
+    HttpPost httpRequest = new HttpPost(uri);
     return httpRequest;
   }
 
@@ -360,6 +386,31 @@ public class Http implements Backend {
         params.add(new BasicNameValuePair("limit", limit.toString()));
       if (matchHidden != null)
         params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      if (wait != null)
+        params.add(new BasicNameValuePair("wait", wait.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(UpdateMessage request) {
+    Boolean matchHidden = request.getMatchHidden();
+    Long ttl = request.getTtl();
+    Long hide = request.getHide();
+    String detail = request.getDetail();
+    Long wait = request.getWait();
+    if ((matchHidden != null) || (ttl != null) || (hide != null) || (detail != null)
+        || (wait != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (matchHidden != null)
+        params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      if (ttl != null)
+        params.add(new BasicNameValuePair("ttl", ttl.toString()));
+      if (hide != null)
+        params.add(new BasicNameValuePair("hide", hide.toString()));
       if (detail != null)
         params.add(new BasicNameValuePair("detail", detail));
       if (wait != null)
@@ -479,6 +530,16 @@ public class Http implements Backend {
     if (params != null)
       encodedParams = URLEncodedUtils.format(params, "UTF-8");
     return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
+  }
+
+  private URI getUri(UpdateMessage request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
   }
 
   private URI getUri(UpdateMessages request) {
@@ -646,55 +707,6 @@ public class Http implements Backend {
           // this needs to be handled.
         }
         throw new RuntimeException("Unhandled return code");
-    }
-  }
-
-  /**
-   * Update a message with a known id.
-   * 
-   * @param account Update a message in this account.
-   * @param queue Update a message in this queue.
-   * @param messageId Update a message with this id.
-   * @param ttl Optional. Update the message to remain in the queue for up to
-   *          this many seconds.
-   * @param hide Optional. Update the message to be hidden for this many
-   *          seconds.
-   * @param detail Optional. Return this level of detail about the updated
-   *          message.
-   * @return An updated Message with the requested level of detail, or null if
-   *         detail='none'.
-   */
-  @Override
-  public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide,
-      String detail) {
-    try {
-      List<NameValuePair> params = null;
-      if ((ttl != null) || (hide != null) || (detail != null)) {
-        params = new ArrayList<NameValuePair>(3);
-        if (ttl != null)
-          params.add(new BasicNameValuePair("ttl", ttl.toString()));
-        if (hide != null)
-          params.add(new BasicNameValuePair("hide", hide.toString()));
-        if (detail != null)
-          params.add(new BasicNameValuePair("detail", detail));
-      }
-      URI uri = getUri(account, queue, messageId, params);
-      HttpPost request = new HttpPost(uri);
-      HttpResponse response = client.execute(request);
-      return handleSingleMessageHttpResponse(response);
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to construct request URI " + e);
-    } catch (ClientProtocolException e) {
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
-    } catch (IOException e) {
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
     }
   }
 }

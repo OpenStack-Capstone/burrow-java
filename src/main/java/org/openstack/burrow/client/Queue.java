@@ -16,7 +16,6 @@
 
 package org.openstack.burrow.client;
 
-import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
@@ -27,19 +26,11 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Queue {
   private Account account;
-  private Backend backend;
   private String id;
 
-  public Queue(Backend backend, Account account, String queue) {
-    this.backend = backend;
+  public Queue(Account account, String queue) {
     this.account = account;
     this.id = queue;
-  }
-
-  public Queue(Backend backend, String account, String id) {
-    this.backend = backend;
-    this.account = new Account(backend, account);
-    this.id = id;
   }
 
   public CreateMessage createMessage(String messageId, String body) {
@@ -71,7 +62,7 @@ public class Queue {
   }
 
   public UpdateMessage updateMessage(String messageId) {
-    return new UpdateMessage(backend, account.getId(), id, messageId);
+    return new UpdateMessage(this, messageId);
   }
 
   public UpdateMessages updateMessages() {
