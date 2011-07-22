@@ -139,7 +139,7 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     assertFalse(seen[1]);
-    queue.updateMessages().setHide(0).matchHidden(true).execute();
+    backend.execute(queue.updateMessages().withHide(0).withMatchHidden(true));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
     assertTrue(seen[1]);

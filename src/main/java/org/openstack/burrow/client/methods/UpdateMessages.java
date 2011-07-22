@@ -16,26 +16,19 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public class UpdateMessages {
-  private String account;
-  private Backend backend;
   private String detail;
   private Long hide;
   private Long limit;
   private String marker;
   private Boolean matchHidden;
-  private String queue;
+  private Queue queue;
   private Long ttl;
   private Long wait;
 
-  public UpdateMessages(Backend backend, String account, String queue) {
-    this.backend = backend;
-    this.account = account;
+  public UpdateMessages(Queue queue) {
     this.queue = queue;
     this.marker = null;
     this.limit = null;
@@ -46,10 +39,8 @@ public class UpdateMessages {
     this.wait = null;
   }
 
-  private UpdateMessages(Backend backend, String account, String queue, String marker, Long limit,
-      Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
-    this.backend = backend;
-    this.account = account;
+  private UpdateMessages(Queue queue, String marker, Long limit, Boolean matchHidden, Long ttl,
+      Long hide, String detail, Long wait) {
     this.queue = queue;
     this.marker = marker;
     this.limit = limit;
@@ -60,43 +51,63 @@ public class UpdateMessages {
     this.wait = wait;
   }
 
-  public List<Message> execute() {
-    return this.backend.updateMessages(account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public String getDetail() {
+    return detail;
   }
 
-  public UpdateMessages matchHidden(boolean matchHidden) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public Long getHide() {
+    return hide;
   }
 
-  public UpdateMessages matchLimit(Long limit) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public Long getLimit() {
+    return limit;
   }
 
-  public UpdateMessages requestDetail(String detail) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public String getMarker() {
+    return marker;
   }
 
-  public UpdateMessages requestWait(long wait) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public Boolean getMatchHidden() {
+    return matchHidden;
   }
 
-  public UpdateMessages setHide(long hide) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public Queue getQueue() {
+    return queue;
   }
 
-  public UpdateMessages setTtl(long ttl) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+  public Long getTtl() {
+    return ttl;
+  }
+
+  public Long getWait() {
+    return wait;
+  }
+
+  public UpdateMessages withDetail(String detail) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessages withHide(long hide) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessages withLimit(Long limit) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
   public UpdateMessages withMarker(String marker) {
-    return new UpdateMessages(backend, account, queue, marker, limit, matchHidden, ttl, hide,
-        detail, wait);
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessages withMatchHidden(boolean matchHidden) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessages withTtl(long ttl) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessages withWait(long wait) {
+    return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 }

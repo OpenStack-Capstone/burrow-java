@@ -26,6 +26,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.UpdateMessages;
 
 public interface Backend {
   /**
@@ -104,6 +105,16 @@ public interface Backend {
   public List<Message> execute(GetMessages request);
 
   /**
+   * Execute an UpdateMessages request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Message instances populated with any information returned
+   *         by the queue about the messages, or null if the queue did not
+   *         return any information.
+   */
+  public List<Message> execute(UpdateMessages request);
+
+  /**
    * List accounts.
    * 
    * @param marker Optional. Only accounts with a name after this marker will be
@@ -141,25 +152,4 @@ public interface Backend {
    */
   public Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide,
       String detail);
-
-  /**
-   * Update messages in a queue.
-   * 
-   * @param account Update messages in this account.
-   * @param queue Update messages in this queue.
-   * @param marker Optional. Update messages with ids after this marker.
-   * @param limit Optional. Update at most this many messages.
-   * @param matchHidden Optional. Update messages that are hidden.
-   * @param ttl Optional. Update messages to remain in the queue for up to this
-   *          many seconds.
-   * @param hide Optional. Update messages to be hidden this many seconds.
-   * @param detail Optional. Return this level of detail for the updated
-   *          messages.
-   * @param wait Optional. Wait up to this many seconds to update a message if
-   *          none would otherwise be updated.
-   * @return A list of updated Message instances with the requested level of
-   *         detail, or null if detail='none'.
-   */
-  public List<Message> updateMessages(String account, String queue, String marker, Long limit,
-      Boolean matchHidden, Long ttl, Long hide, String detail, Long wait);
 }

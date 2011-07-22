@@ -75,6 +75,6 @@ public class Queue {
   }
 
   public UpdateMessages updateMessages() {
-    return new UpdateMessages(backend, account.getId(), id);
+    return new UpdateMessages(this);
   }
 }
