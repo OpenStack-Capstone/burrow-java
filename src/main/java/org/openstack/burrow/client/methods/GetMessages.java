@@ -16,24 +16,17 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public class GetMessages {
-  private String account;
-  private Backend backend;
   private String detail;
   private Long limit;
   private String marker;
   private Boolean matchHidden;
-  private String queue;
+  private Queue queue;
   private Long wait;
 
-  public GetMessages(Backend backend, String account, String queue) {
-    this.backend = backend;
-    this.account = account;
+  public GetMessages(Queue queue) {
     this.queue = queue;
     this.marker = null;
     this.limit = null;
@@ -42,10 +35,8 @@ public class GetMessages {
     this.wait = null;
   }
 
-  private GetMessages(Backend backend, String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait) {
-    this.backend = backend;
-    this.account = account;
+  private GetMessages(Queue queue, String marker, Long limit, Boolean matchHidden, String detail,
+      Long wait) {
     this.queue = queue;
     this.marker = marker;
     this.limit = limit;
@@ -54,27 +45,47 @@ public class GetMessages {
     this.wait = wait;
   }
 
-  public List<Message> execute() {
-    return this.backend.getMessages(account, queue, marker, limit, matchHidden, detail, wait);
+  public String getDetail() {
+    return detail;
   }
 
-  public GetMessages matchHidden(boolean matchHidden) {
-    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Long getLimit() {
+    return limit;
   }
 
-  public GetMessages matchLimit(long limit) {
-    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public String getMarker() {
+    return marker;
   }
 
-  public GetMessages requestDetail(String detail) {
-    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Boolean getMatchHidden() {
+    return matchHidden;
   }
 
-  public GetMessages requestWait(long wait) {
-    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public Long getWait() {
+    return wait;
+  }
+
+  public GetMessages withDetail(String detail) {
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages withLimit(long limit) {
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
   public GetMessages withMarker(String marker) {
-    return new GetMessages(backend, account, queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages withMatchHidden(boolean matchHidden) {
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
+
+  public GetMessages withWait(long wait) {
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 }

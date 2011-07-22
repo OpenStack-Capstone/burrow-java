@@ -52,6 +52,7 @@ import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -173,6 +174,25 @@ public class Http implements Backend {
     }
   }
 
+  @Override
+  public List<Message> execute(GetMessages request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
   /**
    * List accounts.
    * 
@@ -224,56 +244,10 @@ public class Http implements Backend {
     return httpRequest;
   }
 
-  /**
-   * Get messages from a queue.
-   * 
-   * @param account Get messages in this account.
-   * @param queue Get messages in this queue.
-   * @param marker Optional. Get messages with ids after this marker.
-   * @param limit Optional. Get at most this many messages.
-   * @param matchHidden Optional. Get messages that are hidden.
-   * @param detail Optional. Return this level of detail for the messages.
-   * @param wait Optional. Wait up to this many seconds to get a message if none
-   *          would otherwise be returned.
-   * @return A list of Message instances with the requested level of detail.
-   */
-  @Override
-  public List<Message> getMessages(String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait) {
-    try {
-      List<NameValuePair> params = null;
-      if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
-          || (wait != null)) {
-        params = new ArrayList<NameValuePair>(5);
-        if (marker != null)
-          params.add(new BasicNameValuePair("marker", marker));
-        if (limit != null)
-          params.add(new BasicNameValuePair("limit", limit.toString()));
-        if (matchHidden != null)
-          params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
-        if (detail != null)
-          params.add(new BasicNameValuePair("detail", detail));
-        if (wait != null)
-          params.add(new BasicNameValuePair("wait", wait.toString()));
-      }
-      URI uri = getUri(account, queue, null, params);
-      HttpGet request = new HttpGet(uri);
-      HttpResponse response = client.execute(request);
-      return handleMultipleMessageHttpResponse(response);
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to construct request URI " + e);
-    } catch (ClientProtocolException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
-    }
+  private HttpGet getHttpRequest(GetMessages request) {
+    URI uri = getUri(request);
+    HttpGet httpRequest = new HttpGet(uri);
+    return httpRequest;
   }
 
   private List<NameValuePair> getQueryParamaters(CreateMessage request) {
@@ -345,6 +319,31 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(GetMessages request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    Boolean matchHidden = request.getMatchHidden();
+    String detail = request.getDetail();
+    Long wait = request.getWait();
+    if ((marker != null) || (limit != null) || (matchHidden != null) || (detail != null)
+        || (wait != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(5);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (matchHidden != null)
+        params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      if (wait != null)
+        params.add(new BasicNameValuePair("wait", wait.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * List queues in an account.
    * 
@@ -395,6 +394,16 @@ public class Http implements Backend {
     Account account = queue.getAccount();
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(GetMessages request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
     }

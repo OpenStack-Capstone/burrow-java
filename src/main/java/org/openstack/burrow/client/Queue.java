@@ -67,7 +67,7 @@ public class Queue {
   }
 
   public GetMessages getMessages() {
-    return new GetMessages(backend, account.getId(), id);
+    return new GetMessages(this);
   }
 
   public UpdateMessage updateMessage(String messageId) {

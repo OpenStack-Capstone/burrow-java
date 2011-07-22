@@ -97,7 +97,7 @@ abstract class ClientTest extends TestCase {
     String body = "testCreateGetMessagesBody";
     backend.execute(queue.createMessage(ids[0], body));
     backend.execute(queue.createMessage(ids[1], body));
-    List<Message> messages = queue.getMessages().execute();
+    List<Message> messages = backend.execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
     assertTrue(seen[0] && seen[1]);
   }
@@ -112,14 +112,14 @@ abstract class ClientTest extends TestCase {
     boolean[] seen;
     backend.execute(queue.createMessage(ids[0], body).withHide(9999));
     backend.execute(queue.createMessage(ids[1], body).withHide(0));
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     assertTrue(seen[1]);
     backend.execute(queue.deleteMessages().withMatchHidden(false));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(queue.getMessages().matchHidden(true).execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue(seen[0]);
     assertFalse(seen[1]);
   }
@@ -136,11 +136,11 @@ abstract class ClientTest extends TestCase {
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     assertFalse(seen[1]);
     queue.updateMessages().setHide(0).matchHidden(true).execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
     assertTrue(seen[1]);
   }
@@ -156,10 +156,10 @@ abstract class ClientTest extends TestCase {
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     queue.updateMessage(ids[0]).setHide(0).execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
   }
 }

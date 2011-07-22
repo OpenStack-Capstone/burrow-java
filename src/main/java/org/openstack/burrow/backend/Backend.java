@@ -25,6 +25,7 @@ import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
 
 public interface Backend {
   /**
@@ -93,6 +94,16 @@ public interface Backend {
   public Message execute(GetMessage request);
 
   /**
+   * Execute a GetMessages request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Message instances populated with any information returned
+   *         by the queue about the messages, or null if the queue did not
+   *         return any information.
+   */
+  public List<Message> execute(GetMessages request);
+
+  /**
    * List accounts.
    * 
    * @param marker Optional. Only accounts with a name after this marker will be
@@ -101,22 +112,6 @@ public interface Backend {
    * @return A list of Accounts.
    */
   public List<Account> getAccounts(String marker, Long limit);
-
-  /**
-   * Get messages from a queue.
-   * 
-   * @param account Get messages in this account.
-   * @param queue Get messages in this queue.
-   * @param marker Optional. Get messages with ids after this marker.
-   * @param limit Optional. Get at most this many messages.
-   * @param matchHidden Optional. Get messages that are hidden.
-   * @param detail Optional. Return this level of detail for the messages.
-   * @param wait Optional. Wait up to this many seconds to get a message if none
-   *          would otherwise be returned.
-   * @return A list of Message instances with the requested level of detail.
-   */
-  public List<Message> getMessages(String account, String queue, String marker, Long limit,
-      Boolean matchHidden, String detail, Long wait);
 
   /**
    * List queues in an account.

@@ -26,6 +26,7 @@ import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
 
   public class Memory implements Backend {
 	private HashedList<String, MemoryAccount> accountMap;
@@ -476,6 +477,13 @@ private class MemoryQueue {
 
   @Override
   public Message execute(GetMessage request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public List<Message> execute(GetMessages request) {
     // TODO Auto-generated method stub
     return null;
   }
