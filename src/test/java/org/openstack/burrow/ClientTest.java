@@ -49,8 +49,8 @@ abstract class ClientTest extends TestCase {
     return seen;
   }
 
-  protected Backend backend;
   protected Account account;
+  protected Backend backend;
   protected Client client;
   protected Queue queue;
 
@@ -69,9 +69,9 @@ abstract class ClientTest extends TestCase {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
     backend.execute(queue.createMessage(id, body));
-    queue.deleteMessage(id).execute();
+    backend.execute(queue.deleteMessage(id));
     try {
-      queue.deleteMessage(id).execute();
+      backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed");
     } catch (NoSuchMessageException e) {
       // This is expected.

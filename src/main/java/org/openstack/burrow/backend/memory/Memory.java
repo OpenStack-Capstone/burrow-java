@@ -23,6 +23,7 @@ import java.util.List;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.*;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteMessage;
 
   public class Memory implements Backend {
 	private HashedList<String, MemoryAccount> accountMap;
@@ -452,6 +453,13 @@ private class MemoryQueue {
 
   @Override
   public Message execute(CreateMessage request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public Message execute(DeleteMessage request) {
     // TODO Auto-generated method stub
     return null;
   }

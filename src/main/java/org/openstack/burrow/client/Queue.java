@@ -51,7 +51,7 @@ public class Queue {
   }
 
   public DeleteMessage deleteMessage(String messageId) {
-    return new DeleteMessage(backend, account.getId(), id, messageId);
+    return new DeleteMessage(this, messageId);
   }
 
   public DeleteMessages deleteMessages() {

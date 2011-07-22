@@ -49,6 +49,7 @@ import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteMessage;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -75,37 +76,6 @@ public class Http implements Backend {
   @Override
   public List<Account> deleteAccounts(String marker, Long limit, String detail) {
     return null;
-  }
-
-  /**
-   * Delete a message with a known id.
-   * 
-   * @param account Delete a message in this account.
-   * @param queue Delete a message in this queue.
-   * @param messageId Delete a message with this id.
-   */
-  @Override
-  public void deleteMessage(String account, String queue, String messageId) {
-    try {
-      URI uri = getUri(account, queue, messageId, null);
-      HttpDelete request = new HttpDelete(uri);
-      HttpResponse response = client.execute(request);
-      // TODO: update interface to return any message received.
-      handleSingleMessageHttpResponse(response);
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to construct request URI " + e);
-    } catch (ClientProtocolException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
-    }
   }
 
   /**
@@ -198,6 +168,25 @@ public class Http implements Backend {
     }
   }
 
+  @Override
+  public Message execute(DeleteMessage request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleSingleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
   /**
    * List accounts.
    * 
@@ -228,6 +217,12 @@ public class Http implements Backend {
       // This should be impossible for any legal String.
       throw new RuntimeException("Unable to create body HttpEntity: " + e);
     }
+    return httpRequest;
+  }
+
+  private HttpDelete getHttpRequest(DeleteMessage request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
@@ -337,6 +332,17 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(DeleteMessage request) {
+    Boolean matchHidden = request.getMatchHidden();
+    if (matchHidden != null) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(1);
+      params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * List queues in an account.
    * 
@@ -353,6 +359,16 @@ public class Http implements Backend {
   }
 
   private URI getUri(CreateMessage request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(DeleteMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {

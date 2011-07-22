@@ -23,10 +23,9 @@ import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteMessage;
 
 public interface Backend {
-  public Message execute(CreateMessage request);
-
   /**
    * Delete accounts, including the associated queues and messages.
    * 
@@ -38,17 +37,6 @@ public interface Backend {
    *         detail.
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail);
-
-  /**
-   * Delete a message with a known id.
-   * 
-   * 
-   * @param account Delete a message in this account.
-   * @param queue Delete a message in this queue.
-   * @param messageId Delete a message with this id.
-   */
-  public void deleteMessage(String account, String queue, String messageId)
-      throws NoSuchMessageException;
 
   /**
    * Delete messages in a queue.
@@ -80,6 +68,26 @@ public interface Backend {
    *         detail.
    */
   public List<Queue> deleteQueues(String account, String marker, Long limit, String detail);
+
+  /**
+   * Execute a CreateMessage request.
+   * 
+   * @param request The request to execute.
+   * @return A Message instance populated with any information returned by the
+   *         queue about the created message, or null if the queue did not
+   *         return any information.
+   */
+  public Message execute(CreateMessage request);
+
+  /**
+   * Execute a DeleteMessage request.
+   * 
+   * @param request The request to execute.
+   * @return A Message instance populated with any information returned by the
+   *         queue about the deleted message, or null if the queue did not
+   *         return any information.
+   */
+  public Message execute(DeleteMessage request);
 
   /**
    * List accounts.
