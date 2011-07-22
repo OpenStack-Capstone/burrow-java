@@ -63,7 +63,7 @@ public class Queue {
   }
 
   public GetMessage getMessage(String messageId) {
-    return new GetMessage(backend, account.getId(), id, messageId);
+    return new GetMessage(this, messageId);
   }
 
   public GetMessages getMessages() {

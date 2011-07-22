@@ -20,11 +20,11 @@ import java.util.List;
 
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.GetMessage;
 
 public interface Backend {
   /**
@@ -83,6 +83,16 @@ public interface Backend {
   public List<Message> execute(DeleteMessages request);
 
   /**
+   * Execute a GetMessage request.
+   * 
+   * @param request The request to execute.
+   * @return A Message instance populated with any information returned by the
+   *         queue about the message, or null if the queue did not return any
+   *         information.
+   */
+  public Message execute(GetMessage request);
+
+  /**
    * List accounts.
    * 
    * @param marker Optional. Only accounts with a name after this marker will be
@@ -91,19 +101,6 @@ public interface Backend {
    * @return A list of Accounts.
    */
   public List<Account> getAccounts(String marker, Long limit);
-
-  /**
-   * Get a message with a known id.
-   * 
-   * @param account Get a message from this account.
-   * @param queue Get a message from this queue.
-   * @param messageId Get a message with this id.
-   * @param detail Return this level of detail about the message.
-   * @return A Message instance with the requested level of detail, or null if
-   *         detail='none'.
-   */
-  public Message getMessage(String account, String queue, String messageId, String detail)
-      throws NoSuchMessageException;
 
   /**
    * Get messages from a queue.

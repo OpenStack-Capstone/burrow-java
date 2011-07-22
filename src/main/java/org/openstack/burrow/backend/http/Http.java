@@ -51,6 +51,7 @@ import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.GetMessage;
 
 public class Http implements Backend {
   private HttpClient client;
@@ -153,6 +154,25 @@ public class Http implements Backend {
     }
   }
 
+  @Override
+  public Message execute(GetMessage request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleSingleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
   /**
    * List accounts.
    * 
@@ -198,43 +218,10 @@ public class Http implements Backend {
     return httpRequest;
   }
 
-  /**
-   * Get a message with a known id.
-   * 
-   * @param account Get a message from this account.
-   * @param queue Get a message from this queue.
-   * @param messageId Get a message with this id.
-   * @param detail Return this level of detail about the message.
-   * @return A Message instance with the requested level of detail, or null if
-   *         detail='none'.
-   */
-  @Override
-  public Message getMessage(String account, String queue, String messageId, String detail)
-      throws NoSuchMessageException {
-    try {
-      List<NameValuePair> params = null;
-      if (detail != null) {
-        params = new ArrayList<NameValuePair>(1);
-        params.add(new BasicNameValuePair("detail", detail));
-      }
-      URI uri = getUri(account, queue, messageId, params);
-      HttpGet request = new HttpGet(uri);
-      HttpResponse response = client.execute(request);
-      return handleSingleMessageHttpResponse(response);
-    } catch (URISyntaxException e) {
-      // Failed to construct the URI for this request.
-      // TODO: Throw something
-      e.printStackTrace();
-      throw new RuntimeException("Failed to construct request URI " + e);
-    } catch (ClientProtocolException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: ClientProtocolException " + e);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new RuntimeException("Failed to execute HttpRequest: IOException " + e);
-    }
+  private HttpGet getHttpRequest(GetMessage request) {
+    URI uri = getUri(request);
+    HttpGet httpRequest = new HttpGet(uri);
+    return httpRequest;
   }
 
   /**
@@ -340,6 +327,24 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(GetMessage request) {
+    Boolean matchHidden = request.getMatchHidden();
+    String detail = request.getDetail();
+    Long wait = request.getWait();
+    if ((matchHidden != null) || (detail != null) || (wait != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (matchHidden != null)
+        params.add(new BasicNameValuePair("match_hidden", matchHidden.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      if (wait != null)
+        params.add(new BasicNameValuePair("wait", wait.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * List queues in an account.
    * 
@@ -380,6 +385,16 @@ public class Http implements Backend {
     Account account = queue.getAccount();
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(GetMessage request) {
+    Queue queue = request.getQueue();
+    Account account = queue.getAccount();
+    try {
+      return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
     }
