@@ -1,10 +1,15 @@
 package org.openstack.burrow.backend.memory;
 
+import java.lang.reflect.Array;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * A Hash table which maintains an order of insertion list of its contents.
  *
+ * When using an iterator over this collection in a multithreaded environment, the life of the iterator must be
+ * wrapped in a <pre>synchronized (hashListInstance) {..}</pre> block in order to be threadsafe.
  *
  * @param <K> Key type for hash lookups
  * @param <V> Type of values to be contained.
@@ -18,7 +23,7 @@ public class HashedList<K, V> {
      *
      */
     public HashedList() {
-        table = (PrivEntry[]) new Object[967];
+        table = (PrivEntry[]) Array.newInstance(PrivEntry.class, 967);// Object[967];
         front = null;
         back = null;
     }
@@ -112,7 +117,7 @@ public class HashedList<K, V> {
      * @param key
      * @return
      */
-    public V get(K key) {
+    public synchronized V get(K key) {
         PrivEntry e = getEntry(key);
         return e == null ? null : e.value;
     }
@@ -121,7 +126,7 @@ public class HashedList<K, V> {
      * @param key
      * @param value
      */
-    public void put(K key, V value) {
+    public synchronized void put(K key, V value) {
         int ind = key.hashCode() % table.length;
         PrivEntry curr = table[ind];
 
@@ -145,7 +150,7 @@ public class HashedList<K, V> {
      * @param key
      * @param value
      */
-    public void update(K key, V value) {
+    public synchronized void update(K key, V value) {
         PrivEntry e = getEntry(key);
 
         if (e == null) {
@@ -159,7 +164,7 @@ public class HashedList<K, V> {
      * @param key
      * @return
      */
-    public V remove(K key) {
+    public synchronized V remove(K key) {
         PrivEntry e = getEntry(key);
 
         if (e == null) return null;
@@ -182,7 +187,7 @@ public class HashedList<K, V> {
     /**
      * @return
      */
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return population == 0;
     }
 
@@ -190,7 +195,7 @@ public class HashedList<K, V> {
      * @param key
      * @return
      */
-    public boolean containsKey(K key) {
+    public synchronized boolean containsKey(K key) {
         return getEntry(key) != null;
     }
 
@@ -252,6 +257,7 @@ public class HashedList<K, V> {
         public Entry<K, V> next() {
             synchronized (outer) {
                 if (nextEntry == null) throw new NoSuchElementException();
+                if (nextEntry != curr.listNext) throw new ConcurrentModificationException();
                 Entry<K, V> ret = nextEntry;
                 curr = nextEntry;
                 removed = false;
@@ -273,7 +279,9 @@ public class HashedList<K, V> {
         public void remove() {
             if ((curr == null) || removed) throw new IllegalStateException();
             removed = true;
-            removeEntry(curr);
+            synchronized (outer) {
+                removeEntry(curr);
+            }
         }
     }
 

@@ -128,7 +128,7 @@ public class HashedListTest extends TestCase {
         list.put("3", 3);
         list.put("4", 4);
 
-        Iterator<Entry<String, Integer>> iterator = list.newIteratorFrom("2");
+        Iterator<Entry<String, Integer>> iterator = list.newIteratorFrom("1");
 
 
         for (int i = 2; iterator.hasNext(); i++) {
