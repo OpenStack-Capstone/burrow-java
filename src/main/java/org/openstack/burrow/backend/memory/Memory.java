@@ -1,34 +1,34 @@
-  /*
- * Copyright (C) 2011 OpenStack LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+/*
+* Copyright (C) 2011 OpenStack LLC.
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not
+* use this file except in compliance with the License. You may obtain a copy of
+* the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations under
+* the License.
+*/
 
 package org.openstack.burrow.backend.memory;
+
+import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.*;
+public class Memory implements Backend {
+    private HashedList<String, MemoryAccount> accountMap;
 
-  public class Memory implements Backend {
-	private HashedList<String, MemoryAccount> accountMap;
-
-	public Memory() {
-		accountMap = new HashedList<String, MemoryAccount>();
-	}
+    public Memory() {
+        accountMap = new HashedList<String, MemoryAccount>();
+    }
 
 
     private void ensurePresent(String account, String queue) {
@@ -42,7 +42,7 @@ import org.openstack.burrow.client.*;
         }
 
         if (!ensureAccount.containsKey(queue) && (queue != null)) {
-             ensureAccount.put(account, new MemoryQueue());
+            ensureAccount.put(account, new MemoryQueue());
         }
     }
 
@@ -63,37 +63,37 @@ import org.openstack.burrow.client.*;
         accountMap.get(account).get(queue).put(messageId, body, ttl, hide);
     }
 
-      /**
-       * Delete accounts, including the associated queues and messages.
-       *
-       * @param marker Optional. Only accounts with a name after this marker will be
-       *               deleted.
-       * @param limit  Optional. Delete at most this many accounts. A limit of less than 0
-       *        is equivalent to unlimited.
-       * @param detail Optional. Return the names of the accounts deleted.
-       * @return A list of Account instances deleted, with the requested level of
-       *         detail.
-       */
-      public synchronized List<Account> deleteAccounts(String marker, Long limit, String detail) {
-          List<Account> deleted = new ArrayList<Account>();
+    /**
+     * Delete accounts, including the associated queues and messages.
+     *
+     * @param marker Optional. Only accounts with a name after this marker will be
+     *               deleted.
+     * @param limit  Optional. Delete at most this many accounts. A limit of less than 0
+     *               is equivalent to unlimited.
+     * @param detail Optional. Return the names of the accounts deleted.
+     * @return A list of Account instances deleted, with the requested level of
+     *         detail.
+     */
+    public synchronized List<Account> deleteAccounts(String marker, Long limit, String detail) {
+        List<Account> deleted = new ArrayList<Account>();
 
-          Iterator<Entry<String, MemoryAccount>> iter;
-          if (marker != null) iter = accountMap.newIteratorFrom(marker);
-          else iter = accountMap.newIterator();
+        Iterator<Entry<String, MemoryAccount>> iter;
+        if (marker != null) iter = accountMap.newIteratorFrom(marker);
+        else iter = accountMap.newIterator();
 
-          if (limit == null) limit = -1l;
+        if (limit == null) limit = -1l;
 
-          while ((limit != 0) && (iter.hasNext())) {
-              Entry<String, MemoryAccount> e = iter.next();
-              deleted.add(new Account(this, e.getKey()));
-              iter.remove();
-              limit--;
-          }
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryAccount> e = iter.next();
+            deleted.add(new Account(this, e.getKey()));
+            iter.remove();
+            limit--;
+        }
 
-          return deleted;
-      }
+        return deleted;
+    }
 
-      /**
+    /**
      * Delete a message with a known id.
      *
      * @param account   Delete a message in this account.
@@ -105,7 +105,7 @@ import org.openstack.burrow.client.*;
         accountMap.get(account).get(queue).remove(messageId);
     }
 
-      /**
+    /**
      * Delete messages in a queue.
      *
      * @param account     Delete messages in this account.
@@ -136,24 +136,24 @@ import org.openstack.burrow.client.*;
      * @return A list of queue names deleted, or null if not detail=True.
      */
     public synchronized List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-          List<Queue> deleted = new ArrayList<Queue>();
-          ensurePresent(account, null);
+        List<Queue> deleted = new ArrayList<Queue>();
+        ensurePresent(account, null);
 
 
-          Iterator<Entry<String, MemoryQueue>> iter;
-          if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
-          else iter = accountMap.get(account).newIterator();
+        Iterator<Entry<String, MemoryQueue>> iter;
+        if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
+        else iter = accountMap.get(account).newIterator();
 
-          if (limit == null) limit = -1l;
+        if (limit == null) limit = -1l;
 
-          while ((limit != 0) && (iter.hasNext())) {
-              Entry<String, MemoryQueue> e = iter.next();
-              deleted.add(new Queue(this, account, e.getKey()));
-              iter.remove();
-              limit--;
-          }
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryQueue> e = iter.next();
+            deleted.add(new Queue(this, account, e.getKey()));
+            iter.remove();
+            limit--;
+        }
 
-          return deleted;
+        return deleted;
     }
 
     /**
@@ -165,21 +165,21 @@ import org.openstack.burrow.client.*;
      * @return A list of account names.
      */
     public synchronized List<Account> getAccounts(String marker, Long limit) {
-          List<Account> accts = new ArrayList<Account>();
+        List<Account> accts = new ArrayList<Account>();
 
-          Iterator<Entry<String, MemoryAccount>> iter;
-          if (marker != null) iter = accountMap.newIteratorFrom(marker);
-          else iter = accountMap.newIterator();
+        Iterator<Entry<String, MemoryAccount>> iter;
+        if (marker != null) iter = accountMap.newIteratorFrom(marker);
+        else iter = accountMap.newIterator();
 
-          if (limit == null) limit = -1l;
+        if (limit == null) limit = -1l;
 
-          while ((limit != 0) && (iter.hasNext())) {
-              Entry<String, MemoryAccount> e = iter.next();
-              accts.add(new Account(this, e.getKey()));
-              limit--;
-          }
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryAccount> e = iter.next();
+            accts.add(new Account(this, e.getKey()));
+            limit--;
+        }
 
-          return accts;
+        return accts;
     }
 
     /**
@@ -238,9 +238,9 @@ import org.openstack.burrow.client.*;
         if (limit == null) limit = -1l;
 
         while ((limit != 0) && (iter.hasNext())) {
-              Entry<String, MemoryQueue> e = iter.next();
-              queues.add(new Queue(this, account, e.getKey()));
-              limit--;
+            Entry<String, MemoryQueue> e = iter.next();
+            queues.add(new Queue(this, account, e.getKey()));
+            limit--;
         }
 
         return queues;
@@ -291,162 +291,162 @@ import org.openstack.burrow.client.*;
     }
 
 
+    private class MemoryQueue {
+        private class MessageRecord extends Message {
+            long createdAt;
+            long hiddenAt;
 
-private class MemoryQueue {
-    private class MessageRecord extends Message {
-        long createdAt;
-        long hiddenAt;
-
-        private MessageRecord(String id, String body, Long ttl, Long hide) {
-            this.ttl = ttl;
-            this.hide = hide;
-            this.body = body;
-            this.id = id;
-
-
-            createdAt = System.currentTimeMillis();
-            if (hide != 0) hiddenAt = System.currentTimeMillis();
-            else hiddenAt = 0l;
-        }
-
-        private void update(Long ttl, Long hide) {
-            if (ttl != null) {
+            private MessageRecord(String id, String body, Long ttl, Long hide) {
                 this.ttl = ttl;
+                this.hide = hide;
+                this.body = body;
+                this.id = id;
+
+
+                createdAt = System.currentTimeMillis();
+                if (hide != 0) hiddenAt = System.currentTimeMillis();
+                else hiddenAt = 0l;
             }
 
-            if (hide != null) {
-                if (hide == 0) {
-                    this.hide = 0l;
-                    this.hiddenAt = 0l;
-                } else if (this.hide == 0) {
-                    hiddenAt = System.currentTimeMillis();
-                    this.hide = hide;
+            private void update(Long ttl, Long hide) {
+                if (ttl != null) {
+                    this.ttl = ttl;
+                }
+
+                if (hide != null) {
+                    if (hide == 0) {
+                        this.hide = 0l;
+                        this.hiddenAt = 0l;
+                    } else if (this.hide == 0) {
+                        hiddenAt = System.currentTimeMillis();
+                        this.hide = hide;
+                    }
+                }
+            }
+        }
+
+        private HashedList<String, MessageRecord> queue;
+
+        MemoryQueue() {
+            queue = new HashedList<String, MessageRecord>();
+        }
+
+        synchronized void put(String messageId, String body, Long ttl, Long hide) {
+            clean();
+            queue.put(messageId, new MessageRecord(messageId, body, ttl, hide));
+        }
+
+        synchronized Message get(String messageId) {
+            clean();
+            MessageRecord message = queue.get(messageId);
+
+            if (message == null) throw new NoSuchMessageException();
+
+            if (message.getHide() != 0) throw new MessageHiddenException();
+
+            return message;
+        }
+
+        synchronized List<Message> get(String marker, Long limit, boolean matchHidden, Long wait) {
+            clean();
+            List<Message> messages = new ArrayList<Message>();
+
+            Iterator<Entry<String, MessageRecord>> iter;
+            if (marker != null) iter = queue.newIteratorFrom(marker);
+            else iter = queue.newIterator();
+
+            if (limit == null) limit = -1l;
+
+            while ((limit != 0) && (iter.hasNext())) {
+                MessageRecord msg = iter.next().getValue();
+                if (matchHidden || (msg.getHide() != 0)) {
+                    messages.add(msg);
+                    limit--;
+                }
+            }
+
+            return messages;
+        }
+
+        synchronized Message remove(String id) {
+            clean();
+            MessageRecord m = queue.remove(id);
+
+            if (m == null) throw new NoSuchMessageException();
+
+            return m;
+        }
+
+        synchronized List<Message> remove(String marker, Long limit, boolean matchHidden, Long wait) {
+            clean();
+            List<Message> messages = new ArrayList<Message>();
+
+            Iterator<Entry<String, MessageRecord>> iter;
+            if (marker != null) iter = queue.newIteratorFrom(marker);
+            else iter = queue.newIterator();
+
+            if (limit == null) limit = -1l;
+
+            while ((limit != 0) && (iter.hasNext())) {
+                MessageRecord msg = iter.next().getValue();
+                if (matchHidden || (msg.getHide() != 0)) {
+                    messages.add(msg);
+                    limit--;
+                    iter.remove();
+                }
+            }
+
+            return messages;
+        }
+
+        synchronized List<Message> update(String marker, Long limit, boolean matchHidden, Long ttl, Long hide, Long wait) {
+            clean();
+            List<Message> messages = new ArrayList<Message>();
+
+            Iterator<Entry<String, MessageRecord>> iter;
+            if (marker != null) iter = queue.newIteratorFrom(marker);
+            else iter = queue.newIterator();
+
+            if (limit == null) limit = -1l;
+
+            while ((limit != 0) && (iter.hasNext())) {
+                MessageRecord msg = iter.next().getValue();
+                if (matchHidden || (msg.getHide() != 0)) {
+                    messages.add(msg);
+                    limit--;
+                    msg.update(ttl, hide);
+                }
+            }
+
+            return messages;
+        }
+
+        synchronized Message update(String messageId, Long ttl, Long hide) {
+            MessageRecord msg = queue.get(messageId);
+
+            if (msg == null) throw new NoSuchMessageException();
+
+            msg.update(ttl, hide);
+
+            return msg;
+        }
+
+        void clean() {
+            Iterator<Entry<String, MessageRecord>> iter = queue.newIterator();
+            long now = System.currentTimeMillis();
+
+            while (iter.hasNext()) {
+                MessageRecord msg = iter.next().getValue();
+
+                if ((msg.getHide() != 0) && (msg.getHide() * 1000 + msg.hiddenAt < now)) {
+                    msg.update(null, 0l);
+                }
+
+                if ((msg.getTtl() * 1000 + msg.createdAt < now)) {
+                    iter.remove();
                 }
             }
         }
     }
 
-	private HashedList<String, MessageRecord> queue;
-
-	MemoryQueue() {
-		queue = new HashedList<String, MessageRecord>();
-	}
-
-	synchronized void put(String messageId, String body, Long ttl, Long hide) {
-		clean();
-		queue.put(messageId, new MessageRecord(messageId, body, ttl, hide));
-    }
-
-	synchronized Message get(String messageId) {
-		clean();
-        MessageRecord message = queue.get(messageId);
-
-        if (message == null) throw new NoSuchMessageException();
-
-        if (message.getHide() != 0) throw new MessageHiddenException();
-
-        return message;
-	}
-
-	synchronized List<Message> get(String marker, Long limit, boolean matchHidden, Long wait) {
-		clean();
-        List<Message> messages = new ArrayList<Message>();
-
-        Iterator<Entry<String, MessageRecord>> iter;
-        if (marker != null) iter = queue.newIteratorFrom(marker);
-        else iter = queue.newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = iter.next().getValue();
-              if (matchHidden || (msg.getHide() != 0)) {
-                messages.add(msg);
-                limit--;
-              }
-        }
-
-		return messages;
-	}
-
-	synchronized Message remove(String id) {
-		clean();
-        MessageRecord m = queue.remove(id);
-
-		if (m == null) throw new NoSuchMessageException();
-
-    	return m;
-	}
-
-    synchronized List<Message> remove(String marker, Long limit, boolean matchHidden, Long wait) {
-		clean();
-        List<Message> messages = new ArrayList<Message>();
-
-        Iterator<Entry<String, MessageRecord>> iter;
-        if (marker != null) iter = queue.newIteratorFrom(marker);
-        else iter = queue.newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = iter.next().getValue();
-              if (matchHidden || (msg.getHide() != 0)) {
-                messages.add(msg);
-                limit--;
-                iter.remove();
-              }
-        }
-
-		return messages;
-    }
-
-    synchronized List<Message> update(String marker, Long limit, boolean matchHidden, Long ttl, Long hide, Long wait) {
-		clean();
-        List<Message> messages = new ArrayList<Message>();
-
-        Iterator<Entry<String, MessageRecord>> iter;
-        if (marker != null) iter = queue.newIteratorFrom(marker);
-        else iter = queue.newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-              MessageRecord msg = iter.next().getValue();
-              if (matchHidden || (msg.getHide() != 0)) {
-                messages.add(msg);
-                limit--;
-                msg.update(ttl, hide);
-              }
-        }
-
-		return messages;
-    }
-
-    synchronized Message update(String messageId, Long ttl, Long hide) {
-         MessageRecord msg = queue.get(messageId);
-
-         if (msg == null) throw new NoSuchMessageException();
-
-         msg.update(ttl, hide);
-
-         return msg;
-    }
-	void clean() {
-		Iterator<Entry<String, MessageRecord>> iter = queue.newIterator();
-		long now = System.currentTimeMillis();
-
-		while (iter.hasNext()) {
-			MessageRecord msg = iter.next().getValue();
-
-			if ((msg.getHide() != 0) && (msg.getHide() * 1000 + msg.hiddenAt < now)) {
-				msg.update(null, 0l);
-			}
-
-			if ((msg.getTtl() * 1000 + msg.createdAt < now)) {
-				iter.remove();
-			}
-		}
-	}
 }
-
-  }
