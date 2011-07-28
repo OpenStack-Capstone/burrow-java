@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.lang.Math;
 
 /**
  * A Hash table which maintains an order of insertion list of its contents.
@@ -23,7 +24,7 @@ public class HashedList<K, V> {
      *
      */
     public HashedList() {
-        table = (PrivEntry[]) Array.newInstance(PrivEntry.class, 967);// Object[967];
+        table = (PrivEntry[]) Array.newInstance(PrivEntry.class, 967);
         front = null;
         back = null;
     }
@@ -33,7 +34,7 @@ public class HashedList<K, V> {
      * @return
      */
     protected PrivEntry getEntry(K key) {
-        int ind = key.hashCode() % table.length;
+        int ind = Math.abs(key.hashCode()) % table.length;
         PrivEntry curr = table[ind];
 
         while (curr != null) {
@@ -127,7 +128,7 @@ public class HashedList<K, V> {
      * @param value
      */
     public synchronized void put(K key, V value) {
-        int ind = key.hashCode() % table.length;
+		int ind = Math.abs(key.hashCode()) % table.length;
         PrivEntry curr = table[ind];
 
         while (curr != null) {
@@ -255,15 +256,16 @@ public class HashedList<K, V> {
          * @return
          */
         public Entry<K, V> next() {
+			Entry<K, V> ret;
             synchronized (outer) {
                 if (nextEntry == null) throw new NoSuchElementException();
-                if (nextEntry != curr.listNext) throw new ConcurrentModificationException();
-                Entry<K, V> ret = nextEntry;
+				if (curr != null && nextEntry != curr.listNext) throw new ConcurrentModificationException();
+                ret = nextEntry;
                 curr = nextEntry;
                 removed = false;
-                nextEntry = nextEntry.listNext;
-                return ret;
+                nextEntry = nextEntry.listNext;                
             }
+			return ret;
         }
 
         /**
@@ -279,9 +281,10 @@ public class HashedList<K, V> {
         public void remove() {
             if ((curr == null) || removed) throw new IllegalStateException();
             removed = true;
-            synchronized (outer) {
+			synchronized (outer) {
                 removeEntry(curr);
             }
+			curr = null;
         }
     }
 

@@ -73,7 +73,7 @@ public class HashedListTest extends TestCase {
 
     }
 
-    public void testIsEmpty() {
+	public void testIsEmpty() {
         HashedList<String, Integer> list = new HashedList<String, Integer>();
 
         if (!list.isEmpty())
@@ -93,6 +93,28 @@ public class HashedListTest extends TestCase {
 
         if (!list.isEmpty())
             fail("List reports nonempty after removal of all elements.");
+
+    }
+
+	public void testContainsKey() {
+        HashedList<String, Integer> list = new HashedList<String, Integer>();
+
+        list.put("1", 1);
+
+        if (!list.containsKey("1"))
+            fail("containsKey reports existent key nonexistent.");
+
+        if (list.containsKey("2"))
+            fail("containsKey reports nonexistent key existent.");
+
+        list.put("2", 2);
+        list.put("3", 3);
+        list.remove("1");
+        list.remove("2");
+        list.remove("3");
+
+        if (list.containsKey("1"))
+            fail("containsKey reports nonexistent key existent following put and remove.");
 
     }
 

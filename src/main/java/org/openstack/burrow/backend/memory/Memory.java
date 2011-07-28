@@ -41,10 +41,10 @@ public class Memory implements Backend {
             ensureAccount = accountMap.get(account);
         }
 
-        if (!ensureAccount.containsKey(queue) && (queue != null)) {
-            ensureAccount.put(account, new MemoryQueue());
+        if ((!ensureAccount.containsKey(queue)) && (queue != null)) {
+            ensureAccount.put(queue, new MemoryQueue());
         }
-    }
+	}
 
     /**
      * Create a message with a given id.
@@ -60,8 +60,12 @@ public class Memory implements Backend {
      */
     public synchronized void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
         ensurePresent(account, queue);
-        accountMap.get(account).get(queue).put(messageId, body, ttl, hide);
-    }
+        MemoryAccount ma = accountMap.get(account);
+		MemoryQueue mq = ma.get(queue);
+		if (mq == null) throw new RuntimeException();
+		mq.put(messageId, body, ttl, hide);
+
+	}
 
     /**
      * Delete accounts, including the associated queues and messages.
@@ -297,7 +301,9 @@ public class Memory implements Backend {
             long hiddenAt;
 
             private MessageRecord(String id, String body, Long ttl, Long hide) {
-                this.ttl = ttl;
+                if (ttl == null) ttl = 0l;
+				if (hide == null) hide = 0l;
+				this.ttl = ttl;
                 this.hide = hide;
                 this.body = body;
                 this.id = id;
