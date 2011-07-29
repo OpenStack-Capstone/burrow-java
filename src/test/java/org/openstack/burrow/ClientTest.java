@@ -97,7 +97,8 @@ abstract class ClientTest extends TestCase {
     queue.createMessage(ids[1], body).execute();
     List<Message> messages = queue.getMessages().execute();
     boolean[] seen = scanMessages(messages, ids);
-    assertTrue(seen[0] && seen[1]);
+    assertTrue(seen[0]);
+    assertTrue(seen[1]);
   }
 
   /**

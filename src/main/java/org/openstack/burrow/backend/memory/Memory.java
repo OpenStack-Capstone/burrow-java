@@ -30,21 +30,43 @@ public class Memory implements Backend {
         accountMap = new HashedList<String, MemoryAccount>();
     }
 
-
-    private void ensurePresent(String account, String queue) {
-        MemoryAccount ensureAccount;
+    private MemoryAccount createIfAbsent(String account) {
+        MemoryAccount ma;
 
         if (!accountMap.containsKey(account)) {
-            ensureAccount = new MemoryAccount();
-            accountMap.put(account, ensureAccount);
+            ma = new MemoryAccount();
+            accountMap.put(account, ma);
         } else {
-            ensureAccount = accountMap.get(account);
+            ma = accountMap.get(account);
         }
 
-        if ((!ensureAccount.containsKey(queue)) && (queue != null)) {
-            ensureAccount.put(queue, new MemoryQueue());
-        }
+        return ma;
 	}
+
+    private MemoryQueue createIfAbsent(String account, String queue) {
+        MemoryAccount ma = createIfAbsent(account);
+        MemoryQueue mq;
+
+        if (!ma.containsKey(queue)) {
+            mq = new MemoryQueue();
+            ma.put(queue, mq);
+        } else {
+            mq = ma.get(queue);
+        }
+
+        return mq;
+	}
+
+    private void ensurePresent(String account, String queue) {
+        if (account == null || queue == null)
+            throw new IllegalArgumentException("Neither account nor queue identifiers may be null.");
+
+        if (!accountMap.containsKey(account))
+            throw new NoSuchAccountException();
+
+        if (!accountMap.get(account).containsKey(queue))
+            throw new NoSuchQueueException();
+    }
 
     /**
      * Create a message with a given id.
@@ -59,12 +81,8 @@ public class Memory implements Backend {
      *                  seconds.
      */
     public synchronized void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
-        ensurePresent(account, queue);
-        MemoryAccount ma = accountMap.get(account);
-		MemoryQueue mq = ma.get(queue);
-		if (mq == null) throw new RuntimeException();
-		mq.put(messageId, body, ttl, hide);
-
+        MemoryQueue mq = createIfAbsent(account, queue);
+        mq.put(messageId, body, ttl, hide);
 	}
 
     /**
@@ -140,9 +158,9 @@ public class Memory implements Backend {
      * @return A list of queue names deleted, or null if not detail=True.
      */
     public synchronized List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-        List<Queue> deleted = new ArrayList<Queue>();
-        ensurePresent(account, null);
+        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
 
+        List<Queue> deleted = new ArrayList<Queue>();
 
         Iterator<Entry<String, MemoryQueue>> iter;
         if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
@@ -219,7 +237,10 @@ public class Memory implements Backend {
      */
     public synchronized List<Message> getMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
         ensurePresent(account, queue);
-        return accountMap.get(account).get(queue).get(marker, limit, matchHidden, wait);
+        MemoryAccount ma = accountMap.get(account);
+        MemoryQueue mq = ma.get(queue);
+        if (mq == null) throw new NoSuchQueueException();
+        return mq.get(marker, limit, matchHidden, wait);
     }
 
     /**
@@ -233,7 +254,7 @@ public class Memory implements Backend {
      */
     public synchronized List<Queue> getQueues(String account, String marker, Long limit) {
         List<Queue> queues = new ArrayList<Queue>();
-        ensurePresent(account, null);
+        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
 
         Iterator<Entry<String, MemoryQueue>> iter;
         if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
@@ -288,171 +309,4 @@ public class Memory implements Backend {
         ensurePresent(account, queue);
         return accountMap.get(account).get(queue).update(marker, limit, matchHidden, ttl, hide, wait);
     }
-
-
-    private class MemoryAccount extends HashedList<String, MemoryQueue> {
-        //Any auth logic will be here, in overridden methods.
-    }
-
-
-    private class MemoryQueue {
-        private class MessageRecord extends Message {
-            long createdAt;
-            long hiddenAt;
-
-            private MessageRecord(String id, String body, Long ttl, Long hide) {
-                if (ttl == null) ttl = 0l;
-				if (hide == null) hide = 0l;
-				this.ttl = ttl;
-                this.hide = hide;
-                this.body = body;
-                this.id = id;
-
-
-                createdAt = System.currentTimeMillis();
-                if (hide != 0) hiddenAt = System.currentTimeMillis();
-                else hiddenAt = 0l;
-            }
-
-            private void update(Long ttl, Long hide) {
-                if (ttl != null) {
-                    this.ttl = ttl;
-                }
-
-                if (hide != null) {
-                    if (hide == 0) {
-                        this.hide = 0l;
-                        this.hiddenAt = 0l;
-                    } else if (this.hide == 0) {
-                        hiddenAt = System.currentTimeMillis();
-                        this.hide = hide;
-                    }
-                }
-            }
-        }
-
-        private HashedList<String, MessageRecord> queue;
-
-        MemoryQueue() {
-            queue = new HashedList<String, MessageRecord>();
-        }
-
-        synchronized void put(String messageId, String body, Long ttl, Long hide) {
-            clean();
-            queue.put(messageId, new MessageRecord(messageId, body, ttl, hide));
-        }
-
-        synchronized Message get(String messageId) {
-            clean();
-            MessageRecord message = queue.get(messageId);
-
-            if (message == null) throw new NoSuchMessageException();
-
-            if (message.getHide() != 0) throw new MessageHiddenException();
-
-            return message;
-        }
-
-        synchronized List<Message> get(String marker, Long limit, boolean matchHidden, Long wait) {
-            clean();
-            List<Message> messages = new ArrayList<Message>();
-
-            Iterator<Entry<String, MessageRecord>> iter;
-            if (marker != null) iter = queue.newIteratorFrom(marker);
-            else iter = queue.newIterator();
-
-            if (limit == null) limit = -1l;
-
-            while ((limit != 0) && (iter.hasNext())) {
-                MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
-                    messages.add(msg);
-                    limit--;
-                }
-            }
-
-            return messages;
-        }
-
-        synchronized Message remove(String id) {
-            clean();
-            MessageRecord m = queue.remove(id);
-
-            if (m == null) throw new NoSuchMessageException();
-
-            return m;
-        }
-
-        synchronized List<Message> remove(String marker, Long limit, boolean matchHidden, Long wait) {
-            clean();
-            List<Message> messages = new ArrayList<Message>();
-
-            Iterator<Entry<String, MessageRecord>> iter;
-            if (marker != null) iter = queue.newIteratorFrom(marker);
-            else iter = queue.newIterator();
-
-            if (limit == null) limit = -1l;
-
-            while ((limit != 0) && (iter.hasNext())) {
-                MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
-                    messages.add(msg);
-                    limit--;
-                    iter.remove();
-                }
-            }
-
-            return messages;
-        }
-
-        synchronized List<Message> update(String marker, Long limit, boolean matchHidden, Long ttl, Long hide, Long wait) {
-            clean();
-            List<Message> messages = new ArrayList<Message>();
-
-            Iterator<Entry<String, MessageRecord>> iter;
-            if (marker != null) iter = queue.newIteratorFrom(marker);
-            else iter = queue.newIterator();
-
-            if (limit == null) limit = -1l;
-
-            while ((limit != 0) && (iter.hasNext())) {
-                MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
-                    messages.add(msg);
-                    limit--;
-                    msg.update(ttl, hide);
-                }
-            }
-
-            return messages;
-        }
-
-        synchronized Message update(String messageId, Long ttl, Long hide) {
-            MessageRecord msg = queue.get(messageId);
-
-            if (msg == null) throw new NoSuchMessageException();
-
-            msg.update(ttl, hide);
-
-            return msg;
-        }
-
-        void clean() {
-            Iterator<Entry<String, MessageRecord>> iter = queue.newIterator();
-            long now = System.currentTimeMillis();
-
-            while (iter.hasNext()) {
-                MessageRecord msg = iter.next().getValue();
-
-                if ((msg.getHide() != 0) && (msg.getHide() * 1000 + msg.hiddenAt < now)) {
-                    msg.update(null, 0l);
-                }
-
-                if ((msg.getTtl() * 1000 + msg.createdAt < now)) {
-                    iter.remove();
-                }
-            }
-        }
-    }
-
 }
