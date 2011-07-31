@@ -42,6 +42,7 @@ public class AsyncHttp implements AsyncBackend{
       this.client = new DefaultHttpAsyncClient();
     } catch (IOReactorException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
       }
   }
 
@@ -56,15 +57,26 @@ public class AsyncHttp implements AsyncBackend{
   }
 
   @Override
+  public List<Account> getAccounts(String marker, Long limit) {
+    return null;
+  }
+
+  @Override
+  public List<Queue> getQueues(String account, String marker, Long limit) {
+    return null;
+  }
+
+  @Override
   public Message execute(CreateMessage request) {
     try {
       return executeAsync(request).get();
       } catch (InterruptedException e) {
         e.printStackTrace();
+        throw new RuntimeException("Error executing HTTP request: " + e);
       } catch (ExecutionException e) {
         e.printStackTrace();
+        throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -73,10 +85,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -85,10 +98,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -97,10 +111,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -109,10 +124,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -121,10 +137,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
   }
 
   @Override
@@ -133,20 +150,11 @@ public class AsyncHttp implements AsyncBackend{
       return executeAsync(request).get();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     } catch (ExecutionException e) {
       e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
     }
-    return null;
-  }
-
-  @Override
-  public List<Account> getAccounts(String marker, Long limit) {
-    return null;
-  }
-
-  @Override
-  public List<Queue> getQueues(String account, String marker, Long limit) {
-    return null;
   }
 
   @Override
