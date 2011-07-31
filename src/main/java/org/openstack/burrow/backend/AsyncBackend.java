@@ -21,6 +21,7 @@ import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.*;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 public interface AsyncBackend extends Backend {
   /**
@@ -31,7 +32,7 @@ public interface AsyncBackend extends Backend {
    *         queue about the created message, or null if the queue did not
    *         return any information.
    */
-  public Message executeAsync(CreateMessage request);
+  public Future<Message> executeAsync(CreateMessage request);
 
   /**
    * Asynchronously executes a DeleteMessage request.
@@ -41,7 +42,7 @@ public interface AsyncBackend extends Backend {
    *         queue about the deleted message, or null if the queue did not
    *         return any information.
    */
-  public Message executeAsync(DeleteMessage request);
+  public Future<Message> executeAsync(DeleteMessage request);
 
   /**
    * Asynchronously executes a DeleteMessages request.
@@ -51,7 +52,7 @@ public interface AsyncBackend extends Backend {
    *         by the queue about the deleted messages, or null if the queue did
    *         not return any information.
    */
-  public List<Message> executeAsync(DeleteMessages request);
+  public Future<List<Message>> executeAsync(DeleteMessages request);
 
   /**
    * Asynchronously executes a GetMessage request.
@@ -61,7 +62,7 @@ public interface AsyncBackend extends Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message executeAsync(GetMessage request);
+  public Future<Message> executeAsync(GetMessage request);
 
   /**
    * Asynchronously executes a GetMessages request.
@@ -71,7 +72,7 @@ public interface AsyncBackend extends Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> executeAsync(GetMessages request);
+  public Future<List<Message>> executeAsync(GetMessages request);
 
   /**
    * Asynchronously executes an UpdateMessage request.
@@ -81,7 +82,7 @@ public interface AsyncBackend extends Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message executeAsync(UpdateMessage request);
+  public Future<Message> executeAsync(UpdateMessage request);
 
   /**
    * Asynchronously executes an UpdateMessages request.
@@ -91,7 +92,7 @@ public interface AsyncBackend extends Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> executeAsync(UpdateMessages request);
+  public Future<List<Message>> executeAsync(UpdateMessages request);
 
 }
 
