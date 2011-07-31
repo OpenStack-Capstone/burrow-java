@@ -23,43 +23,11 @@ import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.*;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 public class AsyncHttp implements AsyncBackend{
 
-    @Override
-    public Message executeAsync(CreateMessage request) {
-        return null;
-    }
 
-    @Override
-    public Message executeAsync(DeleteMessage request) {
-        return null;
-    }
-
-    @Override
-    public List<Message> executeAsync(DeleteMessages request) {
-        return null;
-    }
-
-    @Override
-    public Message executeAsync(GetMessage request) {
-        return null;
-    }
-
-    @Override
-    public List<Message> executeAsync(GetMessages request) {
-        return null;
-    }
-
-    @Override
-    public Message executeAsync(UpdateMessage request) {
-        return null;
-    }
-
-    @Override
-    public List<Message> executeAsync(UpdateMessages request) {
-        return null;
-    }
 
     @Override
     public List<Account> deleteAccounts(String marker, Long limit, String detail) {
@@ -113,6 +81,41 @@ public class AsyncHttp implements AsyncBackend{
 
     @Override
     public List<Queue> getQueues(String account, String marker, Long limit) {
+        return null;
+    }
+
+    @Override
+    public Future<Message> executeAsync(CreateMessage request) {
+        return null;
+    }
+
+    @Override
+    public Future<Message> executeAsync(DeleteMessage request) {
+        return null;
+    }
+
+    @Override
+    public Future<List<Message>> executeAsync(DeleteMessages request) {
+        return null;
+    }
+
+    @Override
+    public Future<Message> executeAsync(GetMessage request) {
+        return null;
+    }
+
+    @Override
+    public Future<List<Message>> executeAsync(GetMessages request) {
+        return null;
+    }
+
+    @Override
+    public Future<Message> executeAsync(UpdateMessage request) {
+        return null;
+    }
+
+    @Override
+    public Future<List<Message>> executeAsync(UpdateMessages request) {
         return null;
     }
 }
