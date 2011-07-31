@@ -50,11 +50,13 @@ abstract class ClientTest extends TestCase {
   }
 
   protected Account account;
+  protected Backend backend;
   protected Client client;
   protected Queue queue;
 
   protected ClientTest(String testName, Backend backend) {
     super(testName);
+    this.backend = backend;
     client = new Client(backend);
     account = client.Account("testAccount");
     queue = account.Queue("testQueue");
@@ -66,10 +68,10 @@ abstract class ClientTest extends TestCase {
   public void testCreateDeleteMessage() {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    queue.createMessage(id, body).execute();
-    queue.deleteMessage(id).execute();
+    backend.execute(queue.createMessage(id, body));
+    backend.execute(queue.deleteMessage(id));
     try {
-      queue.deleteMessage(id).execute();
+      backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed");
     } catch (NoSuchMessageException e) {
       // This is expected.
@@ -82,8 +84,8 @@ abstract class ClientTest extends TestCase {
   public void testCreateGetMessage() {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
-    queue.createMessage(id, body).execute();
-    Message message = queue.getMessage(id).execute();
+    backend.execute(queue.createMessage(id, body));
+    Message message = backend.execute(queue.getMessage(id));
     assertEquals(message.getBody(), body);
   }
 
@@ -93,9 +95,9 @@ abstract class ClientTest extends TestCase {
   public void testCreateGetMessages() {
     String[] ids = {"testCreateGetMessages1", "testCreateGetMessages2"};
     String body = "testCreateGetMessagesBody";
-    queue.createMessage(ids[0], body).execute();
-    queue.createMessage(ids[1], body).execute();
-    List<Message> messages = queue.getMessages().execute();
+    backend.execute(queue.createMessage(ids[0], body));
+    backend.execute(queue.createMessage(ids[1], body));
+    List<Message> messages = backend.execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
     assertTrue(seen[0]);
     assertTrue(seen[1]);
@@ -109,16 +111,16 @@ abstract class ClientTest extends TestCase {
     String[] ids = {"testDeleteMessages1", "testDeleteMessages2"};
     String body = "testDeleteMessagesBody";
     boolean[] seen;
-    queue.createMessage(ids[0], body).setHide(9999).execute();
-    queue.createMessage(ids[1], body).setHide(0).execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    backend.execute(queue.createMessage(ids[0], body).withHide(9999));
+    backend.execute(queue.createMessage(ids[1], body).withHide(0));
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     assertTrue(seen[1]);
-    queue.deleteMessages().matchHidden(false).execute();
+    backend.execute(queue.deleteMessages().withMatchHidden(false));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    queue.createMessage("404workaround", "404workaround").execute();
-    seen = scanMessages(queue.getMessages().matchHidden(true).execute(), ids);
+    backend.execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue(seen[0]);
     assertFalse(seen[1]);
   }
@@ -130,16 +132,16 @@ abstract class ClientTest extends TestCase {
     String[] ids = {"testMultipleUpdateHideMessage1", "testMultipleUpdateHideMessage2"};
     String body = "testMultipleUpdateHideMessageBody";
     boolean[] seen;
-    queue.createMessage(ids[0], body).setHide(9999).execute();
-    queue.createMessage(ids[1], body).setHide(9999).execute();
+    backend.execute(queue.createMessage(ids[0], body).withHide(9999));
+    backend.execute(queue.createMessage(ids[1], body).withHide(9999));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    queue.createMessage("404workaround", "404workaround").execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    backend.execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
     assertFalse(seen[1]);
-    queue.updateMessages().setHide(0).matchHidden(true).execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    backend.execute(queue.updateMessages().withHide(0).withMatchHidden(true));
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
     assertTrue(seen[1]);
   }
@@ -151,14 +153,14 @@ abstract class ClientTest extends TestCase {
     String ids[] = {"testUpdateHideMessage"};
     String body = "testUpdateHideMessageBody";
     boolean[] seen;
-    queue.createMessage(ids[0], body).setHide(99999).execute();
+    backend.execute(queue.createMessage(ids[0], body).withHide(99999));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    queue.createMessage("404workaround", "404workaround").execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    backend.execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertFalse(seen[0]);
-    queue.updateMessage(ids[0]).setHide(0).execute();
-    seen = scanMessages(queue.getMessages().execute(), ids);
+    backend.execute(queue.updateMessage(ids[0]).withHide(0));
+    seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
   }
 }

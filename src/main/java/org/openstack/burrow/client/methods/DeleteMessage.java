@@ -16,23 +16,38 @@
 
 package org.openstack.burrow.client.methods;
 
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.Queue;
 
 public class DeleteMessage {
-  private String account;
-  private Backend backend;
-  private String messageId;
-  private String queue;
+  private String id;
+  private Boolean matchHidden;
+  private Queue queue;
 
-  public DeleteMessage(Backend backend, String account, String queue, String messageId) {
-    this.backend = backend;
-    this.account = account;
+  public DeleteMessage(Queue queue, String id) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
+    this.matchHidden = null;
   }
 
-  public void execute() throws NoSuchMessageException {
-    backend.deleteMessage(account, queue, messageId);
+  private DeleteMessage(Queue queue, String id, Boolean matchHidden) {
+    this.queue = queue;
+    this.id = id;
+    this.matchHidden = matchHidden;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public Boolean getMatchHidden() {
+    return matchHidden;
+  }
+
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public DeleteMessage withMatchHidden(Boolean matchHidden) {
+    return new DeleteMessage(queue, id, matchHidden);
   }
 }

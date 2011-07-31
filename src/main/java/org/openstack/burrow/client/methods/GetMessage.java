@@ -16,37 +16,60 @@
 
 package org.openstack.burrow.client.methods;
 
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public class GetMessage {
-  private String account;
-  private Backend backend;
   private String detail;
-  private String messageId;
-  private String queue;
+  private String id;
+  private Boolean matchHidden;
+  private Queue queue;
+  private Long wait;
 
-  public GetMessage(Backend backend, String account, String queue, String messageId) {
-    this.backend = backend;
-    this.account = account;
+  public GetMessage(Queue queue, String id) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
+    this.matchHidden = null;
     this.detail = null;
+    this.wait = null;
   }
 
-  private GetMessage(Backend backend, String account, String queue, String messageId, String detail) {
-    this.backend = backend;
-    this.account = account;
+  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
+    this.matchHidden = matchHidden;
     this.detail = detail;
+    this.wait = wait;
   }
 
-  public Message execute() {
-    return backend.getMessage(account, queue, messageId, detail);
+  public String getDetail() {
+    return detail;
   }
 
-  public GetMessage requestDetail(String detail) {
-    return new GetMessage(backend, account, queue, messageId, detail);
+  public String getId() {
+    return id;
+  }
+
+  public Boolean getMatchHidden() {
+    return matchHidden;
+  }
+
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public Long getWait() {
+    return wait;
+  }
+
+  public GetMessage withDetail(String detail) {
+    return new GetMessage(queue, id, matchHidden, detail, wait);
+  }
+
+  public GetMessage withMatchHidden(Boolean matchHidden) {
+    return new GetMessage(queue, id, matchHidden, detail, wait);
+  }
+
+  public GetMessage withWait(Long wait) {
+    return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 }

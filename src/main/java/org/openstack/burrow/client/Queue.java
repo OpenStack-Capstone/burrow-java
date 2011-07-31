@@ -16,7 +16,6 @@
 
 package org.openstack.burrow.client;
 
-import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
@@ -26,41 +25,47 @@ import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Queue {
-  private String account;
-  private Backend backend;
-  private String queue;
+  private Account account;
+  private String id;
 
-  public Queue(Backend backend, String account, String queue) {
-    this.backend = backend;
+  public Queue(Account account, String queue) {
     this.account = account;
-    this.queue = queue;
+    this.id = queue;
   }
 
   public CreateMessage createMessage(String messageId, String body) {
-    return new CreateMessage(backend, account, queue, messageId, body);
+    return new CreateMessage(this, messageId, body);
   }
 
   public DeleteMessage deleteMessage(String messageId) {
-    return new DeleteMessage(backend, account, queue, messageId);
+    return new DeleteMessage(this, messageId);
   }
 
   public DeleteMessages deleteMessages() {
-    return new DeleteMessages(backend, account, queue);
+    return new DeleteMessages(this);
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public GetMessage getMessage(String messageId) {
-    return new GetMessage(backend, account, queue, messageId);
+    return new GetMessage(this, messageId);
   }
 
   public GetMessages getMessages() {
-    return new GetMessages(backend, account, queue);
+    return new GetMessages(this);
   }
 
   public UpdateMessage updateMessage(String messageId) {
-    return new UpdateMessage(backend, account, queue, messageId);
+    return new UpdateMessage(this, messageId);
   }
 
   public UpdateMessages updateMessages() {
-    return new UpdateMessages(backend, account, queue);
+    return new UpdateMessages(this);
   }
 }

@@ -16,47 +16,56 @@
 
 package org.openstack.burrow.client.methods;
 
-import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.client.Queue;
 
 public class CreateMessage {
-  private String account;
-  private Backend backend;
   private String body;
   private Long hide;
-  private String messageId;
-  private String queue;
+  private String id;
+  private Queue queue;
   private Long ttl;
 
-  public CreateMessage(Backend backend, String account, String queue, String messageId, String body) {
-    this.backend = backend;
-    this.account = account;
+  public CreateMessage(Queue queue, String id, String body) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
     this.body = body;
     this.ttl = null;
     this.hide = null;
   }
 
-  private CreateMessage(Backend backend, String account, String queue, String messageId,
-      String body, Long ttl, Long hide) {
-    this.backend = backend;
-    this.account = account;
+  private CreateMessage(Queue queue, String id, String body, Long ttl, Long hide) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
     this.body = body;
     this.ttl = ttl;
     this.hide = hide;
   }
 
-  public void execute() {
-    this.backend.createMessage(account, queue, messageId, body, ttl, hide);
+  public String getBody() {
+    return body;
   }
 
-  public CreateMessage setHide(long hide) {
-    return new CreateMessage(backend, account, queue, messageId, body, ttl, hide);
+  public Long getHide() {
+    return hide;
   }
 
-  public CreateMessage setTtl(long ttl) {
-    return new CreateMessage(backend, account, queue, messageId, body, ttl, hide);
+  public String getId() {
+    return id;
+  }
+
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public Long getTtl() {
+    return ttl;
+  }
+
+  public CreateMessage withHide(long hide) {
+    return new CreateMessage(queue, id, body, ttl, hide);
+  }
+
+  public CreateMessage withTtl(long ttl) {
+    return new CreateMessage(queue, id, body, ttl, hide);
   }
 }

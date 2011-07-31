@@ -16,52 +16,81 @@
 
 package org.openstack.burrow.client.methods;
 
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 
 public class UpdateMessage {
-  private String account;
-  private Backend backend;
   private String detail;
   private Long hide;
-  private String messageId;
-  private String queue;
+  private String id;
+  private Boolean matchHidden;
+  private Queue queue;
   private Long ttl;
+  private Long wait;
 
-  public UpdateMessage(Backend backend, String account, String queue, String messageId) {
-    this.backend = backend;
-    this.account = account;
+  public UpdateMessage(Queue queue, String messageId) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = messageId;
     this.ttl = null;
     this.hide = null;
     this.detail = null;
   }
 
-  private UpdateMessage(Backend backend, String account, String queue, String messageId, Long ttl,
-      Long hide, String detail) {
-    this.backend = backend;
-    this.account = account;
+  private UpdateMessage(Queue queue, String id, Boolean matchHidden, Long ttl, Long hide,
+      String detail, Long wait) {
     this.queue = queue;
-    this.messageId = messageId;
+    this.id = id;
+    this.matchHidden = matchHidden;
     this.ttl = ttl;
     this.hide = hide;
     this.detail = detail;
+    this.wait = wait;
   }
 
-  public Message execute() {
-    return backend.updateMessage(account, queue, messageId, ttl, hide, detail);
+  public String getDetail() {
+    return detail;
   }
 
-  public UpdateMessage requestDetail(String detail) {
-    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  public Long getHide() {
+    return hide;
   }
 
-  public UpdateMessage setHide(long hide) {
-    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  public String getId() {
+    return id;
   }
 
-  public UpdateMessage setTtl(long ttl) {
-    return new UpdateMessage(backend, account, queue, messageId, ttl, hide, detail);
+  public Boolean getMatchHidden() {
+    return matchHidden;
+  }
+
+  public Queue getQueue() {
+    return queue;
+  }
+
+  public Long getTtl() {
+    return ttl;
+  }
+
+  public Long getWait() {
+    return wait;
+  }
+
+  public UpdateMessage withDetail(String detail) {
+    return new UpdateMessage(queue, id, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessage withHide(long hide) {
+    return new UpdateMessage(queue, id, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessage withMatchHidden(boolean matchHidden) {
+    return new UpdateMessage(queue, id, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessage withTtl(long ttl) {
+    return new UpdateMessage(queue, id, matchHidden, ttl, hide, detail, wait);
+  }
+
+  public UpdateMessage withWait(long wait) {
+    return new UpdateMessage(queue, id, matchHidden, ttl, hide, detail, wait);
   }
 }
