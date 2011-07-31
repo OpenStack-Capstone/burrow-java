@@ -81,7 +81,7 @@ class MemoryQueue {
 
             while ((limit != 0) && (iter.hasNext())) {
                 MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
+                if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
                     limit--;
                 }
@@ -112,7 +112,7 @@ class MemoryQueue {
 
             while ((limit != 0) && (iter.hasNext())) {
                 MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
+                if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
                     limit--;
                     iter.remove();
@@ -135,7 +135,7 @@ class MemoryQueue {
 
             while ((limit != 0) && (iter.hasNext())) {
                 MessageRecord msg = iter.next().getValue();
-                if (matchHidden || (msg.getHide() != 0)) {
+                if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
                     limit--;
                     msg.update(ttl, hide);
