@@ -196,38 +196,139 @@ public class AsyncHttp implements AsyncBackend{
       }
 
     });
+    return futureMessage;
+  }
 
+  @Override
+  public Future<Message> executeAsync(GetMessage request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    final FutureMessage futureMessage = new FutureMessage();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureMessage.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessage.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
     return futureMessage;
   }
 
   @Override
   public Future<Message> executeAsync(DeleteMessage request) {
-    return null;
+    HttpDelete httpRequest = getHttpRequest(request);
+    final FutureMessage futureMessage = new FutureMessage();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureMessage.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessage.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureMessage;
   }
 
   @Override
   public Future<List<Message>> executeAsync(DeleteMessages request) {
-    return null;
-  }
+    HttpDelete httpRequest = getHttpRequest(request);
+    final FutureMessageList futureMessageList = new FutureMessageList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
 
-  @Override
-  public Future<Message> executeAsync(GetMessage request) {
-    return null;
+      public void completed(final HttpResponse response) {
+        futureMessageList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessageList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureMessageList;
   }
 
   @Override
   public Future<List<Message>> executeAsync(GetMessages request) {
-    return null;
+    HttpGet httpRequest = getHttpRequest(request);
+    final FutureMessageList futureMessageList = new FutureMessageList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureMessageList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessageList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureMessageList;
   }
 
   @Override
   public Future<Message> executeAsync(UpdateMessage request) {
-    return null;
+    HttpPost httpRequest = getHttpRequest(request);
+    final FutureMessage futureMessage = new FutureMessage();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureMessage.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessage.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureMessage;
   }
 
   @Override
   public Future<List<Message>> executeAsync(UpdateMessages request) {
-    return null;
+    HttpPost httpRequest = getHttpRequest(request);
+    final FutureMessageList futureMessageList = new FutureMessageList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureMessageList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureMessageList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureMessageList;
   }
 
   /**
@@ -236,7 +337,7 @@ public class AsyncHttp implements AsyncBackend{
    * @param request
    * @return
    */
-  HttpPut getHttpRequest(CreateMessage request) {
+  private HttpPut getHttpRequest(CreateMessage request) {
     URI uri = getUri(request);
     HttpPut httpRequest = new HttpPut(uri);
     try {
@@ -520,7 +621,7 @@ public class AsyncHttp implements AsyncBackend{
     }
   }
 
-  List<Message> handleMultipleMessageHttpResponse(HttpResponse response) {
+  static List<Message> handleMultipleMessageHttpResponse(HttpResponse response) {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -595,7 +696,7 @@ public class AsyncHttp implements AsyncBackend{
     }
   }
 
-  Message handleSingleMessageHttpResponse(HttpResponse response) {
+  static Message handleSingleMessageHttpResponse(HttpResponse response) {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     switch (status.getStatusCode()) {
