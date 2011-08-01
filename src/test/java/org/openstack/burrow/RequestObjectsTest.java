@@ -37,7 +37,7 @@ public class RequestObjectsTest {
     @Test
     public void testCreateMessage() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        CreateMessage cm = mock(CreateMessage.class);
        stub(cm.getId()).toReturn("msgId");
@@ -60,7 +60,7 @@ public class RequestObjectsTest {
     @Test
     public void testDeleteMessage() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        DeleteMessage dm = mock(DeleteMessage.class);
        stub(dm.getId()).toReturn("msgId");
@@ -77,7 +77,7 @@ public class RequestObjectsTest {
     @Test
     public void testDeleteMessages() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        DeleteMessages dms = mock(DeleteMessages.class);
        stub(dms.getDetail()).toReturn("detail");
@@ -96,7 +96,7 @@ public class RequestObjectsTest {
     @Test
     public void testGetMessage() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        GetMessage gm = mock(GetMessage.class);
        stub(gm.getId()).toReturn("msgId");
@@ -119,7 +119,7 @@ public class RequestObjectsTest {
     @Test
     public void testGetMessages() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        GetMessages gms = mock(GetMessages.class);
        stub(gms.getMarker()).toReturn("marker");
@@ -143,7 +143,7 @@ public class RequestObjectsTest {
    @Test
     public void testUpdateMessage() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        UpdateMessage um = mock(UpdateMessage.class);
        stub(um.getTtl()).toReturn(100L);
@@ -168,7 +168,7 @@ public class RequestObjectsTest {
    @Test
     public void testUpdateMessages() {
        Backend backend = new Http("localhost", 8080);
-       Account account = new Account(backend, "acct");
+       Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        UpdateMessages ums = mock(UpdateMessages.class);
        stub(ums.getTtl()).toReturn(100L);
