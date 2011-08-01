@@ -17,7 +17,9 @@
 package org.openstack.burrow.backend;
 
 
+import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.*;
 
 import java.util.List;
@@ -93,6 +95,15 @@ public interface AsyncBackend extends Backend {
    *         return any information.
    */
   public Future<List<Message>> executeAsync(UpdateMessages request);
+
+  public Future<List<Account>> executeAsync(DeleteAccounts request);
+
+  public Future<List<Account>> executeAsync(GetAccounts request);
+
+  public Future<List<Queue>> executeAsync(GetQueues request);
+
+  public Future<List<Queue>> executeAsync(DeleteQueues request);
+
 
 }
 

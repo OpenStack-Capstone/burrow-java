@@ -16,6 +16,7 @@
 package org.openstack.burrow.backend.http;
 
 import org.apache.http.HttpResponse;
+import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class FutureQueueList implements Future<List<Queue>> {
     private HttpResponse httpResponse;
     private Exception exception;
     private List<Queue> queueList;
+    private Account account;
 
     FutureQueueList () {
     }
@@ -73,8 +75,8 @@ public class FutureQueueList implements Future<List<Queue>> {
             } else if (this.httpResponse != null) {
                 // We have been woken because there is a httpResponse and it has not been processed yet.
                 try {
-                    //TODO: Write when Account Http handle is written
-                    // this.accountList = (this.httpResponse);
+                    //TODO: figure out how to set the class variable account
+                    //this.queueList = handleMultipleQueueHttpResponse(this.account, this.httpResponse);
                     this.notifyAll();
                     return this.queueList;
                     //TODO: Catch and Throw appropriate exceptions

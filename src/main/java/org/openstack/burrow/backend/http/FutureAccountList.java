@@ -24,6 +24,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.openstack.burrow.backend.http.AsyncHttp.handleMultipleAccountHttpResponse;
+
 public class FutureAccountList implements Future<List<Account>> {
     private HttpResponse httpResponse;
     private Exception exception;
@@ -73,8 +75,7 @@ public class FutureAccountList implements Future<List<Account>> {
             } else if (this.httpResponse != null) {
                 // We have been woken because there is a httpResponse and it has not been processed yet.
                 try {
-                    //TODO: Write when Account Http handle is written
-                    // this.accountList = (this.httpResponse);
+                    this.accountList = handleMultipleAccountHttpResponse(this.httpResponse);
                     this.notifyAll();
                     return this.accountList;
                     //TODO: Catch and Throw appropriate exceptions
