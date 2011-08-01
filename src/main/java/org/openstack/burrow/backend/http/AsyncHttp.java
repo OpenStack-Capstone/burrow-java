@@ -67,26 +67,6 @@ public class AsyncHttp implements AsyncBackend{
   }
 
   @Override
-  public List<Account> deleteAccounts(String marker, Long limit, String detail) {
-    return null;
-  }
-
-  @Override
-  public List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-    return null;
-  }
-
-  @Override
-  public List<Account> getAccounts(String marker, Long limit) {
-    return null;
-  }
-
-  @Override
-  public List<Queue> getQueues(String account, String marker, Long limit) {
-    return null;
-  }
-
-  @Override
   public Message execute(CreateMessage request) {
     try {
       return executeAsync(request).get();
@@ -777,6 +757,30 @@ public class AsyncHttp implements AsyncBackend{
         }
         throw new RuntimeException("Unhandled return code");
     }
+  }
+
+  @Override
+  public List<Account> execute(DeleteAccounts request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Queue> execute(DeleteQueues request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Account> execute(GetAccounts request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Queue> execute(GetQueues request) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
 
