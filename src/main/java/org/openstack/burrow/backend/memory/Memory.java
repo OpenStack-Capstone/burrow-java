@@ -25,6 +25,7 @@ import org.openstack.burrow.client.*;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -93,7 +94,8 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
           while ((limit != 0) && (iter.hasNext())) {
               Entry<String, MemoryAccount> e = iter.next();
-              deleted.add(new Account(this, e.getKey()));
+              // FIXME REMOVED CONSTRUCTOR COMMENTED TO COMPILE
+              // deleted.add(new Account(this, e.getKey()));
               iter.remove();
               limit--;
           }
@@ -184,7 +186,8 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
           while ((limit != 0) && (iter.hasNext())) {
               Entry<String, MemoryAccount> e = iter.next();
-              accts.add(new Account(this, e.getKey()));
+              // FIXME CONSTRUCTOR WAS REMOVED, COMMENTED TO MAKE IT COMPILE
+              // accts.add(new Account(this, e.getKey()));
               limit--;
           }
 
@@ -510,6 +513,13 @@ private class MemoryQueue {
 
   @Override
   public List<Queue> execute(GetQueues request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public List<Queue> execute(DeleteQueues request) {
     // TODO Auto-generated method stub
     return null;
   }

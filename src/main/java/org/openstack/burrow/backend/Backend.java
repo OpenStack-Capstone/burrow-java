@@ -24,6 +24,7 @@ import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -42,19 +43,6 @@ public interface Backend {
    *         detail.
    */
   public List<Account> deleteAccounts(String marker, Long limit, String detail);
-
-  /**
-   * Delete queues, including associated messages.
-   * 
-   * @param account Delete queues in this account.
-   * @param marker Optional. Only queues with a name after this marker will be
-   *          deleted.
-   * @param limit Optional. At most this many queues will be deleted.
-   * @param detail Optional. If true, return the names of the queues deleted.
-   * @return A list of Queue instances deleted, with the requested level of
-   *         detail.
-   */
-  public List<Queue> deleteQueues(String account, String marker, Long limit, String detail);
 
   /**
    * Execute a CreateMessage request.
@@ -85,6 +73,15 @@ public interface Backend {
    *         not return any information.
    */
   public List<Message> execute(DeleteMessages request);
+
+  /**
+   * Execute a DeleteQueues request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Queue instances populated with any information returned
+   *         about the queues, or null if no information was returned.
+   */
+  public List<Queue> execute(DeleteQueues request);
 
   /**
    * Execute a GetMessage request.

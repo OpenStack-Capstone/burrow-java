@@ -144,6 +144,69 @@ abstract class ClientTest extends TestCase {
   }
 
   /**
+   * Implicitly create two queues, then delete all queues on the account.
+   */
+  public void testDeleteQueues() {
+    String messageId = "testDeleteQueues";
+    String queueIds[] = {"testDeleteQueues1", "testDeleteQueues2"};
+    Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
+    String body = "testDeleteQueuesMessageBody";
+    boolean[] seenQueues;
+    // Create the messages, implicitly creating the queues.
+    backend.execute(queues[0].createMessage(messageId, body));
+    backend.execute(queues[1].createMessage(messageId, body));
+    // Verify that the queues now exist.
+    seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
+    assertTrue(seenQueues[0]);
+    assertTrue(seenQueues[1]);
+    // Delete all queues on the account.
+    backend.execute(account.deleteQueues());
+    // Verify that no queues exist on the account.
+    try {
+      backend.execute(account.getQueues());
+      fail("getQueues should have raised NoSuchAccountException when no queues exist");
+    } catch (NoSuchAccountException e) {
+      // This is expected.
+    }
+  }
+
+  /**
+   * Implicitly create two queues then delete them one at a time.
+   */
+  public void testDeleteQueuesWithDetail() {
+    String messageId = "testDeleteQueuesWithDetail";
+    String messageBody = "testDeleteQueuesWithDetailMessageBody";
+    String queueIds[] = {"testDeleteQueuesWithDetailQueue1", "testDeleteQueuesWithDetailQueue2"};
+    Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
+    boolean[] seenQueues;
+    // Blindly delete all queues to clear the account.
+    try {
+      backend.execute(account.deleteQueues());
+    } catch (NoSuchAccountException e) {
+      // This is okay.
+    }
+    // Create the messages, implicitly creating the queues.
+    backend.execute(queues[0].createMessage(messageId, messageBody));
+    backend.execute(queues[1].createMessage(messageId, messageBody));
+    // Verify that the queues now exist.
+    seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
+    assertTrue(seenQueues[0]);
+    assertTrue(seenQueues[1]);
+    // Delete one queue with detail=id and scan for it being one of the queues
+    // we just created.
+    seenQueues =
+        scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
+    assertTrue(seenQueues[0] || seenQueues[1]);
+    assertFalse(seenQueues[0] && seenQueues[1]);
+    // Delete one more queue with detail=all and scan for it being the other one
+    // we just created.
+    seenQueues =
+        scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
+    assertTrue(seenQueues[0] || seenQueues[1]);
+    assertFalse(seenQueues[0] && seenQueues[1]);
+  }
+
+  /**
    * Create a message, verify the queue exists, then delete all messages in the
    * queue and verify it goes away.
    */

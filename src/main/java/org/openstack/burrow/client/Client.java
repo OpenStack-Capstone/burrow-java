@@ -28,7 +28,7 @@ public class Client {
   }
 
   public Account Account(String accountName) {
-    return new Account(backend, accountName);
+    return new Account(accountName);
   }
 
   public DeleteAccounts deleteAccounts() {

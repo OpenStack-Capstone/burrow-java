@@ -52,6 +52,7 @@ import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -83,23 +84,6 @@ public class Http implements Backend {
   @Override
   public List<Account> deleteAccounts(String marker, Long limit, String detail) {
     return null;
-  }
-
-  /**
-   * Delete queues, including associated messages.
-   * 
-   * @param account Delete queues in this account.
-   * @param marker Optional. Only queues with a name after this marker will be
-   *          deleted.
-   * @param limit Optional. At most this many queues will be deleted.
-   * @param detail Optional. If true, return the names of the queues deleted.
-   * @return A list of Queue instances deleted, with the requested level of
-   *         detail.
-   */
-  @Override
-  public List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
   }
 
   @Override
@@ -146,6 +130,26 @@ public class Http implements Backend {
     try {
       HttpResponse response = client.execute(httpRequest);
       return handleMultipleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Queue> execute(DeleteQueues request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    Account account = request.getAccount();
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleQueueHttpResponse(account, response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
       // TODO: Throw something that isn't a RuntimeException
@@ -300,6 +304,12 @@ public class Http implements Backend {
     return httpRequest;
   }
 
+  private HttpDelete getHttpRequest(DeleteQueues request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
+    return httpRequest;
+  }
+
   private HttpGet getHttpRequest(GetMessage request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
@@ -375,6 +385,24 @@ public class Http implements Backend {
         params.add(new BasicNameValuePair("detail", detail));
       if (wait != null)
         params.add(new BasicNameValuePair("wait", wait.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(DeleteQueues request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
       return params;
     } else {
       return null;
@@ -520,6 +548,15 @@ public class Http implements Backend {
     Account account = queue.getAccount();
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(DeleteQueues request) {
+    Account account = request.getAccount();
+    try {
+      return getUri(account.getId(), null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
     }
