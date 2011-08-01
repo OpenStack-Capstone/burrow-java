@@ -3,18 +3,19 @@ package org.openstack.burrow.backend.http;
 import org.apache.http.HttpResponse;
 import org.openstack.burrow.client.Message;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.openstack.burrow.backend.http.AsyncHttp.handleSingleMessageHttpResponse;
+import static org.openstack.burrow.backend.http.AsyncHttp.handleMultipleMessageHttpResponse;
 
-public class FutureMessage implements Future<Message> {
+public class FutureMessageList implements Future<List<Message>> {
     private static HttpResponse httpResponse;
     private static Exception exception;
 
-    FutureMessage () {
+    FutureMessageList () {
     }
 
     @Override
@@ -33,15 +34,15 @@ public class FutureMessage implements Future<Message> {
     }
 
     @Override
-    public synchronized Message get() throws InterruptedException, ExecutionException {
+    public synchronized List<Message> get() throws InterruptedException, ExecutionException {
         while (httpResponse == null){
             this.wait();
         }
-        return handleSingleMessageHttpResponse(httpResponse);
+        return handleMultipleMessageHttpResponse(httpResponse);
     }
 
     @Override
-    public synchronized Message get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public synchronized List<Message> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return null;
     }
 
@@ -57,3 +58,4 @@ public class FutureMessage implements Future<Message> {
         this.notifyAll();
     }
 }
+

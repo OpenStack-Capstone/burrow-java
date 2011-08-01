@@ -1,20 +1,19 @@
 package org.openstack.burrow.backend.http;
 
 import org.apache.http.HttpResponse;
-import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Account;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.openstack.burrow.backend.http.AsyncHttp.handleSingleMessageHttpResponse;
-
-public class FutureMessage implements Future<Message> {
+public class FutureAccountList implements Future<List<Account>> {
     private static HttpResponse httpResponse;
     private static Exception exception;
 
-    FutureMessage () {
+    FutureAccountList () {
     }
 
     @Override
@@ -33,15 +32,15 @@ public class FutureMessage implements Future<Message> {
     }
 
     @Override
-    public synchronized Message get() throws InterruptedException, ExecutionException {
+    public synchronized List<Account> get() throws InterruptedException, ExecutionException {
         while (httpResponse == null){
             this.wait();
         }
-        return handleSingleMessageHttpResponse(httpResponse);
+        return null;
     }
 
     @Override
-    public synchronized Message get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public synchronized List<Account> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return null;
     }
 
