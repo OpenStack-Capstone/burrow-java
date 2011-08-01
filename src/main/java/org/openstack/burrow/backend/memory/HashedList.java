@@ -21,7 +21,7 @@ public class HashedList<K, V> {
     int population;
 
     /**
-     *
+     * Construct a new HashedList object
      */
     public HashedList() {
         table = (PrivEntry[]) Array.newInstance(PrivEntry.class, 967);
@@ -30,6 +30,8 @@ public class HashedList<K, V> {
     }
 
     /**
+     * Utility method for fetching table entries
+     *
      * @param key
      * @return
      */
