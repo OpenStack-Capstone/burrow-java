@@ -12,8 +12,8 @@ import java.util.concurrent.TimeoutException;
 import static org.openstack.burrow.backend.http.AsyncHttp.handleMultipleMessageHttpResponse;
 
 public class FutureMessageList implements Future<List<Message>> {
-    private static HttpResponse httpResponse;
-    private static Exception exception;
+    private HttpResponse httpResponse;
+    private Exception exception;
 
     FutureMessageList () {
     }

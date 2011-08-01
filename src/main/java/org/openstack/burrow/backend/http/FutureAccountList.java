@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class FutureAccountList implements Future<List<Account>> {
-    private static HttpResponse httpResponse;
-    private static Exception exception;
+    private HttpResponse httpResponse;
+    private Exception exception;
 
     FutureAccountList () {
     }
