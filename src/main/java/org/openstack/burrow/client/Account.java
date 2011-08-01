@@ -16,21 +16,18 @@
 
 package org.openstack.burrow.client;
 
-import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.methods.DeleteQueues;
 import org.openstack.burrow.client.methods.GetQueues;
 
 public class Account {
-  private Backend backend;
   private String id;
 
-  public Account(Backend backend, String account) {
-    this.backend = backend;
+  public Account(String account) {
     this.id = account;
   }
 
   public DeleteQueues deleteQueues() {
-    return new DeleteQueues(backend, id);
+    return new DeleteQueues(this);
   }
 
   public String getId() {
@@ -38,7 +35,7 @@ public class Account {
   }
 
   public GetQueues getQueues() {
-    return new GetQueues(backend, id);
+    return new GetQueues(this);
   }
 
   public Queue Queue(String queue) {

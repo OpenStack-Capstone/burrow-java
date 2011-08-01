@@ -72,67 +72,6 @@ public class Memory implements Backend {
     }
 
     /**
-     * Delete accounts, including the associated queues and messages.
-     *
-     * @param marker Optional. Only accounts with a name after this marker will be
-     *               deleted.
-     * @param limit  Optional. Delete at most this many accounts. A limit of less than 0
-     *               is equivalent to unlimited.
-     * @param detail Optional. Return the names of the accounts deleted.
-     * @return A list of Account instances deleted, with the requested level of
-     *         detail.
-     */
-    public synchronized List<Account> deleteAccounts(String marker, Long limit, String detail) {
-        List<Account> deleted = new ArrayList<Account>();
-
-        Iterator<Entry<String, MemoryAccount>> iter;
-        if (marker != null) iter = accountMap.newIteratorFrom(marker);
-        else iter = accountMap.newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-            Entry<String, MemoryAccount> e = iter.next();
-            deleted.add(new Account(this, e.getKey()));
-            iter.remove();
-            limit--;
-        }
-
-        return deleted;
-    }
-
-    /**
-     * Delete queues, including associated messages.
-     *
-     * @param account Delete queues in this account.
-     * @param marker  Optional. Only queues with a name after this marker will be
-     *                deleted.
-     * @param limit   Optional. At most this many queues will be deleted.
-     * @param detail  Optional. If true, return the names of the queues deleted.
-     * @return A list of queue names deleted, or null if not detail=True.
-     */
-    public synchronized List<Queue> deleteQueues(String account, String marker, Long limit, String detail) {
-        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
-
-        List<Queue> deleted = new ArrayList<Queue>();
-
-        Iterator<Entry<String, MemoryQueue>> iter;
-        if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
-        else iter = accountMap.get(account).newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-            Entry<String, MemoryQueue> e = iter.next();
-            deleted.add(new Queue(new Account(this, account), e.getKey()));
-            iter.remove();
-            limit--;
-        }
-
-        return deleted;
-    }
-
-    /**
      * Execute a CreateMessage request.
      *
      * @param request The request to execute.
@@ -149,6 +88,32 @@ public class Memory implements Backend {
         MemoryQueue mq = createIfAbsent(account, queue);
 
         return mq.put(request.getId(), request.getBody(), request.getTtl(), request.getHide());
+    }
+
+    /**
+     * Execute a DeleteAccounts request.
+     *
+     * @param request The request to execute.
+     * @return A list of Account instances populated with any information returned
+     *         about the accounts, or null if no information was returned.
+     */
+    public List<Account> execute(DeleteAccounts request) {
+        List<Account> deleted = new ArrayList<Account>();
+
+        Iterator<Entry<String, MemoryAccount>> iter;
+        if (request.getMarker() != null) iter = accountMap.newIteratorFrom(request.getMarker());
+        else iter = accountMap.newIterator();
+
+        long limit = request.getLimit() == null ? -1l : request.getLimit();
+
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryAccount> e = iter.next();
+            deleted.add(new Account(e.getKey()));
+            iter.remove();
+            limit--;
+        }
+
+        return deleted;
     }
 
     /**
@@ -187,6 +152,60 @@ public class Memory implements Backend {
         MemoryQueue mq = ensurePresent(account, queue);
 
         return mq.remove(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
+    }
+
+    /**
+     * Execute a DeleteQueues request.
+     *
+     * @param request The request to execute.
+     * @return A list of Queue instances populated with any information returned
+     *         about the queues, or null if no information was returned.
+     */
+    public List<Queue> execute(DeleteQueues request) {
+        if (!accountMap.containsKey(request.getAccount().getId())) throw new NoSuchAccountException();
+
+        List<Queue> deleted = new ArrayList<Queue>();
+
+        Iterator<Entry<String, MemoryQueue>> iter;
+        if (request.getMarker() != null) {
+            iter = accountMap.get(request.getAccount().getId()).newIteratorFrom(request.getMarker());
+        } else iter = accountMap.get(request.getAccount().getId()).newIterator();
+
+        long limit = request.getLimit() == null ? -1l : request.getLimit();
+
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryQueue> e = iter.next();
+            deleted.add(new Queue(request.getAccount(), e.getKey()));
+            iter.remove();
+            limit--;
+        }
+
+        return deleted;
+    }
+
+    /**
+     * Execute a GetAccounts request.
+     *
+     * @param request The request to execute.
+     * @return A list of Account instances populated with any information returned
+     *         about the accounts, or null if no information was returned.
+     */
+    public List<Account> execute(GetAccounts request) {
+        List<Account> accts = new ArrayList<Account>();
+
+        Iterator<Entry<String, MemoryAccount>> iter;
+        if (request.getMarker() != null) iter = accountMap.newIteratorFrom(request.getMarker());
+        else iter = accountMap.newIterator();
+
+        long limit = request.getLimit() == null ? -1l : request.getLimit();
+
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryAccount> e = iter.next();
+            accts.add(new Account(e.getKey()));
+            limit--;
+        }
+
+        return accts;
     }
 
     /**
@@ -232,6 +251,36 @@ public class Memory implements Backend {
     }
 
     /**
+     * Execute a GetQueues request.
+     *
+     * @param request The request to execute.
+     * @return A list of Queue instances populated with any information returned
+     *         by the queue about the queues, or null if the queue did not return
+     *         any information.
+     */
+    public List<Queue> execute(GetQueues request) {
+        if (!accountMap.containsKey(request.getAccount().getId()))
+                throw new NoSuchAccountException();
+
+        List<Queue> queues = new ArrayList<Queue>();
+        Iterator<Entry<String, MemoryQueue>> iter;
+
+        if (request.getMarker() != null) {
+            iter = accountMap.get(request.getAccount().getId()).newIteratorFrom(request.getMarker());
+        } else iter = accountMap.get(request.getAccount().getId()).newIterator();
+
+        long limit = request.getLimit() == null ? -1l : request.getLimit();
+
+        while ((limit != 0) && (iter.hasNext())) {
+            Entry<String, MemoryQueue> e = iter.next();
+            queues.add(new Queue(request.getAccount(), e.getKey()));
+            limit--;
+        }
+
+        return queues;
+    }
+
+    /**
      * Execute an UpdateMessage request.
      *
      * @param request The request to execute.
@@ -269,59 +318,5 @@ public class Memory implements Backend {
 
         return mq.update(request.getMarker(), request.getLimit(), request.getMatchHidden(),
                          request.getTtl(), request.getHide(), request.getWait());
-    }
-
-    /**
-     * List accounts.
-     *
-     * @param marker Optional. Only accounts with a name after this marker will be
-     *               returned.
-     * @param limit  Optional. Return at most this many accounts.
-     * @return A list of account names.
-     */
-    public synchronized List<Account> getAccounts(String marker, Long limit) {
-        List<Account> accts = new ArrayList<Account>();
-
-        Iterator<Entry<String, MemoryAccount>> iter;
-        if (marker != null) iter = accountMap.newIteratorFrom(marker);
-        else iter = accountMap.newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-            Entry<String, MemoryAccount> e = iter.next();
-            accts.add(new Account(this, e.getKey()));
-            limit--;
-        }
-
-        return accts;
-    }
-
-    /**
-     * List queues in an account.
-     *
-     * @param account List queues in this account.
-     * @param marker  Optional. Only queues with a name after this marker will be
-     *                listed.
-     * @param limit   Optional. At most this many queues will be listed.
-     * @return A list of queue names.
-     */
-    public synchronized List<Queue> getQueues(String account, String marker, Long limit) {
-        List<Queue> queues = new ArrayList<Queue>();
-        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
-
-        Iterator<Entry<String, MemoryQueue>> iter;
-        if (marker != null) iter = accountMap.get(account).newIteratorFrom(marker);
-        else iter = accountMap.get(account).newIterator();
-
-        if (limit == null) limit = -1l;
-
-        while ((limit != 0) && (iter.hasNext())) {
-            Entry<String, MemoryQueue> e = iter.next();
-            queues.add(new Queue(new Account(this, account), e.getKey()));
-            limit--;
-        }
-
-        return queues;
     }
 }

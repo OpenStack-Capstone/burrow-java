@@ -17,6 +17,7 @@
 package org.openstack.burrow.backend;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
@@ -33,111 +34,111 @@ import org.openstack.burrow.client.methods.GetQueues;
 import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
-public interface Backend {
+public interface AsyncBackend extends Backend {
   /**
-   * Execute a CreateMessage request.
+   * Asynchronously executes a CreateMessage request.
    * 
    * @param request The request to execute.
    * @return A Message instance populated with any information returned by the
    *         queue about the created message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(CreateMessage request);
+  public Future<Message> executeAsync(CreateMessage request);
 
   /**
-   * Execute a DeleteAccounts request.
+   * Asynchronously executes a DeleteAccounts request.
    * 
    * @param request The request to execute.
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(DeleteAccounts request);
+  public Future<List<Account>> executeAsync(DeleteAccounts request);
 
   /**
-   * Execute a DeleteMessage request.
+   * Asynchronously executes a DeleteMessage request.
    * 
    * @param request The request to execute.
    * @return A Message instance populated with any information returned by the
    *         queue about the deleted message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(DeleteMessage request);
+  public Future<Message> executeAsync(DeleteMessage request);
 
   /**
-   * Execute a DeleteMessages request.
+   * Asynchronously executes a DeleteMessages request.
    * 
    * @param request The request to execute.
    * @return A list of Message instances populated with any information returned
    *         by the queue about the deleted messages, or null if the queue did
    *         not return any information.
    */
-  public List<Message> execute(DeleteMessages request);
+  public Future<List<Message>> executeAsync(DeleteMessages request);
 
   /**
-   * Execute a DeleteQueues request.
+   * Asynchronously executes a DeleteQueues request.
    * 
    * @param request The request to execute.
    * @return A list of Queue instances populated with any information returned
    *         about the queues, or null if no information was returned.
    */
-  public List<Queue> execute(DeleteQueues request);
+  public Future<List<Queue>> executeAsync(DeleteQueues request);
 
   /**
-   * Execute a GetAccounts request.
+   * Asynchronously executes a GetAccounts request.
    * 
    * @param request The request to execute.
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(GetAccounts request);
+  public Future<List<Account>> executeAsync(GetAccounts request);
 
   /**
-   * Execute a GetMessage request.
+   * Asynchronously executes a GetMessage request.
    * 
    * @param request The request to execute.
    * @return A Message instance populated with any information returned by the
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(GetMessage request);
+  public Future<Message> executeAsync(GetMessage request);
 
   /**
-   * Execute a GetMessages request.
+   * Asynchronously executes a GetMessages request.
    * 
    * @param request The request to execute.
    * @return A list of Message instances populated with any information returned
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(GetMessages request);
+  public Future<List<Message>> executeAsync(GetMessages request);
 
   /**
-   * Execute a GetQueues request.
+   * Asynchronously executes a GetQueues request.
    * 
    * @param request The request to execute.
    * @return A list of Queue instances populated with any information returned
    *         by the queue about the queues, or null if the queue did not return
    *         any information.
    */
-  public List<Queue> execute(GetQueues request);
+  public Future<List<Queue>> executeAsync(GetQueues request);
 
   /**
-   * Execute an UpdateMessage request.
+   * Asynchronously executes an UpdateMessage request.
    * 
    * @param request The request to execute.
    * @return A Message instance populated with any information returned by the
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(UpdateMessage request);
+  public Future<Message> executeAsync(UpdateMessage request);
 
   /**
-   * Execute an UpdateMessages request.
+   * Asynchronously executes an UpdateMessages request.
    * 
    * @param request The request to execute.
    * @return A list of Message instances populated with any information returned
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(UpdateMessages request);
+  public Future<List<Message>> executeAsync(UpdateMessages request);
 }

@@ -16,44 +16,44 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Account;
-
 public class DeleteAccounts {
-  private Backend backend;
   private String detail;
   private Long limit;
   private String marker;
 
-  public DeleteAccounts(Backend backend) {
-    this.backend = backend;
+  public DeleteAccounts() {
     this.marker = null;
     this.limit = null;
     this.detail = null;
   }
 
-  private DeleteAccounts(Backend backend, String marker, Long limit, String detail) {
-    this.backend = backend;
+  private DeleteAccounts(String marker, Long limit, String detail) {
     this.marker = marker;
     this.limit = limit;
     this.detail = detail;
   }
 
-  public List<Account> execute() {
-    return this.backend.deleteAccounts(marker, limit, detail);
+  public String getDetail() {
+    return detail;
   }
 
-  public DeleteAccounts matchLimit(long limit) {
-    return new DeleteAccounts(backend, marker, limit, detail);
+  public Long getLimit() {
+    return limit;
   }
 
-  public DeleteAccounts requestDetail(String detail) {
-    return new DeleteAccounts(backend, marker, limit, detail);
+  public String getMarker() {
+    return marker;
+  }
+
+  public DeleteAccounts withDetail(String detail) {
+    return new DeleteAccounts(marker, limit, detail);
+  }
+
+  public DeleteAccounts withLimit(long limit) {
+    return new DeleteAccounts(marker, limit, detail);
   }
 
   public DeleteAccounts withMarker(String marker) {
-    return new DeleteAccounts(backend, marker, limit, detail);
+    return new DeleteAccounts(marker, limit, detail);
   }
 }

@@ -16,47 +16,53 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.Account;
 
 public class DeleteQueues {
-  private String account;
-  private Backend backend;
+  private Account account;
   private String detail;
   private Long limit;
   private String marker;
 
-  public DeleteQueues(Backend backend, String account) {
-    this.backend = backend;
+  public DeleteQueues(Account account) {
     this.account = account;
     this.marker = null;
     this.limit = null;
     this.detail = null;
   }
 
-  private DeleteQueues(Backend backend, String account, String marker, Long limit, String detail) {
-    this.backend = backend;
+  private DeleteQueues(Account account, String marker, Long limit, String detail) {
     this.account = account;
     this.marker = marker;
     this.limit = limit;
     this.detail = detail;
   }
 
-  public List<Queue> execute() {
-    return backend.deleteQueues(account, marker, limit, detail);
+  public Account getAccount() {
+    return account;
   }
 
-  public DeleteQueues matchLimit(Long limit) {
-    return new DeleteQueues(backend, account, marker, limit, detail);
+  public String getDetail() {
+    return detail;
   }
 
-  public DeleteQueues requestDetail(String detail) {
-    return new DeleteQueues(backend, account, marker, limit, detail);
+  public Long getLimit() {
+    return limit;
+  }
+
+  public String getMarker() {
+    return marker;
+  }
+
+  public DeleteQueues withDetail(String detail) {
+    return new DeleteQueues(account, marker, limit, detail);
+  }
+
+  public DeleteQueues withLimit(long limit) {
+    return new DeleteQueues(account, marker, limit, detail);
   }
 
   public DeleteQueues withMarker(String marker) {
-    return new DeleteQueues(backend, account, marker, limit, detail);
+    return new DeleteQueues(account, marker, limit, detail);
   }
 }

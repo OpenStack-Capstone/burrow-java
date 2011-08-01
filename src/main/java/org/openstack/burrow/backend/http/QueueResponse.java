@@ -14,25 +14,19 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow.backend.http;
 
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.GetAccounts;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Queue;
 
-public class Client {
-
-  public Client() {
+class QueueResponse extends Queue {
+  QueueResponse(Account account, JSONObject queue) throws JSONException {
+    super(account, queue.getString("id"));
   }
 
-  public Account Account(String accountName) {
-    return new Account(accountName);
-  }
-
-  public DeleteAccounts deleteAccounts() {
-    return new DeleteAccounts();
-  }
-
-  public GetAccounts getAccounts() {
-    return new GetAccounts();
+  QueueResponse(Account account, String id) {
+    super(account, id);
   }
 }

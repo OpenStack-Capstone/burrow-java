@@ -14,25 +14,20 @@
  * the License.
  */
 
-package org.openstack.burrow.client;
+package org.openstack.burrow;
 
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.GetAccounts;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-public class Client {
+import org.apache.http.nio.reactor.IOReactorException;
+import org.openstack.burrow.backend.http.AsyncHttp;
 
-  public Client() {
+public class AsyncHttpClientTest extends ClientTest {
+  public static Test suite() {
+    return new TestSuite(HttpClientTest.class);
   }
 
-  public Account Account(String accountName) {
-    return new Account(accountName);
-  }
-
-  public DeleteAccounts deleteAccounts() {
-    return new DeleteAccounts();
-  }
-
-  public GetAccounts getAccounts() {
-    return new GetAccounts();
+  public AsyncHttpClientTest(String testName) throws IOReactorException {
+    super(testName, new AsyncHttp("localhost", 8080));
   }
 }
