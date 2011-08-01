@@ -51,6 +51,8 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   public AsyncHttp(String host, int port) throws IOReactorException {
     super(host, port);
     this.client = new DefaultHttpAsyncClient();
+    // TODO: Move this into a Backend.start() method
+    this.client.start();
   }
 
   @Override
