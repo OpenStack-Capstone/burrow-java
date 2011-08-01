@@ -23,9 +23,11 @@ import java.util.List;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.*;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -520,6 +522,20 @@ private class MemoryQueue {
 
   @Override
   public List<Queue> execute(DeleteQueues request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public List<Account> execute(DeleteAccounts request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public List<Account> execute(GetAccounts request) {
     // TODO Auto-generated method stub
     return null;
   }

@@ -33,6 +33,24 @@ import org.openstack.burrow.client.Queue;
  */
 abstract class ClientTest extends TestCase {
   /**
+   * Scan a list of accounts for the presence of one or more account ids.
+   * 
+   * @param queues The accounts to scan.
+   * @param ids The account ids to scan for.
+   * @return for each id, true if the account id was seen and false otherwise.
+   */
+  static boolean[] scanAccounts(List<Account> accounts, String[] ids) {
+    boolean[] seen = new boolean[ids.length];
+    for (int idx = 0; idx < seen.length; idx++)
+      seen[idx] = false;
+    for (Account a : accounts)
+      for (int idx = 0; idx < ids.length; idx++)
+        if (a.getId().equals(ids[idx]))
+          seen[idx] = true;
+    return seen;
+  }
+
+  /**
    * Scan a list of messages for the presence of one or more message ids.
    * 
    * @param messages The messages to scan.
@@ -76,7 +94,7 @@ abstract class ClientTest extends TestCase {
   protected ClientTest(String testName, Backend backend) {
     super(testName);
     this.backend = backend;
-    client = new Client(backend);
+    client = new Client();
     account = client.Account("testAccount");
     queue = account.Queue("testQueue");
   }
@@ -119,6 +137,37 @@ abstract class ClientTest extends TestCase {
     List<Message> messages = backend.execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
     assertTrue(seen[0] && seen[1]);
+  }
+
+  /**
+   * Delete all accounts, then implicitly create two and delete them one at a
+   * time.
+   */
+  public void testDeleteAccounts() {
+    String messageId = "testDeleteAccountsMessageId";
+    String messageBody = "testDeleteAccountsMessageBody";
+    String queueId = "testDeleteAccountsQueueId";
+    String accountIds[] = {"testDeleteAccountsId1", "testDeleteAccountsId2"};
+    Account accounts[] = {client.Account(accountIds[0]), client.Account(accountIds[1])};
+    Queue queues[] = {accounts[0].Queue(queueId), accounts[1].Queue(queueId)};
+    boolean seen[];
+    // Blindly nuke the entire server.
+    backend.execute(client.deleteAccounts());
+    // Create the accounts by creating the messages.
+    backend.execute(queues[0].createMessage(messageId, messageBody));
+    backend.execute(queues[1].createMessage(messageId, messageBody));
+    // Delete one account with detail=id.
+    seen =
+        scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("id")),
+            accountIds);
+    assertTrue(seen[0] || seen[1]);
+    assertFalse(seen[0] && seen[1]);
+    // Delete one account with detail=all.
+    seen =
+        scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("all")),
+            accountIds);
+    assertTrue(seen[0] || seen[1]);
+    assertFalse(seen[0] && seen[1]);
   }
 
   /**
@@ -204,6 +253,20 @@ abstract class ClientTest extends TestCase {
         scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
     assertTrue(seenQueues[0] || seenQueues[1]);
     assertFalse(seenQueues[0] && seenQueues[1]);
+  }
+
+  /**
+   * Implicitly create an account by creating a message.
+   */
+  public void testGetAccounts() {
+    String messageId = "testGetAccountsMessageId";
+    String messageBody = "testGetAccountsMessageBody";
+    String accountIds[] = {account.getId()};
+    boolean seen[];
+    // Create a message to implicitly create the queue and account.
+    backend.execute(queue.createMessage(messageId, messageBody));
+    seen = scanAccounts(backend.execute(client.getAccounts()), accountIds);
+    assertTrue(seen[0]);
   }
 
   /**

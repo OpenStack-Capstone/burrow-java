@@ -22,9 +22,11 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -32,18 +34,6 @@ import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
 public interface Backend {
-  /**
-   * Delete accounts, including the associated queues and messages.
-   * 
-   * @param marker Optional. Only accounts with a name after this marker will be
-   *          deleted.
-   * @param limit Optional. Delete at most this many accounts.
-   * @param detail Optional. Return the names of the accounts deleted.
-   * @return A list of Account instances deleted, with the requested level of
-   *         detail.
-   */
-  public List<Account> deleteAccounts(String marker, Long limit, String detail);
-
   /**
    * Execute a CreateMessage request.
    * 
@@ -53,6 +43,15 @@ public interface Backend {
    *         return any information.
    */
   public Message execute(CreateMessage request);
+
+  /**
+   * Execute a DeleteAccounts request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Account instances populated with any information returned
+   *         about the accounts, or null if no information was returned.
+   */
+  public List<Account> execute(DeleteAccounts request);
 
   /**
    * Execute a DeleteMessage request.
@@ -82,6 +81,15 @@ public interface Backend {
    *         about the queues, or null if no information was returned.
    */
   public List<Queue> execute(DeleteQueues request);
+
+  /**
+   * Execute a GetAccounts request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Account instances populated with any information returned
+   *         about the accounts, or null if no information was returned.
+   */
+  public List<Account> execute(GetAccounts request);
 
   /**
    * Execute a GetMessage request.
@@ -132,14 +140,4 @@ public interface Backend {
    *         return any information.
    */
   public List<Message> execute(UpdateMessages request);
-
-  /**
-   * List accounts.
-   * 
-   * @param marker Optional. Only accounts with a name after this marker will be
-   *          returned.
-   * @param limit Optional. Return at most this many accounts.
-   * @return A list of Accounts.
-   */
-  public List<Account> getAccounts(String marker, Long limit);
 }

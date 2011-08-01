@@ -16,37 +16,44 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Account;
-
 public class GetAccounts {
-  private Backend backend;
+  private String detail;
   private Long limit;
   private String marker;
 
-  public GetAccounts(Backend backend) {
-    this.backend = backend;
+  public GetAccounts() {
     this.marker = null;
     this.limit = null;
+    this.detail = null;
   }
 
-  private GetAccounts(Backend backend, String marker, Long limit) {
-    this.backend = backend;
+  private GetAccounts(String marker, Long limit, String detail) {
     this.marker = marker;
     this.limit = limit;
+    this.detail = detail;
   }
 
-  public List<Account> execute() {
-    return backend.getAccounts(marker, limit);
+  public String getDetail() {
+    return detail;
   }
 
-  public GetAccounts matchLimit(long limit) {
-    return new GetAccounts(backend, marker, limit);
+  public Long getLimit() {
+    return limit;
+  }
+
+  public String getMarker() {
+    return marker;
+  }
+
+  public GetAccounts withDetail(String detail) {
+    return new GetAccounts(marker, limit, detail);
+  }
+
+  public GetAccounts withLimit(long limit) {
+    return new GetAccounts(marker, limit, detail);
   }
 
   public GetAccounts withMarker(String marker) {
-    return new GetAccounts(backend, marker, limit);
+    return new GetAccounts(marker, limit, detail);
   }
 }

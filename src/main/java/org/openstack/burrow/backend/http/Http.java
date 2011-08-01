@@ -50,9 +50,11 @@ import org.openstack.burrow.client.NoSuchAccountException;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
 import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
 import org.openstack.burrow.client.methods.GetQueues;
@@ -71,27 +73,31 @@ public class Http implements Backend {
     this.client = new DefaultHttpClient();
   }
 
-  /**
-   * Delete accounts, including the associated queues and messages.
-   * 
-   * @param marker Optional. Only accounts with a name after this marker will be
-   *          deleted.
-   * @param limit Optional. Delete at most this many accounts.
-   * @param detail Optional. Return the names of the accounts deleted.
-   * @return A list of Account instances deleted, with the requested level of
-   *         detail.
-   */
-  @Override
-  public List<Account> deleteAccounts(String marker, Long limit, String detail) {
-    return null;
-  }
-
   @Override
   public Message execute(CreateMessage request) {
     HttpPut httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);
       return handleSingleMessageHttpResponse(response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Account> execute(DeleteAccounts request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleAccountHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
       // TODO: Throw something that isn't a RuntimeException
@@ -150,6 +156,25 @@ public class Http implements Backend {
     try {
       HttpResponse response = client.execute(httpRequest);
       return handleMultipleQueueHttpResponse(account, response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Account> execute(GetAccounts request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleAccountHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
       // TODO: Throw something that isn't a RuntimeException
@@ -259,26 +284,6 @@ public class Http implements Backend {
     }
   }
 
-  /**
-   * List accounts.
-   * 
-   * @param marker Optional. Only accounts with a name after this marker will be
-   *          returned.
-   * @param limit Optional. Return at most this many accounts.
-   * @return A list of Accounts.
-   */
-  @Override
-  public List<Account> getAccounts(String marker, Long limit) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
-  }
-
-  /**
-   * Construct a new HttpPut request for the CreateMessage action.
-   * 
-   * @param request
-   * @return
-   */
   private HttpPut getHttpRequest(CreateMessage request) {
     URI uri = getUri(request);
     HttpPut httpRequest = new HttpPut(uri);
@@ -289,6 +294,12 @@ public class Http implements Backend {
       // This should be impossible for any legal String.
       throw new RuntimeException("Unable to create body HttpEntity: " + e);
     }
+    return httpRequest;
+  }
+
+  private HttpDelete getHttpRequest(DeleteAccounts request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
@@ -307,6 +318,12 @@ public class Http implements Backend {
   private HttpDelete getHttpRequest(DeleteQueues request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
+    return httpRequest;
+  }
+
+  private HttpGet getHttpRequest(GetAccounts request) {
+    URI uri = getUri(request);
+    HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
   }
 
@@ -355,6 +372,24 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(DeleteAccounts request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   private List<NameValuePair> getQueryParamaters(DeleteMessage request) {
     Boolean matchHidden = request.getMatchHidden();
     if (matchHidden != null) {
@@ -392,6 +427,24 @@ public class Http implements Backend {
   }
 
   private List<NameValuePair> getQueryParamaters(DeleteQueues request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(GetAccounts request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
     String detail = request.getDetail();
@@ -533,6 +586,14 @@ public class Http implements Backend {
     }
   }
 
+  private URI getUri(DeleteAccounts request) {
+    try {
+      return getUri(null, null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
   private URI getUri(DeleteMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -557,6 +618,14 @@ public class Http implements Backend {
     Account account = request.getAccount();
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(GetAccounts request) {
+    try {
+      return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
     }
@@ -623,6 +692,89 @@ public class Http implements Backend {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private List<Account> handleMultipleAccountHttpResponse(HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    if (entity == null)
+      return null; // Is this actually the right thing to do?
+    String mimeType = EntityUtils.getContentMimeType(entity);
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+        if (mimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONArray arrayJson = new JSONArray(body);
+            List<Account> accounts = new ArrayList<Account>(arrayJson.length());
+            try {
+              // Assume the response is an array of JSON Objects.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                JSONObject accountJson = arrayJson.getJSONObject(idx);
+                Account account = new AccountResponse(accountJson);
+                accounts.add(idx, account);
+              }
+            } catch (JSONException e) {
+              // The response was not an array of JSON Objects. Try again,
+              // assuming it was an array of strings.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                String accountId = arrayJson.getString(idx);
+                Account account = new AccountResponse(accountId);
+                accounts.add(idx, account);
+              }
+            }
+            return accounts;
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("IOException reading http response");
+          } catch (JSONException e) {
+            // It is not necessary to consume the entity because at the
+            // first point where this exception can be thrown,
+            // the entity has already been consumed by toString();
+            // TODO: throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("JSONException reading response");
+          }
+        } else {
+          // This situation cannot be handled.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e1) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Throw something appropriate.
+          throw new RuntimeException("Non-Json response");
+        }
+        /*
+         * // THIS (MIGHT) be an error! case HttpStatus.SC_NOT_FOUND: // This is
+         * not necessarily an error, but we must throw something. try { //
+         * Consume the entity to release HttpClient resources.
+         * EntityUtils.consume(entity); } catch (IOException e1) { // If we ever
+         * stop throwing an exception in the outside block, // this needs to be
+         * handled. } throw new NoSuchAccountException();
+         */
+      default:
+        // This is probably an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        // TODO: Throw something appropriate.
+        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
     }
   }
 
