@@ -71,7 +71,7 @@ public class DeleteMessages {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
-  public DeleteMessages withLimit(Long limit) {
+  public DeleteMessages withLimit(long limit) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
@@ -83,7 +83,7 @@ public class DeleteMessages {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
-  public DeleteMessages withWait(Long wait) {
+  public DeleteMessages withWait(long wait) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 }

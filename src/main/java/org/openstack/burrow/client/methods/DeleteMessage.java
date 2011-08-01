@@ -47,7 +47,7 @@ public class DeleteMessage {
     return queue;
   }
 
-  public DeleteMessage withMatchHidden(Boolean matchHidden) {
+  public DeleteMessage withMatchHidden(boolean matchHidden) {
     return new DeleteMessage(queue, id, matchHidden);
   }
 }
