@@ -25,13 +25,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.openstack.burrow.backend.http.AsyncHttp.handleMultipleQueueHttpResponse;
+
 public class FutureQueueList implements Future<List<Queue>> {
     private HttpResponse httpResponse;
     private Exception exception;
     private List<Queue> queueList;
     private Account account;
 
-    FutureQueueList () {
+    FutureQueueList (Account account) {
+        this.account = account;
     }
 
     @Override
@@ -75,8 +78,7 @@ public class FutureQueueList implements Future<List<Queue>> {
             } else if (this.httpResponse != null) {
                 // We have been woken because there is a httpResponse and it has not been processed yet.
                 try {
-                    //TODO: figure out how to set the class variable account
-                    //this.queueList = handleMultipleQueueHttpResponse(this.account, this.httpResponse);
+                    this.queueList = handleMultipleQueueHttpResponse(this.account, this.httpResponse);
                     this.notifyAll();
                     return this.queueList;
                     //TODO: Catch and Throw appropriate exceptions
