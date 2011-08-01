@@ -34,10 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.backend.AsyncBackend;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.*;
 import org.openstack.burrow.client.methods.*;
 
 import java.io.IOException;
@@ -155,6 +152,146 @@ public class AsyncHttp implements AsyncBackend{
       e.printStackTrace();
       throw new RuntimeException("Error executing HTTP request: " + e);
     }
+  }
+
+  @Override
+  public List<Account> execute(DeleteAccounts request) {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Queue> execute(DeleteQueues request) {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Account> execute(GetAccounts request) {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public List<Queue> execute(GetQueues request) {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
+  public Future<List<Account>> executeAsync(DeleteAccounts request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    final FutureAccountList futureAccountList = new FutureAccountList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureAccountList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureAccountList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureAccountList;
+  }
+
+  @Override
+  public Future<List<Queue>> executeAsync(DeleteQueues request) {
+    HttpDelete httpRequest = getHttpRequest(request);
+    final FutureQueueList futureQueueList = new FutureQueueList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureQueueList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureQueueList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureQueueList;
+  }
+
+  @Override
+  public Future<List<Account>> executeAsync(GetAccounts request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    final FutureAccountList futureAccountList = new FutureAccountList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureAccountList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureAccountList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureAccountList;
+  }
+
+  @Override
+  public Future<List<Queue>> executeAsync(GetQueues request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    final FutureQueueList futureQueueList = new FutureQueueList();
+    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
+
+      public void completed(final HttpResponse response) {
+        futureQueueList.setHttpResponse(response);
+      }
+
+      public void failed(final Exception e) {
+        futureQueueList.setException(e);
+      }
+
+      public void cancelled() {
+        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");// raise a RuntimeError because we don't allow this.
+      }
+
+    });
+    return futureQueueList;
   }
 
   @Override
@@ -759,28 +896,304 @@ public class AsyncHttp implements AsyncBackend{
     }
   }
 
-  @Override
-  public List<Account> execute(DeleteAccounts request) {
-    // TODO Auto-generated method stub
-    return null;
+
+    private HttpDelete getHttpRequest(DeleteAccounts request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
+    return httpRequest;
   }
 
-  @Override
-  public List<Queue> execute(DeleteQueues request) {
-    // TODO Auto-generated method stub
-    return null;
+
+    private HttpGet getHttpRequest(GetQueues request) {
+      URI uri = getUri(request);
+      HttpGet httpRequest = new HttpGet(uri);
+      return httpRequest;
+    }
+
+  private HttpDelete getHttpRequest(DeleteQueues request) {
+    URI uri = getUri(request);
+    HttpDelete httpRequest = new HttpDelete(uri);
+    return httpRequest;
   }
 
-  @Override
-  public List<Account> execute(GetAccounts request) {
-    // TODO Auto-generated method stub
-    return null;
+  private HttpGet getHttpRequest(GetAccounts request) {
+    URI uri = getUri(request);
+    HttpGet httpRequest = new HttpGet(uri);
+    return httpRequest;
   }
 
-  @Override
-  public List<Queue> execute(GetQueues request) {
-    // TODO Auto-generated method stub
-    return null;
+  private URI getUri(DeleteAccounts request) {
+    try {
+      return getUri(null, null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(DeleteQueues request) {
+    Account account = request.getAccount();
+    try {
+      return getUri(account.getId(), null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(GetAccounts request) {
+    try {
+      return getUri(null, null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+  private URI getUri(GetQueues request) {
+    Account account = request.getAccount();
+    try {
+      return getUri(account.getId(), null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
+    private List<NameValuePair> getQueryParamaters(GetQueues request) {
+      String marker = request.getMarker();
+      Long limit = request.getLimit();
+      if ((marker != null) || (limit != null)) {
+        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+        if (marker != null)
+          params.add(new BasicNameValuePair("marker", marker));
+        if (limit != null)
+          params.add(new BasicNameValuePair("limit", limit.toString()));
+        return params;
+      } else {
+        return null;
+      }
+    }
+
+  private List<NameValuePair> getQueryParamaters(DeleteQueues request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(GetAccounts request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+  private List<NameValuePair> getQueryParamaters(DeleteAccounts request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    String detail = request.getDetail();
+    if ((marker != null) || (limit != null) || (detail != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      if (detail != null)
+        params.add(new BasicNameValuePair("detail", detail));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
+
+
+  static List<Account> handleMultipleAccountHttpResponse(HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    if (entity == null)
+      return null; // Is this actually the right thing to do?
+    String mimeType = EntityUtils.getContentMimeType(entity);
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+        if (mimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONArray arrayJson = new JSONArray(body);
+            List<Account> accounts = new ArrayList<Account>(arrayJson.length());
+            try {
+              // Assume the response is an array of JSON Objects.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                JSONObject accountJson = arrayJson.getJSONObject(idx);
+                Account account = new AccountResponse(accountJson);
+                accounts.add(idx, account);
+              }
+            } catch (JSONException e) {
+              // The response was not an array of JSON Objects. Try again,
+              // assuming it was an array of strings.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                String accountId = arrayJson.getString(idx);
+                Account account = new AccountResponse(accountId);
+                accounts.add(idx, account);
+              }
+            }
+            return accounts;
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("IOException reading http response");
+          } catch (JSONException e) {
+            // It is not necessary to consume the entity because at the
+            // first point where this exception can be thrown,
+            // the entity has already been consumed by toString();
+            // TODO: throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("JSONException reading response");
+          }
+        } else {
+          // This situation cannot be handled.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e1) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Throw something appropriate.
+          throw new RuntimeException("Non-Json response");
+        }
+        /*
+         * // THIS (MIGHT) be an error! case HttpStatus.SC_NOT_FOUND: // This is
+         * not necessarily an error, but we must throw something. try { //
+         * Consume the entity to release HttpClient resources.
+         * EntityUtils.consume(entity); } catch (IOException e1) { // If we ever
+         * stop throwing an exception in the outside block, // this needs to be
+         * handled. } throw new NoSuchAccountException();
+         */
+      default:
+        // This is probably an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        // TODO: Throw something appropriate.
+        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+    }
+  }
+
+
+  static List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    if (entity == null)
+      return null; // Is this actually the right thing to do?
+    String mimeType = EntityUtils.getContentMimeType(entity);
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+        if (mimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONArray arrayJson = new JSONArray(body);
+            List<Queue> queues = new ArrayList<Queue>(arrayJson.length());
+            try {
+              // Assume the response is an array of JSON Objects.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                JSONObject queueJson = arrayJson.getJSONObject(idx);
+                Queue queue = new QueueResponse(account, queueJson);
+                queues.add(idx, queue);
+              }
+            } catch (JSONException e) {
+              // The response was not an array of JSON Objects. Try again,
+              // assuming it was an array of strings.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                String queueId = arrayJson.getString(idx);
+                Queue queue = new QueueResponse(account, queueId);
+                queues.add(idx, queue);
+              }
+            }
+            return queues;
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("IOException reading http response");
+          } catch (JSONException e) {
+            // It is not necessary to consume the entity because at the
+            // first point where this exception can be thrown,
+            // the entity has already been consumed by toString();
+            // TODO: throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("JSONException reading response");
+          }
+        } else {
+          // This situation cannot be handled.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e1) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Throw something appropriate.
+          throw new RuntimeException("Non-Json response");
+        }
+      case HttpStatus.SC_NOT_FOUND:
+        // This is not necessarily an error, but we must throw something.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        throw new NoSuchAccountException();
+      default:
+        // This is probably an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        // TODO: Throw something appropriate.
+        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+    }
   }
 }
 
