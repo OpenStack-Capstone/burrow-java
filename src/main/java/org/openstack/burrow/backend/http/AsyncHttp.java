@@ -231,7 +231,7 @@ public class AsyncHttp implements AsyncBackend{
   @Override
   public Future<List<Queue>> executeAsync(DeleteQueues request) {
     HttpDelete httpRequest = getHttpRequest(request);
-    final FutureQueueList futureQueueList = new FutureQueueList();
+    final FutureQueueList futureQueueList = new FutureQueueList(request.getAccount());
     client.execute(httpRequest, new FutureCallback<HttpResponse>() {
 
       public void completed(final HttpResponse response) {
@@ -275,7 +275,7 @@ public class AsyncHttp implements AsyncBackend{
   @Override
   public Future<List<Queue>> executeAsync(GetQueues request) {
     HttpGet httpRequest = getHttpRequest(request);
-    final FutureQueueList futureQueueList = new FutureQueueList();
+    final FutureQueueList futureQueueList = new FutureQueueList(request.getAccount());
     client.execute(httpRequest, new FutureCallback<HttpResponse>() {
 
       public void completed(final HttpResponse response) {
