@@ -115,6 +115,9 @@ abstract class ClientTest extends TestCase {
     }
   }
 
+  /**
+   * Create and delete a hidden message.
+   */
   public void testCreateDeleteMessageWithMatchHidden() {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
@@ -153,14 +156,17 @@ abstract class ClientTest extends TestCase {
     assertTrue(seen[0] && seen[1]);
   }
 
+  /**
+   * Create a message with a TTL.
+   */
   public void testCreateGetMessageWithTtl() {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
-    Long Ttl = 100L;
-    backend.execute(queue.createMessage(id, body).withTtl(Ttl));
+    int ttl = 100;
+    backend.execute(queue.createMessage(id, body).withTtl(ttl));
     Message message = backend.execute(queue.getMessage(id));
     assertEquals(message.getBody(), body);
-    assertTrue(message.getTtl() < Ttl);
+    assertTrue(message.getTtl() <= ttl);
   }
 
   /**
@@ -195,6 +201,19 @@ abstract class ClientTest extends TestCase {
   }
 
   /**
+   * Delete a message that does not exist.
+   */
+  public void testDeleteAMessageThatDoesNotExist() {
+    String id = "testDeleteAMessageThatDoesNotExist";
+    try {
+      backend.execute(queue.deleteMessage(id));
+      fail("deleteMessage should have failed for a message that does not exist");
+    } catch (NoSuchMessageException e) {
+      // Expected.
+    }
+  }
+
+  /**
    * Create a visible and a hidden message, then delete all non-hidden messages
    * in the queue.
    */
@@ -214,15 +233,6 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue(seen[0]);
     assertFalse(seen[1]);
-  }
-
-  public void testDeleteMessageWithNothingInQueue() {
-    String id = "testDeleteMessageWithNothingInQueue";
-    try {
-      Message message = backend.execute(queue.deleteMessage(id));
-    } catch (NoSuchMessageException e) {
-
-    }
   }
 
   /**
@@ -302,24 +312,18 @@ abstract class ClientTest extends TestCase {
     assertTrue(seen[0]);
   }
 
-  public void testGetMessageWithNothingInQueue() {
-    String id = "testGetMessageWithNothingInQueue";
+  /**
+   * Get a message that does not exist.
+   */
+  public void testGetAMessageThatDoesNotExist() {
+    String id = "testGetAMessageThatDoesNotExist";
     try {
-      Message message = backend.execute(queue.getMessage(id));
+      backend.execute(queue.getMessage(id));
+      fail("getMessage should have failed");
     } catch (NoSuchMessageException e) {
-
+      // this is expected.
     }
   }
-  /*
-   * public void testCreateMessageGetters() { String id =
-   * "testCreateMessageGettersId"; String body = "testCreateMessageGettersBody";
-   * CreateMessage cm = queue.createMessage(id, body); assertEquals(cm.getId(),
-   * id); assertEquals(cm.getBody(), body); }
-   * 
-   * public void testDeleteMessageGetters(){ String id =
-   * "testDeleteMessageGettersId"; DeleteMessage dm = queue.deleteMessage(id);
-   * assertEquals(dm.getId(), id); }
-   */
 
   /**
    * Create a message, verify the queue exists, then delete all messages in the
