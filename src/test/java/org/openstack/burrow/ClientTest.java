@@ -27,8 +27,6 @@ import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchAccountException;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteMessage;
 
 /**
  * Unit tests for the Burrow Client.
@@ -129,6 +127,7 @@ abstract class ClientTest extends TestCase {
       // This is expected.
     }
   }
+
   /**
    * Create and then get a message.
    */
@@ -141,17 +140,6 @@ abstract class ClientTest extends TestCase {
     assertEquals(message.getBody(), body);
   }
 
-  public void testCreateGetMessageWithTtl() {
-    String id = "testCreateGetMessage";
-    String body = "testCreateGetMessageBody";
-    Long Ttl = 100L;
-    backend.execute(queue.createMessage(id, body).withTtl(Ttl));
-    Message message = backend.execute(queue.getMessage(id));
-    assertEquals(message.getBody(), body);
-    assertTrue(message.getTtl() < Ttl);
-  }
-
-
   /**
    * Create two messages and then verify their presence in getMessages.
    */
@@ -163,6 +151,16 @@ abstract class ClientTest extends TestCase {
     List<Message> messages = backend.execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
     assertTrue(seen[0] && seen[1]);
+  }
+
+  public void testCreateGetMessageWithTtl() {
+    String id = "testCreateGetMessage";
+    String body = "testCreateGetMessageBody";
+    Long Ttl = 100L;
+    backend.execute(queue.createMessage(id, body).withTtl(Ttl));
+    Message message = backend.execute(queue.getMessage(id));
+    assertEquals(message.getBody(), body);
+    assertTrue(message.getTtl() < Ttl);
   }
 
   /**
@@ -216,6 +214,15 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue(seen[0]);
     assertFalse(seen[1]);
+  }
+
+  public void testDeleteMessageWithNothingInQueue() {
+    String id = "testDeleteMessageWithNothingInQueue";
+    try {
+      Message message = backend.execute(queue.deleteMessage(id));
+    } catch (NoSuchMessageException e) {
+
+    }
   }
 
   /**
@@ -295,6 +302,25 @@ abstract class ClientTest extends TestCase {
     assertTrue(seen[0]);
   }
 
+  public void testGetMessageWithNothingInQueue() {
+    String id = "testGetMessageWithNothingInQueue";
+    try {
+      Message message = backend.execute(queue.getMessage(id));
+    } catch (NoSuchMessageException e) {
+
+    }
+  }
+  /*
+   * public void testCreateMessageGetters() { String id =
+   * "testCreateMessageGettersId"; String body = "testCreateMessageGettersBody";
+   * CreateMessage cm = queue.createMessage(id, body); assertEquals(cm.getId(),
+   * id); assertEquals(cm.getBody(), body); }
+   * 
+   * public void testDeleteMessageGetters(){ String id =
+   * "testDeleteMessageGettersId"; DeleteMessage dm = queue.deleteMessage(id);
+   * assertEquals(dm.getId(), id); }
+   */
+
   /**
    * Create a message, verify the queue exists, then delete all messages in the
    * queue and verify it goes away.
@@ -354,40 +380,5 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
   }
-
-  public void testDeleteMessageWithNothingInQueue(){
-    String id = "testDeleteMessageWithNothingInQueue";
-    try {
-    Message message = backend.execute(queue.deleteMessage(id));
-    }
-    catch (NoSuchMessageException e) {
-
-    }
-  }
-
-  public void testGetMessageWithNothingInQueue(){
-    String id = "testGetMessageWithNothingInQueue";
-    try {
-    Message message = backend.execute(queue.getMessage(id));
-    }
-    catch (NoSuchMessageException e) {
-
-    }
-  }
-  /*
-  public void testCreateMessageGetters() {
-    String id = "testCreateMessageGettersId";
-    String body = "testCreateMessageGettersBody";
-    CreateMessage cm = queue.createMessage(id, body);
-    assertEquals(cm.getId(), id);
-    assertEquals(cm.getBody(), body);
-  }
-
-  public void testDeleteMessageGetters(){
-    String id = "testDeleteMessageGettersId";
-    DeleteMessage dm = queue.deleteMessage(id);
-    assertEquals(dm.getId(), id);
-    }
-   */
 
 }
