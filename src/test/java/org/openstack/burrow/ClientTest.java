@@ -26,6 +26,8 @@ import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteMessage;
 
 /**
  * Unit tests for the Burrow Client.
@@ -78,6 +80,18 @@ abstract class ClientTest extends TestCase {
     }
   }
 
+  public void testCreateDeleteMessageWithMatchHidden() {
+    String id = "testCreateDeleteMessage";
+    String body = "testCreateDeleteMessageBody";
+    backend.execute(queue.createMessage(id, body).withHide((100L)));
+    backend.execute(queue.deleteMessage(id).withMatchHidden(true));
+    try {
+      backend.execute(queue.deleteMessage(id).withMatchHidden(true));
+      fail("deleteMessage should have failed");
+    } catch (NoSuchMessageException e) {
+      // This is expected.
+    }
+  }
   /**
    * Create and then get a message.
    */
@@ -86,8 +100,20 @@ abstract class ClientTest extends TestCase {
     String body = "testCreateGetMessageBody";
     backend.execute(queue.createMessage(id, body));
     Message message = backend.execute(queue.getMessage(id));
+    assertEquals(message.getId(), id);
     assertEquals(message.getBody(), body);
   }
+
+  public void testCreateGetMessageWithTtl() {
+    String id = "testCreateGetMessage";
+    String body = "testCreateGetMessageBody";
+    Long Ttl = 100L;
+    backend.execute(queue.createMessage(id, body).withTtl(Ttl));
+    Message message = backend.execute(queue.getMessage(id));
+    assertEquals(message.getBody(), body);
+    assertTrue(message.getTtl() < Ttl);
+  }
+
 
   /**
    * Create two messages and then verify their presence in getMessages.
@@ -106,9 +132,9 @@ abstract class ClientTest extends TestCase {
    * Create a visible and a hidden message, then delete all non-hidden messages
    * in the queue.
    */
-  public void testDeleteMessages() {
-    String[] ids = {"testDeleteMessages1", "testDeleteMessages2"};
-    String body = "testDeleteMessagesBody";
+  public void testDeleteMessagesWithHide() {
+    String[] ids = {"testDeleteMessagesWithHide1", "testDeleteMessagesWithHide2"};
+    String body = "testDeleteMessagesBodyWithHide";
     boolean[] seen;
     backend.execute(queue.createMessage(ids[0], body).withHide(9999));
     backend.execute(queue.createMessage(ids[1], body).withHide(0));
@@ -162,4 +188,40 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
     assertTrue(seen[0]);
   }
+
+  public void testDeleteMessageWithNothingInQueue(){
+    String id = "testDeleteMessageWithNothingInQueue";
+    try {
+    Message message = backend.execute(queue.deleteMessage(id));
+    }
+    catch (NoSuchMessageException e) {
+
+    }
+  }
+
+  public void testGetMessageWithNothingInQueue(){
+    String id = "testGetMessageWithNothingInQueue";
+    try {
+    Message message = backend.execute(queue.getMessage(id));
+    }
+    catch (NoSuchMessageException e) {
+
+    }
+  }
+  /*
+  public void testCreateMessageGetters() {
+    String id = "testCreateMessageGettersId";
+    String body = "testCreateMessageGettersBody";
+    CreateMessage cm = queue.createMessage(id, body);
+    assertEquals(cm.getId(), id);
+    assertEquals(cm.getBody(), body);
+  }
+
+  public void testDeleteMessageGetters(){
+    String id = "testDeleteMessageGettersId";
+    DeleteMessage dm = queue.deleteMessage(id);
+    assertEquals(dm.getId(), id);
+    }
+   */
+
 }
