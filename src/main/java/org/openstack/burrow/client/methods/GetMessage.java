@@ -65,11 +65,11 @@ public class GetMessage {
     return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 
-  public GetMessage withMatchHidden(Boolean matchHidden) {
+  public GetMessage withMatchHidden(boolean matchHidden) {
     return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 
-  public GetMessage withWait(Long wait) {
+  public GetMessage withWait(long wait) {
     return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 }

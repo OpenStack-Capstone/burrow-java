@@ -91,7 +91,7 @@ public class UpdateMessages {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
-  public UpdateMessages withLimit(Long limit) {
+  public UpdateMessages withLimit(long limit) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 

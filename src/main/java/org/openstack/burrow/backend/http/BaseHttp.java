@@ -16,18 +16,7 @@
 
 package org.openstack.burrow.backend.http;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -40,24 +29,28 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchAccountException;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.client.*;
+import org.openstack.burrow.client.methods.*;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.http.HttpStatus.*;
 
 abstract class BaseHttp {
+  protected String host;
+  protected int port;
+  protected String scheme = "http";
+
+  protected BaseHttp(String host, int port) {
+    this.host = host;
+    this.port = port;
+  }
+
   static List<Account> handleMultipleAccountHttpResponse(HttpResponse response) {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
@@ -65,7 +58,7 @@ abstract class BaseHttp {
       return null; // Is this actually the right thing to do?
     String mimeType = EntityUtils.getContentMimeType(entity);
     switch (status.getStatusCode()) {
-      case HttpStatus.SC_OK:
+      case SC_OK:
         if (mimeType.equals("application/json")) {
           try {
             String body = EntityUtils.toString(entity);
@@ -148,7 +141,7 @@ abstract class BaseHttp {
       return null; // Is this actually the right thing to do?
     String mimeType = EntityUtils.getContentMimeType(entity);
     switch (status.getStatusCode()) {
-      case HttpStatus.SC_OK:
+      case SC_OK:
         if (mimeType.equals("application/json")) {
           try {
             String body = EntityUtils.toString(entity);
@@ -191,7 +184,7 @@ abstract class BaseHttp {
           // TODO: Throw something appropriate.
           throw new RuntimeException("Non-Json response");
         }
-      case HttpStatus.SC_NO_CONTENT:
+      case SC_NO_CONTENT:
         // This is not an error.
         try {
           // Consume the entity to release HttpClient resources.
@@ -223,7 +216,7 @@ abstract class BaseHttp {
       return null; // Is this actually the right thing to do?
     String mimeType = EntityUtils.getContentMimeType(entity);
     switch (status.getStatusCode()) {
-      case HttpStatus.SC_OK:
+      case SC_OK:
         if (mimeType.equals("application/json")) {
           try {
             String body = EntityUtils.toString(entity);
@@ -277,7 +270,7 @@ abstract class BaseHttp {
           // TODO: Throw something appropriate.
           throw new RuntimeException("Non-Json response");
         }
-      case HttpStatus.SC_NOT_FOUND:
+      case SC_NOT_FOUND:
         // This is not necessarily an error, but we must throw something.
         try {
           // Consume the entity to release HttpClient resources.
@@ -305,8 +298,8 @@ abstract class BaseHttp {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     switch (status.getStatusCode()) {
-      case HttpStatus.SC_OK:
-      case HttpStatus.SC_CREATED:
+      case SC_OK:
+      case SC_CREATED:
         String responseMimeType = EntityUtils.getContentMimeType(entity);
         if (responseMimeType == null) {
           try {
@@ -352,7 +345,7 @@ abstract class BaseHttp {
           // TODO: Handle body-only responses.
           throw new RuntimeException("Unhandled response mime type " + responseMimeType);
         }
-      case HttpStatus.SC_NO_CONTENT:
+      case SC_NO_CONTENT:
         try {
           EntityUtils.consume(entity);
         } catch (IOException e) {
@@ -361,7 +354,7 @@ abstract class BaseHttp {
           throw new RuntimeException("Failed to consume HttpEntity");
         }
         return null;
-      case HttpStatus.SC_NOT_FOUND:
+      case SC_NOT_FOUND:
         try {
           // Consume the entity to release HttpClient resources.
           EntityUtils.consume(entity);
@@ -384,15 +377,6 @@ abstract class BaseHttp {
     }
   }
 
-  protected String host;
-  protected int port;
-  protected String scheme = "http";
-
-  protected BaseHttp(String host, int port) {
-    this.host = host;
-    this.port = port;
-  }
-
   protected HttpPut getHttpRequest(CreateMessage request) {
     URI uri = getUri(request);
     HttpPut httpRequest = new HttpPut(uri);
@@ -401,7 +385,7 @@ abstract class BaseHttp {
       httpRequest.setEntity(bodyEntity);
     } catch (UnsupportedEncodingException e) {
       // This should be impossible for any legal String.
-      throw new RuntimeException("Unable to create body HttpEntity: " + e);
+      throw new BackendInternalException("Unable to create body HttpEntity: " + e);
     }
     return httpRequest;
   }
@@ -691,7 +675,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -699,7 +683,7 @@ abstract class BaseHttp {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -709,7 +693,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -719,7 +703,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -728,7 +712,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -736,7 +720,7 @@ abstract class BaseHttp {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -746,7 +730,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -756,7 +740,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -765,7 +749,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -790,7 +774,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
@@ -800,7 +784,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new RuntimeException("Unable to build request URI: " + e);
+      throw new BackendInternalException("Unable to build request URI: " + e);
     }
   }
 
