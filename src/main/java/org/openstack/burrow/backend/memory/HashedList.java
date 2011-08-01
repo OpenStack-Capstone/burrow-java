@@ -32,8 +32,8 @@ public class HashedList<K, V> {
     /**
      * Utility method for fetching table entries
      *
-     * @param key
-     * @return
+     * @param key Key to fetch entry for
+     * @return The internal table entry associated with key, or null if the key does not exists in the map.
      */
     protected PrivEntry getEntry(K key) {
         int ind = Math.abs(key.hashCode()) % table.length;
@@ -48,7 +48,9 @@ public class HashedList<K, V> {
 
 
     /**
-     * @param e
+     * Utility method to add an entry to a hash chain
+     *
+     * @param e The entry to be added
      */
     protected void chainAdd(PrivEntry e) {
         if (table[e.ind] == null) {
@@ -61,7 +63,9 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param e
+     * Utility method to add an entry to the insertion order list.
+     *
+     * @param e The entry to be added.
      */
     protected void listAdd(PrivEntry e) {
         if (back == null) {
@@ -75,7 +79,9 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param e
+     * Utility method to remove an entry from a hash chain.
+     *
+     * @param e The entry to be removed.
      */
     protected void chainRemove(PrivEntry e) {
         if (table[e.ind] == e) {
@@ -93,7 +99,9 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param e
+     * Utility method to remove an entry from the insertion order list
+     *
+     * @param e The entry to be removed
      */
     protected void listRemove(PrivEntry e) {
         if (e == front) {
@@ -117,8 +125,13 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param key
-     * @return
+     * Retrieve a value from the list given the associated key.
+     *
+     * If it is important to differentiate between a nonexistent and null entry,
+     * containsKey(K key) may be used.
+     *
+     * @param key The key to look up
+     * @return The associated value, or null if it does not exist.
      */
     public synchronized V get(K key) {
         PrivEntry e = getEntry(key);
@@ -126,8 +139,11 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param key
-     * @param value
+     * Insert a key/value pair into the map, will overwrite any entry currently
+     * associated with the given key.
+     *
+     * @param key The lookup key to associate with the given value.
+     * @param value The value to be inserted into the map.
      */
     public synchronized void put(K key, V value) {
 		int ind = Math.abs(key.hashCode()) % table.length;
@@ -150,8 +166,12 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param key
-     * @param value
+     * Update the value associated with a given key, or insert the pair into the map
+     * if the key does not exist.  update() varies from put() in that update() will not
+     * affect the position of the pair in the entry list.
+     *
+     * @param key The lookup key of the value to be updated.
+     * @param value The new value to be associated with the given key.
      */
     public synchronized void update(K key, V value) {
         PrivEntry e = getEntry(key);
@@ -164,8 +184,10 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param key
-     * @return
+     * Remove the key and its associated value from the map.
+     *
+     * @param key the key to be removed
+     * @return The removed value, or null if the key did not exist.
      */
     public synchronized V remove(K key) {
         PrivEntry e = getEntry(key);
@@ -178,7 +200,9 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @param e
+     * Utility method to remove an entry from the map
+     *
+     * @param e The entry to be removed
      */
     private void removeEntry(PrivEntry e) {
         listRemove(e);
@@ -188,29 +212,40 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @return
+     * Test if there are any entries in the map.
+     *
+     * @return True if there no entries in the map, false otherwise.
      */
     public synchronized boolean isEmpty() {
         return population == 0;
     }
 
     /**
-     * @param key
-     * @return
+     * Test whether a key exists in the map.  Useful for discriminating between
+     * keys with null values and nonexistent keys.
+     *
+     * @param key The key to check for existence
+     * @return True if the key exists in the map, false otherwise.
      */
     public synchronized boolean containsKey(K key) {
         return getEntry(key) != null;
     }
 
+
+    /**
+     * Node class for both map and list.
+     */
     protected class PrivEntry extends Entry<K, V> {
         int ind;
         PrivEntry chainNext, chainPrev;
         PrivEntry listNext, listPrev;
 
         /**
-         * @param key
-         * @param value
-         * @param ind
+         * Contruct a new entry
+         *
+         * @param key The key to be stored in the entry
+         * @param value The value to be stored in the entry
+         * @param ind The index which key maps to in the containing table
          */
         PrivEntry(K key, V value, int ind) {
             this.key = key;
@@ -223,12 +258,18 @@ public class HashedList<K, V> {
         }
     }
 
+    /**
+     * Iterator class to walking the entries in the list.
+     */
     protected class IteratorFrom implements Iterator<Entry<K, V>> {
         PrivEntry nextEntry, curr;
         boolean removed;
         final HashedList outer;
+
         /**
-         * @param key
+         * Construct an iterator starting at the entry following the given key.
+         *
+         * @param key The key preceding the desired start position
          */
         public IteratorFrom(K key) {
             outer = HashedList.this;
@@ -238,12 +279,12 @@ public class HashedList<K, V> {
               if (e == null) nextEntry = null;
               else nextEntry = e.listNext;
             }
-                curr = null;
+            curr = null;
             removed = false;
         }
 
         /**
-         *
+         * Construct a iterator starting at the beginning of the list
          */
         public IteratorFrom() {
             outer = HashedList.this;
@@ -255,7 +296,9 @@ public class HashedList<K, V> {
         }
 
         /**
-         * @return
+         * Fetch the next entry in the list
+         *
+         * @return The next entry in the list
          */
         public Entry<K, V> next() {
 			Entry<K, V> ret;
@@ -271,14 +314,17 @@ public class HashedList<K, V> {
         }
 
         /**
-         * @return
+         * Check if there is another item in the list
+         *
+         * @return True if there are more entries in the list, false otherwise
          */
         public boolean hasNext() {
             return nextEntry != null;
         }
 
         /**
-         *
+         * Remove the current item from the map, it is an error to call remove() before next(),
+         * or more than once per call to next().
          */
         public void remove() {
             if ((curr == null) || removed) throw new IllegalStateException();
@@ -291,15 +337,19 @@ public class HashedList<K, V> {
     }
 
     /**
-     * @return
+     * Get an iterator starting at the beginning of the list.
+     *
+     * @return The iterator
      */
     public Iterator<Entry<K, V>> newIterator() {
         return new IteratorFrom();
     }
 
     /**
-     * @param key
-     * @return
+     * Get an iterator starting at the position following the given key.
+     *
+     * @param key The key preceding the desired start position.
+     * @return The iterator
      */
     public Iterator<Entry<K, V>> newIteratorFrom(K key) {
         return new IteratorFrom(key);
@@ -311,14 +361,18 @@ class Entry<L, W> {
     protected W value;
 
     /**
-     * @return
+     * Get the value stored in this entry.
+     *
+     * @return The value stored in this entry.
      */
     public W getValue() {
         return value;
     }
 
     /**
-     * @return
+     * Get the key stored in this entry.
+     *
+     * @return The key stored in this entry.
      */
     public L getKey() {
         return key;
