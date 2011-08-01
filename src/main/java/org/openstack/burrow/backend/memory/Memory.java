@@ -18,6 +18,7 @@ package org.openstack.burrow.backend.memory;
 
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.*;
+import org.openstack.burrow.client.methods.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ public class Memory implements Backend {
         return mq;
 	}
 
-    private void ensurePresent(String account, String queue) {
+    private MemoryQueue ensurePresent(String account, String queue) {
         if (account == null || queue == null)
             throw new IllegalArgumentException("Neither account nor queue identifiers may be null.");
 
@@ -66,24 +67,9 @@ public class Memory implements Backend {
 
         if (!accountMap.get(account).containsKey(queue))
             throw new NoSuchQueueException();
-    }
 
-    /**
-     * Create a message with a given id.
-     *
-     * @param account   Create a message in this account.
-     * @param queue     Create a message in this queue.
-     * @param messageId Create a message with this id.
-     * @param body      Create a message with this body.
-     * @param ttl       Optional. Create a message that will remain in the queue for up
-     *                  to this many seconds.
-     * @param hide      Optional. Create a message that is hidden for this many
-     *                  seconds.
-     */
-    public synchronized void createMessage(String account, String queue, String messageId, String body, Long ttl, Long hide) {
-        MemoryQueue mq = createIfAbsent(account, queue);
-        mq.put(messageId, body, ttl, hide);
-	}
+        return accountMap.get(account).get(queue);
+    }
 
     /**
      * Delete accounts, including the associated queues and messages.
@@ -116,38 +102,6 @@ public class Memory implements Backend {
     }
 
     /**
-     * Delete a message with a known id.
-     *
-     * @param account   Delete a message in this account.
-     * @param queue     Delete a message in this queue.
-     * @param messageId Delete a message with this id.
-     */
-    public synchronized void deleteMessage(String account, String queue, String messageId) {
-        ensurePresent(account, queue);
-        accountMap.get(account).get(queue).remove(messageId);
-    }
-
-    /**
-     * Delete messages in a queue.
-     *
-     * @param account     Delete messages in this account.
-     * @param queue       Delete messages in this queue.
-     * @param marker      Optional. Delete messages with ids after this marker.
-     * @param limit       Optional. Delete at most this many messages.
-     * @param matchHidden Optional. Delete messages that are hidden.
-     * @param detail      Optional. Return this level of detail about the deleted
-     *                    messages.
-     * @param wait        Optional. Wait up to this many seconds to delete a message if
-     *                    none would otherwise be deleted.
-     * @return A list of Message instances with the requested level of detail, or
-     *         null if detail='none'.
-     */
-    public synchronized List<Message> deleteMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
-        ensurePresent(account, queue);
-        return accountMap.get(account).get(queue).remove(marker, limit, matchHidden, wait);
-    }
-
-    /**
      * Delete queues, including associated messages.
      *
      * @param account Delete queues in this account.
@@ -170,12 +124,151 @@ public class Memory implements Backend {
 
         while ((limit != 0) && (iter.hasNext())) {
             Entry<String, MemoryQueue> e = iter.next();
-            deleted.add(new Queue(this, account, e.getKey()));
+            deleted.add(new Queue(new Account(this, account), e.getKey()));
             iter.remove();
             limit--;
         }
 
         return deleted;
+    }
+
+    /**
+     * Execute a CreateMessage request.
+     *
+     * @param request The request to execute.
+     * @return A Message instance populated with any information returned by the
+     *         queue about the created message, or null if the queue did not
+     *         return any information.
+     */
+    public Message execute(CreateMessage request) {
+        if (request == null)
+            throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = createIfAbsent(account, queue);
+
+        return mq.put(request.getId(), request.getBody(), request.getTtl(), request.getHide());
+    }
+
+    /**
+     * Execute a DeleteMessage request.
+     *
+     * @param request The request to execute.
+     * @return A Message instance populated with any information returned by the
+     *         queue about the deleted message, or null if the queue did not
+     *         return any information.
+     */
+    public Message execute(DeleteMessage request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        return mq.remove(request.getId());
+    }
+
+    /**
+     * Execute a DeleteMessages request.
+     *
+     * @param request The request to execute.
+     * @return A list of Message instances populated with any information returned
+     *         by the queue about the deleted messages, or null if the queue did
+     *         not return any information.
+     */
+    public List<Message> execute(DeleteMessages request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        return mq.remove(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
+    }
+
+    /**
+     * Execute a GetMessage request.
+     *
+     * @param request The request to execute.
+     * @return A Message instance populated with any information returned by the
+     *         queue about the message, or null if the queue did not return any
+     *         information.
+     */
+    public Message execute(GetMessage request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        Message msg = mq.get(request.getId());
+        if (msg == null) throw new NoSuchMessageException();
+        if (!request.getMatchHidden() && (msg.getHide() != 0)) throw new MessageHiddenException();
+
+        return msg;
+    }
+
+    /**
+     * Execute a GetMessages request.
+     *
+     * @param request The request to execute.
+     * @return A list of Message instances populated with any information returned
+     *         by the queue about the messages, or null if the queue did not
+     *         return any information.
+     */
+    public List<Message> execute(GetMessages request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        return mq.get(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
+    }
+
+    /**
+     * Execute an UpdateMessage request.
+     *
+     * @param request The request to execute.
+     * @return A Message instance populated with any information returned by the
+     *         queue about the message, or null if the queue did not return any
+     *         information.
+     */
+    public Message execute(UpdateMessage request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        return mq.update(request.getId(), request.getTtl(), request.getHide());
+
+    }
+
+    /**
+     * Execute an UpdateMessages request.
+     *
+     * @param request The request to execute.
+     * @return A list of Message instances populated with any information returned
+     *         by the queue about the messages, or null if the queue did not
+     *         return any information.
+     */
+    public List<Message> execute(UpdateMessages request) {
+        if (request == null)
+                    throw new IllegalArgumentException();
+
+        String account = request.getQueue().getAccount().getId();
+        String queue = request.getQueue().getId();
+        MemoryQueue mq = ensurePresent(account, queue);
+
+        return mq.update(request.getMarker(), request.getLimit(), request.getMatchHidden(),
+                         request.getTtl(), request.getHide(), request.getWait());
     }
 
     /**
@@ -205,45 +298,6 @@ public class Memory implements Backend {
     }
 
     /**
-     * Get a message with a known id.
-     *
-     * @param account   Get a message from this account.
-     * @param queue     Get a message from this queue.
-     * @param messageId Get a message with this id.
-     * @param detail    Return this level of detail about the message.
-     * @return A Message instance with the requested level of detail, or null if
-     *         detail='none'.
-     */
-    public synchronized Message getMessage(String account, String queue, String messageId, String detail) {
-        ensurePresent(account, queue);
-        Message msg = accountMap.get(account).get(queue).get(messageId);
-        if (msg == null) throw new NoSuchMessageException();
-
-        return msg;
-    }
-
-    /**
-     * Get messages from a queue.
-     *
-     * @param account     Get messages in this account.
-     * @param queue       Get messages in this queue.
-     * @param marker      Optional. Get messages with ids after this marker.
-     * @param limit       Optional. Get at most this many messages.
-     * @param matchHidden Optional. Get messages that are hidden.
-     * @param detail      Optional. Return this level of detail for the messages.
-     * @param wait        Optional. Wait up to this many seconds to get a message if none
-     *                    would otherwise be returned.
-     * @return A list of Message instances with the requested level of detail.
-     */
-    public synchronized List<Message> getMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait) {
-        ensurePresent(account, queue);
-        MemoryAccount ma = accountMap.get(account);
-        MemoryQueue mq = ma.get(queue);
-        if (mq == null) throw new NoSuchQueueException();
-        return mq.get(marker, limit, matchHidden, wait);
-    }
-
-    /**
      * List queues in an account.
      *
      * @param account List queues in this account.
@@ -264,49 +318,10 @@ public class Memory implements Backend {
 
         while ((limit != 0) && (iter.hasNext())) {
             Entry<String, MemoryQueue> e = iter.next();
-            queues.add(new Queue(this, account, e.getKey()));
+            queues.add(new Queue(new Account(this, account), e.getKey()));
             limit--;
         }
 
         return queues;
-    }
-
-    /**
-     * Update a message with a known id.
-     *
-     * @param account   Update a message in this account.
-     * @param queue     Update a message in this queue.
-     * @param messageId Update a message with this id.
-     * @param ttl       Optional. Update the message to remain in the queue for up to
-     *                  this many seconds.
-     * @param hide      Optional. Update the message to be hidden for this many
-     *                  seconds.
-     */
-    public synchronized Message updateMessage(String account, String queue, String messageId, Long ttl, Long hide, String detail) {
-        ensurePresent(account, queue);
-        return accountMap.get(account).get(queue).update(messageId, ttl, hide);
-    }
-
-    /**
-     * Update messages in a queue.
-     *
-     * @param account     Update messages in this account.
-     * @param queue       Update messages in this queue.
-     * @param marker      Optional. Update messages with ids after this marker.
-     * @param limit       Optional. Update at most this many messages.
-     * @param matchHidden Optional. Update messages that are hidden.
-     * @param ttl         Optional. Update messages to remain in the queue for up to this
-     *                    many seconds.
-     * @param hide        Optional. Update messages to be hidden this many seconds.
-     * @param detail      Optional. Return this level of detail for the updated
-     *                    messages.
-     * @param wait        Optional. Wait up to this many seconds to update a message if
-     *                    none would otherwise be updated.
-     * @return A list of updated Message instances with the requested level of
-     *         detail, or null if detail='none'.
-     */
-    public synchronized List<Message> updateMessages(String account, String queue, String marker, Long limit, Boolean matchHidden, Long ttl, Long hide, String detail, Long wait) {
-        ensurePresent(account, queue);
-        return accountMap.get(account).get(queue).update(marker, limit, matchHidden, ttl, hide, wait);
     }
 }

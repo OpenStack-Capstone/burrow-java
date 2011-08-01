@@ -52,20 +52,22 @@ class MemoryQueue {
             queue = new HashedList<String, MessageRecord>();
         }
 
-        synchronized void put(String messageId, String body, Long ttl, Long hide) {
+        synchronized Message put(String messageId, String body, Long ttl, Long hide) {
             clean();
-            queue.put(messageId, new MessageRecord(messageId, body, ttl, hide));
+            MessageRecord msg = new MessageRecord(messageId, body, ttl, hide);
+            queue.put(messageId, msg);
+            return msg;
         }
 
         synchronized Message get(String messageId) {
             clean();
-            MessageRecord message = queue.get(messageId);
+            MessageRecord msg = queue.get(messageId);
 
-            if (message == null) throw new NoSuchMessageException();
+            if (msg == null) throw new NoSuchMessageException();
 
-            if (message.getHide() != 0) throw new MessageHiddenException();
+            if (msg.getHide() != 0) throw new MessageHiddenException();
 
-            return message;
+            return msg;
         }
 
         synchronized List<Message> get(String marker, Long limit, Boolean matchHidden, Long wait) {
@@ -92,11 +94,11 @@ class MemoryQueue {
 
         synchronized Message remove(String id) {
             clean();
-            MessageRecord m = queue.remove(id);
+            MessageRecord msg = queue.remove(id);
 
-            if (m == null) throw new NoSuchMessageException();
+            if (msg == null) throw new NoSuchMessageException();
 
-            return m;
+            return msg;
         }
 
         synchronized List<Message> remove(String marker, Long limit, Boolean matchHidden, Long wait) {

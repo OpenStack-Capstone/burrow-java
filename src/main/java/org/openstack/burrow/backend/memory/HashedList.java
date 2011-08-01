@@ -224,7 +224,7 @@ public class HashedList<K, V> {
     protected class IteratorFrom implements Iterator<Entry<K, V>> {
         PrivEntry nextEntry, curr;
         boolean removed;
-        HashedList outer;
+        final HashedList outer;
         /**
          * @param key
          */
