@@ -20,14 +20,18 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.http.nio.reactor.IOReactorException;
+import org.openstack.burrow.backend.AsyncBackend;
 import org.openstack.burrow.backend.http.AsyncHttp;
 
 public class AsyncHttpClientTest extends ClientTest {
   public static Test suite() {
-    return new TestSuite(HttpClientTest.class);
+    return new TestSuite(AsyncHttpClientTest.class);
   }
+
+  protected AsyncBackend asyncBackend;
 
   public AsyncHttpClientTest(String testName) throws IOReactorException {
     super(testName, new AsyncHttp("localhost", 8080));
+    this.asyncBackend = (AsyncBackend) this.backend;
   }
 }
