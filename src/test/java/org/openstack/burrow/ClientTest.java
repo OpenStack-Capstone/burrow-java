@@ -24,6 +24,7 @@ import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchAccountException;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 
@@ -45,6 +46,24 @@ abstract class ClientTest extends TestCase {
     for (Message message : messages)
       for (int idx = 0; idx < ids.length; idx++)
         if (message.getId().equals(ids[idx]))
+          seen[idx] = true;
+    return seen;
+  }
+
+  /**
+   * Scan a list of queues for the presence of one or more queue ids.
+   * 
+   * @param queues The queues to scan.
+   * @param ids The queue ids to scan for.
+   * @return for each id, true if the queue id was seen and false otherwise.
+   */
+  static boolean[] scanQueues(List<Queue> queues, String[] ids) {
+    boolean[] seen = new boolean[ids.length];
+    for (int idx = 0; idx < seen.length; idx++)
+      seen[idx] = false;
+    for (Queue queue : queues)
+      for (int idx = 0; idx < ids.length; idx++)
+        if (queue.getId().equals(ids[idx]))
           seen[idx] = true;
     return seen;
   }
@@ -122,6 +141,27 @@ abstract class ClientTest extends TestCase {
     seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue(seen[0]);
     assertFalse(seen[1]);
+  }
+
+  /**
+   * Create a message, verify the queue exists, then delete all messages in the
+   * queue and verify it goes away.
+   */
+  public void testGetQueuesDeleteMessages() {
+    String messageId = "testGetQueues";
+    String messageBody = "testGetQueuesMessageBody";
+    String queueIds[] = {queue.getId()};
+    boolean[] seen;
+    backend.execute(queue.createMessage(messageId, messageBody));
+    seen = scanQueues(backend.execute(account.getQueues()), queueIds);
+    assertTrue(seen[0]);
+    try {
+      backend.execute(queue.deleteMessages().withMatchHidden(true));
+      seen = scanQueues(backend.execute(account.getQueues()), queueIds);
+      assertFalse(seen[0]);
+    } catch (NoSuchAccountException e) {
+      // Expected, if there are no other queues in the account.
+    }
   }
 
   /**

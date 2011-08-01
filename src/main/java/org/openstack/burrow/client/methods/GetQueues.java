@@ -16,40 +16,42 @@
 
 package org.openstack.burrow.client.methods;
 
-import java.util.List;
-
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.Account;
 
 public class GetQueues {
-  private String account;
-  private Backend backend;
+  private Account account;
   private Long limit;
   private String marker;
 
-  public GetQueues(Backend backend, String account) {
-    this.backend = backend;
+  public GetQueues(Account account) {
     this.account = account;
     this.marker = null;
     this.limit = null;
   }
 
-  private GetQueues(Backend backend, String account, String marker, Long limit) {
-    this.backend = backend;
+  private GetQueues(Account account, String marker, Long limit) {
     this.account = account;
     this.marker = marker;
     this.limit = limit;
   }
 
-  public List<Queue> execute() {
-    return backend.getQueues(account, marker, limit);
+  public Account getAccount() {
+    return account;
   }
 
-  public GetQueues matchLimit(long limit) {
-    return new GetQueues(backend, account, marker, limit);
+  public Long getLimit() {
+    return limit;
+  }
+
+  public String getMarker() {
+    return marker;
+  }
+
+  public GetQueues withLimit(long limit) {
+    return new GetQueues(account, marker, limit);
   }
 
   public GetQueues withMarker(String marker) {
-    return new GetQueues(backend, account, marker, limit);
+    return new GetQueues(account, marker, limit);
   }
 }

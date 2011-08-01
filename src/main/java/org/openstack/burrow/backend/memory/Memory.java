@@ -27,6 +27,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
 import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
@@ -502,6 +503,13 @@ private class MemoryQueue {
 
   @Override
   public Message execute(UpdateMessage withHide) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  @Override
+  public List<Queue> execute(GetQueues request) {
     // TODO Auto-generated method stub
     return null;
   }

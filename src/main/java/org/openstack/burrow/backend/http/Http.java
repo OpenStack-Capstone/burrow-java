@@ -46,6 +46,7 @@ import org.json.JSONObject;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchAccountException;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
@@ -53,6 +54,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
 import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
@@ -196,6 +198,26 @@ public class Http implements Backend {
   }
 
   @Override
+  public List<Queue> execute(GetQueues request) {
+    HttpGet httpRequest = getHttpRequest(request);
+    Account account = request.getAccount();
+    try {
+      HttpResponse response = client.execute(httpRequest);
+      return handleMultipleQueueHttpResponse(account, response);
+    } catch (ClientProtocolException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    } catch (IOException e) {
+      // Thrown by client.execute()
+      // TODO: Throw something that isn't a RuntimeException
+      e.printStackTrace();
+      throw new RuntimeException("Error executing HTTP request: " + e);
+    }
+  }
+
+  @Override
   public Message execute(UpdateMessage request) {
     HttpPost httpRequest = getHttpRequest(request);
     try {
@@ -285,6 +307,12 @@ public class Http implements Backend {
   }
 
   private HttpGet getHttpRequest(GetMessages request) {
+    URI uri = getUri(request);
+    HttpGet httpRequest = new HttpGet(uri);
+    return httpRequest;
+  }
+
+  private HttpGet getHttpRequest(GetQueues request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
@@ -396,6 +424,21 @@ public class Http implements Backend {
     }
   }
 
+  private List<NameValuePair> getQueryParamaters(GetQueues request) {
+    String marker = request.getMarker();
+    Long limit = request.getLimit();
+    if ((marker != null) || (limit != null)) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+      if (marker != null)
+        params.add(new BasicNameValuePair("marker", marker));
+      if (limit != null)
+        params.add(new BasicNameValuePair("limit", limit.toString()));
+      return params;
+    } else {
+      return null;
+    }
+  }
+
   private List<NameValuePair> getQueryParamaters(UpdateMessage request) {
     Boolean matchHidden = request.getMatchHidden();
     Long ttl = request.getTtl();
@@ -452,21 +495,6 @@ public class Http implements Backend {
     }
   }
 
-  /**
-   * List queues in an account.
-   * 
-   * @param account List queues in this account.
-   * @param marker Optional. Only queues with a name after this marker will be
-   *          listed.
-   * @param limit Optional. At most this many queues will be listed.
-   * @return A list of Queues.
-   */
-  @Override
-  public List<Queue> getQueues(String account, String marker, Long limit) {
-    return null; // To change body of implemented methods use File | Settings |
-                 // File Templates.
-  }
-
   private URI getUri(CreateMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -517,6 +545,15 @@ public class Http implements Backend {
     }
   }
 
+  private URI getUri(GetQueues request) {
+    Account account = request.getAccount();
+    try {
+      return getUri(account.getId(), null, null, getQueryParamaters(request));
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unable to build request URI: " + e);
+    }
+  }
+
   private URI getUri(String account, String queue, String message, List<NameValuePair> params)
       throws URISyntaxException {
     String path = "/v1.0";
@@ -556,7 +593,7 @@ public class Http implements Backend {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
-      return null;
+      return null; // Is this actually the right thing to do?
     String mimeType = EntityUtils.getContentMimeType(entity);
     switch (status.getStatusCode()) {
       case HttpStatus.SC_OK:
@@ -613,6 +650,91 @@ public class Http implements Backend {
           throw new RuntimeException("Failed to consume HttpEntity");
         }
         return null;
+      default:
+        // This is probably an error.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        // TODO: Throw something appropriate.
+        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+    }
+  }
+
+  private List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response) {
+    StatusLine status = response.getStatusLine();
+    HttpEntity entity = response.getEntity();
+    if (entity == null)
+      return null; // Is this actually the right thing to do?
+    String mimeType = EntityUtils.getContentMimeType(entity);
+    switch (status.getStatusCode()) {
+      case HttpStatus.SC_OK:
+        if (mimeType.equals("application/json")) {
+          try {
+            String body = EntityUtils.toString(entity);
+            JSONArray arrayJson = new JSONArray(body);
+            List<Queue> queues = new ArrayList<Queue>(arrayJson.length());
+            try {
+              // Assume the response is an array of JSON Objects.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                JSONObject queueJson = arrayJson.getJSONObject(idx);
+                Queue queue = new QueueResponse(account, queueJson);
+                queues.add(idx, queue);
+              }
+            } catch (JSONException e) {
+              // The response was not an array of JSON Objects. Try again,
+              // assuming it was an array of strings.
+              for (int idx = 0; idx < arrayJson.length(); idx++) {
+                String queueId = arrayJson.getString(idx);
+                Queue queue = new QueueResponse(account, queueId);
+                queues.add(idx, queue);
+              }
+            }
+            return queues;
+          } catch (IOException e) {
+            try {
+              // Consume the entity to release HttpClient resources.
+              EntityUtils.consume(entity);
+            } catch (IOException e1) {
+              // If we ever stop throwing an exception in the outside block,
+              // this needs to be handled.
+            }
+            // TODO: Throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("IOException reading http response");
+          } catch (JSONException e) {
+            // It is not necessary to consume the entity because at the
+            // first point where this exception can be thrown,
+            // the entity has already been consumed by toString();
+            // TODO: throw something appropriate.
+            e.printStackTrace();
+            throw new RuntimeException("JSONException reading response");
+          }
+        } else {
+          // This situation cannot be handled.
+          try {
+            // Consume the entity to release HttpClient resources.
+            EntityUtils.consume(entity);
+          } catch (IOException e1) {
+            // If we ever stop throwing an exception in the outside block,
+            // this needs to be handled.
+          }
+          // TODO: Throw something appropriate.
+          throw new RuntimeException("Non-Json response");
+        }
+      case HttpStatus.SC_NOT_FOUND:
+        // This is not necessarily an error, but we must throw something.
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
+        throw new NoSuchAccountException();
       default:
         // This is probably an error.
         try {

@@ -38,7 +38,7 @@ public class Account {
   }
 
   public GetQueues getQueues() {
-    return new GetQueues(backend, id);
+    return new GetQueues(this);
   }
 
   public Queue Queue(String queue) {

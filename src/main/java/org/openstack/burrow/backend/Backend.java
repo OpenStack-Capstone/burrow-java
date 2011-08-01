@@ -26,6 +26,7 @@ import org.openstack.burrow.client.methods.DeleteMessage;
 import org.openstack.burrow.client.methods.DeleteMessages;
 import org.openstack.burrow.client.methods.GetMessage;
 import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
 import org.openstack.burrow.client.methods.UpdateMessage;
 import org.openstack.burrow.client.methods.UpdateMessages;
 
@@ -106,6 +107,16 @@ public interface Backend {
   public List<Message> execute(GetMessages request);
 
   /**
+   * Execute a GetQueues request.
+   * 
+   * @param request The request to execute.
+   * @return A list of Queue instances populated with any information returned
+   *         by the queue about the queues, or null if the queue did not return
+   *         any information.
+   */
+  public List<Queue> execute(GetQueues request);
+
+  /**
    * Execute an UpdateMessage request.
    * 
    * @param request The request to execute.
@@ -134,15 +145,4 @@ public interface Backend {
    * @return A list of Accounts.
    */
   public List<Account> getAccounts(String marker, Long limit);
-
-  /**
-   * List queues in an account.
-   * 
-   * @param account List queues in this account.
-   * @param marker Optional. Only queues with a name after this marker will be
-   *          listed.
-   * @param limit Optional. At most this many queues will be listed.
-   * @return A list of Queues.
-   */
-  public List<Queue> getQueues(String account, String marker, Long limit);
 }
