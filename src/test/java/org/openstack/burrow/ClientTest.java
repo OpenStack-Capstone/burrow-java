@@ -16,13 +16,19 @@
 
 package org.openstack.burrow;
 
+import java.util.List;
+
 import junit.framework.TestCase;
+
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.CommandException;
 import org.openstack.burrow.backend.ProtocolException;
-import org.openstack.burrow.client.*;
-
-import java.util.List;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Client;
+import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchAccountException;
+import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.Queue;
 
 /**
  * Unit tests for the Burrow Client.
@@ -161,8 +167,8 @@ abstract class ClientTest extends TestCase {
     backend.execute(queue.createMessage(id, body).withTtl(ttl));
     Message message = backend.execute(queue.getMessage(id));
     assertEquals(message.getBody(), body);
-    assertTrue("Expected message.getTtl() <= ttl, found message.getTtl()=" + message.getTtl() + "  ttl=" + ttl,
-            message.getTtl() <= ttl);
+    assertTrue("Expected message.getTtl() <= ttl, found message.getTtl()=" + message.getTtl()
+        + "  ttl=" + ttl, message.getTtl() <= ttl);
   }
 
   /**
