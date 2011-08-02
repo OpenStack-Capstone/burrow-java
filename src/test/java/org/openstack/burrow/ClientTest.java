@@ -268,7 +268,7 @@ abstract class ClientTest extends TestCase {
     }
     try {
       backend.execute(account.getQueues());
-      fail("getQueues should have raised NoSuchAccountException when no queues exist");
+      fail("getQueues should have raised CommandException when no queues exist");
     } catch (CommandException e) {
       // This is expected.
     }

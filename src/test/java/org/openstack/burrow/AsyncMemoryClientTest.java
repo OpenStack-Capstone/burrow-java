@@ -21,7 +21,7 @@ import junit.framework.TestSuite;
 import org.openstack.burrow.backend.memory.AsyncMemory;
 import org.openstack.burrow.backend.memory.Memory;
 
-public class AsyncMemoryClientTest extends ClientTest {
+public class AsyncMemoryClientTest extends AsyncClientTest {
   public static Test suite() {
     return new TestSuite(AsyncMemoryClientTest.class);
   }
