@@ -22,15 +22,15 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Unit tests for the Burrow Client.
  */
-abstract class AsyncClientTest extends TestCase {
+public abstract class AsyncClientTest extends TestCase {
     /**
      * Scan a list of accounts for the presence of one or more account ids.
      *
@@ -397,95 +397,150 @@ abstract class AsyncClientTest extends TestCase {
     /**
      * Make sure backend handles nulls sensibly.
      *
-     * IllegalArgumentExceptions are to be expected here.
+     * IllegalArgumentException/ExecutionExceptions (as appropriate) are to be expected here.
      */
     public void testNullHandling() throws ExecutionException, InterruptedException {
         try {
-            backend.executeAsync(queue.createMessage(null, "foo")).get();
+            backend.executeAsync((CreateMessage) null).get();
         } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((DeleteAccounts) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((DeleteMessage) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((DeleteMessages) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((DeleteQueues) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((GetAccounts) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((GetMessage) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((GetMessages) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((GetQueues) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((UpdateMessage) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.executeAsync((UpdateMessages) null).get();
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.executeAsync(queue.createMessage(null, "foo")).get();
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.createMessage("foo", null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.createMessage(null, null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
 
         try {
             backend.executeAsync(queue.getMessage(null).withDetail("foo")).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.getMessage("foo").withDetail(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.getMessage(null).withDetail(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
 
         try {
             backend.executeAsync(queue.deleteMessage(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
 
         try {
             backend.executeAsync(queue.updateMessage(null).withDetail("foo")).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.updateMessage("foo").withDetail(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.updateMessage(null).withDetail(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
 
         try {
             backend.executeAsync(queue.deleteMessages().withDetail(null).withMarker("foo")).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.deleteMessages().withDetail("foo").withMarker(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.deleteMessages().withDetail(null).withMarker(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
 
         try {
             backend.executeAsync(queue.updateMessages().withDetail(null).withMarker("foo")).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.updateMessages().withDetail("foo").withMarker(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
         try {
             backend.executeAsync(queue.updateMessages().withDetail(null).withMarker(null)).get();
-        } catch (IllegalArgumentException e) {
+        } catch (ExecutionException e) {
             //Expected
         }
-//    } catch (IllegalArgumentException iae){;}
     }
 
 }
