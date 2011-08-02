@@ -18,6 +18,8 @@ package org.openstack.burrow;
 
 import org.junit.Test;
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.backend.http.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
@@ -32,7 +34,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testCreateMessage() {
+    public void testCreateMessage() throws CommandException, ProtocolException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -55,7 +57,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessage() {
+    public void testDeleteMessage() throws CommandException, ProtocolException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -72,7 +74,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessages() {
+    public void testDeleteMessages() throws CommandException, ProtocolException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -91,7 +93,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testGetMessage() {
+    public void testGetMessage() throws CommandException, ProtocolException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -114,7 +116,7 @@ public class RequestObjectsTest {
       * calling all the correct functions.
       */
     @Test
-    public void testGetMessages() {
+    public void testGetMessages() throws CommandException, ProtocolException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");

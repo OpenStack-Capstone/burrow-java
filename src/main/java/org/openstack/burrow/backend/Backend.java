@@ -16,12 +16,22 @@
 
 package org.openstack.burrow.backend;
 
+import java.util.List;
+
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.*;
-
-import java.util.List;
+import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
+import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
+import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
+import org.openstack.burrow.client.methods.UpdateMessage;
+import org.openstack.burrow.client.methods.UpdateMessages;
 
 public interface Backend {
   /**
