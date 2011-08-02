@@ -28,14 +28,24 @@ import org.apache.http.nio.IOControl;
 import org.apache.http.nio.client.methods.AsyncCharConsumer;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.openstack.burrow.backend.BurrowRuntimeException;
+import org.openstack.burrow.backend.HttpProtocolException;
+import org.openstack.burrow.backend.NoSuchQueueException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchQueueException;
+import org.openstack.burrow.client.methods.MessageListRequest;
 
 public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>> {
   private StringBuilder accumulator = null;
   private Exception exception = null;
   private String mimeType = null;
+  private MessageListRequest request;
+
+  MessageListResponseConsumer(MessageListRequest request) {
+    this.request = request;
+  }
 
   @Override
   protected List<Message> buildResult() throws Exception {
@@ -45,18 +55,24 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
       // It was not an error condition but we do not care about the response
       // body.
       return null;
-    } else if (mimeType.equals("application/json")) {
-      JSONArray messagesJson = new JSONArray(accumulator.toString());
-      List<Message> messages = new ArrayList<Message>(messagesJson.length());
-      for (int idx = 0; idx < messagesJson.length(); idx++) {
-        JSONObject messageJson = messagesJson.getJSONObject(idx);
-        Message message = new MessageResponse(messageJson);
-        messages.add(idx, message);
+    } else if ("application/json".equals(mimeType)) {
+      try {
+        JSONArray messagesJson = new JSONArray(accumulator.toString());
+        List<Message> messages = new ArrayList<Message>(messagesJson.length());
+        for (int idx = 0; idx < messagesJson.length(); idx++) {
+          JSONObject messageJson = messagesJson.getJSONObject(idx);
+          Message message = new MessageResponse(request, messageJson);
+          messages.add(idx, message);
+        }
+        return messages;
+      } catch (JSONException e) {
+        throw new ProtocolException("Unable to parse server response", e);
       }
-      return messages;
-    } else
-      throw new RuntimeException("Unhandled circumstance in MessageListResponseConsumer; mimeType="
-          + mimeType + ", acc=" + accumulator);
+    } else {
+      throw new BurrowRuntimeException(
+          "Unhandled circumstance in MessageListResponseConsumer; mimeType=" + mimeType + ", acc="
+              + accumulator);
+    }
   }
 
   @Override
@@ -77,11 +93,10 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
     switch (statusCode) {
       case HttpStatus.SC_OK:
         mimeType = EntityUtils.getContentMimeType(response.getEntity());
-        if (mimeType != null) {
-          if (mimeType.equals("application/json"))
-            accumulator = new StringBuilder();
-          else
-            exception = new RuntimeException("Unhandled response mime type: " + mimeType);
+        if ("application/json".equals(mimeType)) {
+          accumulator = new StringBuilder();
+        } else if (mimeType != null) {
+          exception = new HttpProtocolException("Unhandled response mime type: " + mimeType);
         }
         return;
       case HttpStatus.SC_NO_CONTENT:
@@ -94,7 +109,7 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
         return;
       default:
         // This is an error condition.
-        exception = new RuntimeException("Unhandled response status code: " + statusCode);
+        exception = new HttpProtocolException("Unhandled response status code: " + statusCode);
         return;
     }
   }

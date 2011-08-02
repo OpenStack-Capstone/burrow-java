@@ -25,29 +25,45 @@ import org.apache.http.StatusLine;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.client.methods.AsyncCharConsumer;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.openstack.burrow.backend.HttpProtocolException;
+import org.openstack.burrow.backend.NoSuchMessageException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.methods.SingleMessageRequest;
 
 public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
   private StringBuilder accumulator = null;
   private Exception exception = null;
   private String mimeType = null;
+  private SingleMessageRequest request;
+
+  SingleMessageResponseConsumer(SingleMessageRequest request) {
+    this.request = request;
+  }
 
   @Override
   protected Message buildResult() throws Exception {
-    if (exception != null)
+    if (exception != null) {
       throw exception;
-    else if (accumulator == null) {
+    } else if (accumulator == null) {
       // It was not an error condition but we do not care about the response
       // body.
       return null;
-    } else if (mimeType.equals("application/json")) {
-      JSONObject messageJson = new JSONObject(accumulator.toString());
-      return new MessageResponse(messageJson);
-    } else
+    } else if ("application/json".equals(mimeType)) {
+      try {
+        JSONObject messageJson = new JSONObject(accumulator.toString());
+        return new MessageResponse(request, messageJson);
+      } catch (JSONException e) {
+        throw new ProtocolException("Unable to parse server response", e);
+      }
+    } else if ("application/octet-stream".equals(mimeType)) {
+      return new MessageResponse(request, accumulator);
+    } else {
       throw new RuntimeException("Unhandled circumstance in SingleMessageConsumer; mimeType="
           + mimeType + ", acc=" + accumulator);
+    }
   }
 
   @Override
@@ -69,11 +85,10 @@ public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
       case HttpStatus.SC_OK:
       case HttpStatus.SC_CREATED:
         mimeType = EntityUtils.getContentMimeType(response.getEntity());
-        if (mimeType != null) {
-          if (mimeType.equals("application/json"))
-            accumulator = new StringBuilder();
-          else
-            exception = new RuntimeException("Unhandled response mime type: " + mimeType);
+        if (("application/json".equals(mimeType)) || ("application/octet-stream".equals(mimeType))) {
+          accumulator = new StringBuilder();
+        } else if (mimeType != null) {
+          exception = new HttpProtocolException("Unhandled response mime type: " + mimeType);
         }
         return;
       case HttpStatus.SC_NO_CONTENT:
@@ -86,7 +101,7 @@ public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
         return;
       default:
         // This is an error condition.
-        exception = new RuntimeException("Unhandled response status code: " + statusCode);
+        exception = new HttpProtocolException("Unhandled response status code: " + statusCode);
         return;
     }
   }

@@ -19,16 +19,42 @@ package org.openstack.burrow.backend.http;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.methods.MessageListRequest;
+import org.openstack.burrow.client.methods.SingleMessageRequest;
 
 class MessageResponse extends Message {
 
   MessageResponse(JSONObject message) throws JSONException {
-    super();
     setId(message.optString("id", null));
     setBody(message.optString("body", null));
     if (message.has("ttl"))
       setTtl(message.getLong("ttl"));
     if (message.has("hide"))
       setTtl(message.getLong("hide"));
+  }
+
+  MessageResponse(SingleMessageRequest request, JSONObject message) throws JSONException {
+    super(request);
+    setId(message.optString("id", id));
+    setBody(message.optString("body", body));
+    if (message.has("ttl"))
+      setTtl(message.getLong("ttl"));
+    if (message.has("hide"))
+      setTtl(message.getLong("hide"));
+  }
+  
+  MessageResponse(MessageListRequest request, JSONObject message) throws JSONException {
+    super(request);
+    setId(message.optString("id", null));
+    setBody(message.optString("body", null));
+    if (message.has("ttl"))
+      setTtl(message.getLong("ttl"));
+    if (message.has("hide"))
+      setTtl(message.getLong("hide"));    
+  }
+
+  MessageResponse(SingleMessageRequest request, StringBuilder accumulator) {
+    super(request);
+    setBody(accumulator.toString());
   }
 }

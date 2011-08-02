@@ -71,7 +71,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Account> execute(DeleteAccounts request) throws NoSuchAccountException, HttpProtocolException {
+  public List<Account> execute(DeleteAccounts request) throws CommandException, HttpProtocolException {
     HttpDelete httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);
@@ -109,7 +109,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Message> execute(DeleteMessages request) throws NoSuchMessageException, HttpProtocolException {
+  public List<Message> execute(DeleteMessages request) throws CommandException, HttpProtocolException {
     HttpDelete httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);
@@ -128,7 +128,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Queue> execute(DeleteQueues request) throws NoSuchQueueException, HttpProtocolException {
+  public List<Queue> execute(DeleteQueues request) throws CommandException, HttpProtocolException {
     HttpDelete httpRequest = getHttpRequest(request);
     Account account = request.getAccount();
     try {
@@ -148,7 +148,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Account> execute(GetAccounts request) throws NoSuchAccountException, HttpProtocolException {
+  public List<Account> execute(GetAccounts request) throws CommandException, HttpProtocolException {
     HttpGet httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);
@@ -186,7 +186,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Message> execute(GetMessages request) throws NoSuchMessageException, HttpProtocolException {
+  public List<Message> execute(GetMessages request) throws CommandException, HttpProtocolException {
     HttpGet httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);
@@ -205,7 +205,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Queue> execute(GetQueues request) throws NoSuchQueueException, HttpProtocolException {
+  public List<Queue> execute(GetQueues request) throws CommandException, HttpProtocolException {
     HttpGet httpRequest = getHttpRequest(request);
     Account account = request.getAccount();
     try {
@@ -244,7 +244,7 @@ public class Http extends BaseHttp implements Backend {
   }
 
   @Override
-  public List<Message> execute(UpdateMessages request) throws NoSuchMessageException, HttpProtocolException {
+  public List<Message> execute(UpdateMessages request) throws CommandException, HttpProtocolException {
     HttpPost httpRequest = getHttpRequest(request);
     try {
       HttpResponse response = client.execute(httpRequest);

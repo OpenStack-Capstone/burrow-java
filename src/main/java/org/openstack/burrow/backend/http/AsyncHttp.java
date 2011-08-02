@@ -29,11 +29,11 @@ import org.apache.http.nio.client.methods.HttpAsyncPost;
 import org.apache.http.nio.client.methods.HttpAsyncPut;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.openstack.burrow.backend.AsyncBackend;
+import org.openstack.burrow.backend.BurrowRuntimeException;
+import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchAccountException;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.NoSuchQueueException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteAccounts;
@@ -58,144 +58,178 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   }
 
   @Override
-  public Message execute(CreateMessage request) {
+  public Message execute(CreateMessage request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
-    } catch (ExecutionException e) {
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
-    }
-  }
-
-  @Override
-  public List<Account> execute(DeleteAccounts request) {
-    try {
-      return executeAsync(request).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
-    } catch (ExecutionException e) {
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
-    }
-  }
-
-  @Override
-  public Message execute(DeleteMessage request) {
-    try {
-      return executeAsync(request).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchMessageException)
-        throw (NoSuchMessageException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public List<Message> execute(DeleteMessages request) {
+  public List<Account> execute(DeleteAccounts request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchQueueException)
-        throw (NoSuchQueueException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public List<Queue> execute(DeleteQueues request) {
+  public Message execute(DeleteMessage request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchAccountException)
-        throw (NoSuchAccountException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public List<Account> execute(GetAccounts request) {
+  public List<Message> execute(DeleteMessages request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
-    } catch (ExecutionException e) {
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
-    }
-  }
-
-  @Override
-  public Message execute(GetMessage request) {
-    try {
-      return executeAsync(request).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchMessageException)
-        throw (NoSuchMessageException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public List<Message> execute(GetMessages request) {
+  public List<Queue> execute(DeleteQueues request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchQueueException)
-        throw (NoSuchQueueException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public List<Queue> execute(GetQueues request) {
+  public List<Account> execute(GetAccounts request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchAccountException)
-        throw (NoSuchAccountException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
   @Override
-  public Message execute(UpdateMessage request) {
+  public Message execute(GetMessage request) throws CommandException, ProtocolException {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
-    } catch (ExecutionException e) {
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
-    }
-  }
-
-  @Override
-  public List<Message> execute(UpdateMessages request) {
-    try {
-      return executeAsync(request).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
     } catch (ExecutionException e) {
       Throwable t = e.getCause();
-      if (t instanceof NoSuchQueueException)
-        throw (NoSuchQueueException) t;
-      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
+    }
+  }
+
+  @Override
+  public List<Message> execute(GetMessages request) throws CommandException, ProtocolException {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
+    } catch (ExecutionException e) {
+      Throwable t = e.getCause();
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
+    }
+  }
+
+  @Override
+  public List<Queue> execute(GetQueues request) throws CommandException, ProtocolException {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
+    } catch (ExecutionException e) {
+      Throwable t = e.getCause();
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
+    }
+  }
+
+  @Override
+  public Message execute(UpdateMessage request) throws CommandException, ProtocolException {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
+    } catch (ExecutionException e) {
+      Throwable t = e.getCause();
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
+    }
+  }
+
+  @Override
+  public List<Message> execute(UpdateMessages request) throws CommandException, ProtocolException {
+    try {
+      return executeAsync(request).get();
+    } catch (InterruptedException e) {
+      throw new BurrowRuntimeException("InterruptedException executing HTTP request", e);
+    } catch (ExecutionException e) {
+      Throwable t = e.getCause();
+      if (t instanceof CommandException)
+        throw (CommandException) t;
+      if (t instanceof ProtocolException)
+        throw (ProtocolException) t;
+      throw new BurrowRuntimeException("ExecutionException executing HTTP request", e);
     }
   }
 
@@ -204,7 +238,7 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     URI uri = getUri(request);
     HttpAsyncPut httpRequest =
         new HttpAsyncPut(uri, request.getBody(), "application/json", "UTF-8");
-    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(request), null);
   }
 
   @Override
@@ -218,14 +252,14 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   public Future<Message> executeAsync(DeleteMessage request) {
     URI uri = getUri(request);
     HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
-    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(request), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(DeleteMessages request) {
     URI uri = getUri(request);
     HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
-    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
+    return client.execute(httpRequest, new MessageListResponseConsumer(request), null);
   }
 
   @Override
@@ -246,14 +280,14 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   public Future<Message> executeAsync(GetMessage request) {
     URI uri = getUri(request);
     HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
-    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(request), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(GetMessages request) {
     URI uri = getUri(request);
     HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
-    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
+    return client.execute(httpRequest, new MessageListResponseConsumer(request), null);
   }
 
   @Override
@@ -267,13 +301,13 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   public Future<Message> executeAsync(UpdateMessage request) {
     URI uri = getUri(request);
     HttpAsyncPost httpRequest = new HttpAsyncPost(uri, "");
-    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(request), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(UpdateMessages request) {
     URI uri = getUri(request);
     HttpAsyncPost httpRequest = new HttpAsyncPost(uri, "");
-    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
+    return client.execute(httpRequest, new MessageListResponseConsumer(request), null);
   }
 }

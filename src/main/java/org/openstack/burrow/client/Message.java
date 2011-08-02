@@ -16,14 +16,35 @@
 
 package org.openstack.burrow.client;
 
+import org.openstack.burrow.client.methods.MessageListRequest;
+import org.openstack.burrow.client.methods.SingleMessageRequest;
+
 public class Message {
   // TODO Add more attributes.
   protected String body;
   protected Long hide;
   protected String id;
+  protected Queue queue;
   protected Long ttl;
 
   protected Message() {
+    this.id = null;
+    this.body = null;
+    this.ttl = null;
+    this.hide = null;
+    this.queue = null;
+  }
+  
+  protected Message(SingleMessageRequest request) {
+    this.id = request.getId();
+    this.queue = request.getQueue();
+    this.body = null;
+    this.ttl = null;
+    this.hide = null;
+  }
+
+  protected Message(MessageListRequest request) {
+    this.queue = request.getQueue();
     this.id = null;
     this.body = null;
     this.ttl = null;
@@ -42,6 +63,10 @@ public class Message {
     return id;
   }
 
+  public Queue getQueue() {
+    return queue;
+  }
+  
   public long getTtl() {
     return ttl;
   }
@@ -58,6 +83,10 @@ public class Message {
     this.id = id;
   }
 
+  protected void setQueue(Queue queue) {
+    this.queue = queue;
+  }
+  
   protected void setTtl(Long ttl) {
     this.ttl = ttl;
   }

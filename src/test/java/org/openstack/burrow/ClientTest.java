@@ -22,12 +22,12 @@ import junit.framework.TestCase;
 
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.NoSuchAccountException;
+import org.openstack.burrow.backend.NoSuchMessageException;
 import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchAccountException;
-import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.Queue;
 
 /**

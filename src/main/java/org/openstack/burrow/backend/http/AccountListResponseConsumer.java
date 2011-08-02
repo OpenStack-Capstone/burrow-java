@@ -30,6 +30,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openstack.burrow.backend.BurrowRuntimeException;
+import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.HttpProtocolException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.methods.AccountListRequest;
 
@@ -44,35 +48,41 @@ public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>
 
   @Override
   protected List<Account> buildResult() throws Exception {
-    if (exception != null)
+    if (exception != null) {
       throw exception;
-    else if (accumulator == null) {
+    } else if (accumulator == null) {
       // It was not an error condition but we do not care about the response
       // body.
       return null;
-    } else if (mimeType.equals("application/json")) {
-      JSONArray accountsJson = new JSONArray(accumulator.toString());
-      List<Account> accounts = new ArrayList<Account>(accountsJson.length());
+    } else if ("application/json".equals(mimeType)) {
       try {
-        // Assume the array is an array of objects.
-        for (int idx = 0; idx < accountsJson.length(); idx++) {
-          JSONObject accountJson = accountsJson.getJSONObject(idx);
-          Account account = new AccountResponse(accountJson);
-          accounts.add(idx, account);
+        JSONArray accountsJson = new JSONArray(accumulator.toString());
+        List<Account> accounts = new ArrayList<Account>(accountsJson.length());
+        try {
+          // Assume the array is an array of objects.
+          for (int idx = 0; idx < accountsJson.length(); idx++) {
+            JSONObject accountJson = accountsJson.getJSONObject(idx);
+            Account account = new AccountResponse(accountJson);
+            accounts.add(idx, account);
+          }
+        } catch (JSONException e) {
+          // The array was not an array of objects. Try again assuming an array
+          // of strings.
+          for (int idx = 0; idx < accountsJson.length(); idx++) {
+            String accountId = accountsJson.getString(idx);
+            Account account = new AccountResponse(accountId);
+            accounts.add(idx, account);
+          }
         }
+        return accounts;
       } catch (JSONException e) {
-        // The array was not an array of objects. Try again assuming an array of
-        // strings.
-        for (int idx = 0; idx < accountsJson.length(); idx++) {
-          String accountId = accountsJson.getString(idx);
-          Account account = new AccountResponse(accountId);
-          accounts.add(idx, account);
-        }
+        throw new ProtocolException("Unable to parse server response", e);
       }
-      return accounts;
-    } else
-      throw new RuntimeException("Unhandled circumstance in AccountListResponseConsumer; mimeType="
-          + mimeType + ", acc=" + accumulator);
+    } else {
+      throw new BurrowRuntimeException(
+          "Unhandled circumstance in AccountListResponseConsumer; mimeType=" + mimeType + ", acc="
+              + accumulator);
+    }
   }
 
   @Override
@@ -93,11 +103,10 @@ public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>
     switch (statusCode) {
       case HttpStatus.SC_OK:
         mimeType = EntityUtils.getContentMimeType(response.getEntity());
-        if (mimeType != null) {
-          if (mimeType.equals("application/json"))
-            accumulator = new StringBuilder();
-          else
-            exception = new RuntimeException("Unhandled response mime type: " + mimeType);
+        if ("application/json".equals(mimeType)) {
+          accumulator = new StringBuilder();
+        } else if (mimeType != null) {
+          exception = new HttpProtocolException("Unhandled response mime type: " + mimeType);
         }
         return;
       case HttpStatus.SC_NO_CONTENT:
@@ -106,11 +115,11 @@ public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>
         return;
       case HttpStatus.SC_NOT_FOUND:
         // This is an error condition, and we do not care about the body.
-        exception = new RuntimeException("No accounts exist on the server?");
+        exception = new CommandException("No accounts exist on the server");
         return;
       default:
         // This is an error condition.
-        exception = new RuntimeException("Unhandled response status code: " + statusCode);
+        exception = new HttpProtocolException("Unhandled response status code: " + statusCode);
         return;
     }
   }

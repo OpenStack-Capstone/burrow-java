@@ -20,13 +20,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.QueueListRequest;
 
 class QueueResponse extends Queue {
   QueueResponse(Account account, JSONObject queue) throws JSONException {
     super(account, queue.getString("id"));
   }
+  
+  QueueResponse(QueueListRequest request, JSONObject queue) throws JSONException {
+    super(request.getAccount(), queue.getString("id"));
+  }
 
   QueueResponse(Account account, String id) {
     super(account, id);
+  }
+  
+  QueueResponse(QueueListRequest request, String id) {
+    super(request.getAccount(), id);
   }
 }
