@@ -16,22 +16,12 @@
 
 package org.openstack.burrow.backend;
 
-import java.util.List;
-
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.client.methods.*;
+
+import java.util.List;
 
 public interface Backend {
   /**
@@ -42,7 +32,7 @@ public interface Backend {
    *         queue about the created message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(CreateMessage request) throws CommandException, ProtocolException;
+  public Message execute(CreateMessage request) throws BurrowException;
 
   /**
    * Execute a DeleteAccounts request.
@@ -51,7 +41,7 @@ public interface Backend {
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(DeleteAccounts request) throws CommandException, ProtocolException;
+  public List<Account> execute(DeleteAccounts request) throws BurrowException;
 
   /**
    * Execute a DeleteMessage request.
@@ -61,7 +51,7 @@ public interface Backend {
    *         queue about the deleted message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(DeleteMessage request) throws CommandException, ProtocolException;
+  public Message execute(DeleteMessage request) throws BurrowException;
 
   /**
    * Execute a DeleteMessages request.
@@ -71,7 +61,7 @@ public interface Backend {
    *         by the queue about the deleted messages, or null if the queue did
    *         not return any information.
    */
-  public List<Message> execute(DeleteMessages request) throws CommandException, ProtocolException;
+  public List<Message> execute(DeleteMessages request) throws BurrowException;
 
   /**
    * Execute a DeleteQueues request.
@@ -80,7 +70,7 @@ public interface Backend {
    * @return A list of Queue instances populated with any information returned
    *         about the queues, or null if no information was returned.
    */
-  public List<Queue> execute(DeleteQueues request) throws CommandException, ProtocolException;
+  public List<Queue> execute(DeleteQueues request) throws BurrowException;
 
   /**
    * Execute a GetAccounts request.
@@ -89,7 +79,7 @@ public interface Backend {
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(GetAccounts request) throws CommandException, ProtocolException;
+  public List<Account> execute(GetAccounts request) throws BurrowException;
 
   /**
    * Execute a GetMessage request.
@@ -99,7 +89,7 @@ public interface Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(GetMessage request) throws CommandException, ProtocolException;
+  public Message execute(GetMessage request) throws BurrowException;
 
   /**
    * Execute a GetMessages request.
@@ -109,7 +99,7 @@ public interface Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(GetMessages request) throws CommandException, ProtocolException;
+  public List<Message> execute(GetMessages request) throws BurrowException;
 
   /**
    * Execute a GetQueues request.
@@ -119,7 +109,7 @@ public interface Backend {
    *         by the queue about the queues, or null if the queue did not return
    *         any information.
    */
-  public List<Queue> execute(GetQueues request) throws CommandException, ProtocolException;
+  public List<Queue> execute(GetQueues request) throws BurrowException;
 
   /**
    * Execute an UpdateMessage request.
@@ -129,7 +119,7 @@ public interface Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(UpdateMessage request) throws CommandException, ProtocolException;
+  public Message execute(UpdateMessage request) throws BurrowException;
 
   /**
    * Execute an UpdateMessages request.
@@ -139,5 +129,5 @@ public interface Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(UpdateMessages request) throws CommandException, ProtocolException;
+  public List<Message> execute(UpdateMessages request) throws BurrowException;
 }
