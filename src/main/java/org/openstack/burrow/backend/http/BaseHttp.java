@@ -16,18 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
-import static org.apache.http.HttpStatus.SC_OK;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -44,25 +32,21 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchAccountException;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.backend.*;
+import org.openstack.burrow.client.*;
+import org.openstack.burrow.client.methods.*;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.http.HttpStatus.*;
 
 abstract class BaseHttp {
-  static List<Account> handleMultipleAccountHttpResponse(HttpResponse response) {
+  static List<Account> handleMultipleAccountHttpResponse(HttpResponse response) throws HttpProtocolException, org.openstack.burrow.backend.NoSuchAccountException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -100,16 +84,12 @@ abstract class BaseHttp {
               // If we ever stop throwing an exception in the outside block,
               // this needs to be handled.
             }
-            // TODO: Throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("IOException reading http response");
+            throw new HttpProtocolException("IOException reading http response");
           } catch (JSONException e) {
             // It is not necessary to consume the entity because at the
             // first point where this exception can be thrown,
             // the entity has already been consumed by toString();
-            // TODO: throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("JSONException reading response");
+            throw new HttpProtocolException("JSONException reading response");
           }
         } else {
           // This situation cannot be handled.
@@ -120,9 +100,10 @@ abstract class BaseHttp {
             // If we ever stop throwing an exception in the outside block,
             // this needs to be handled.
           }
-          // TODO: Throw something appropriate.
-          throw new RuntimeException("Non-Json response");
+          throw new HttpProtocolException("Non-Json response");
         }
+        case SC_NOT_FOUND:
+           throw new org.openstack.burrow.backend.NoSuchAccountException();
         /*
          * // THIS (MIGHT) be an error! case HttpStatus.SC_NOT_FOUND: // This is
          * not necessarily an error, but we must throw something. try { //
@@ -140,12 +121,11 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        // TODO: Throw something appropriate.
-        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+        throw new HttpProtocolException("Unhandled http response code " + status.getStatusCode());
     }
   }
 
-  static List<Message> handleMultipleMessageHttpResponse(HttpResponse response) {
+  static List<Message> handleMultipleMessageHttpResponse(HttpResponse response) throws HttpProtocolException, org.openstack.burrow.backend.NoSuchMessageException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -172,16 +152,12 @@ abstract class BaseHttp {
               // If we ever stop throwing an exception in the outside block,
               // this needs to be handled.
             }
-            // TODO: Throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("IOException reading http response");
+            throw new HttpProtocolException("IOException reading http response");
           } catch (JSONException e) {
             // It is not necessary to consume the entity because at the
             // first point where this exception can be thrown,
             // the entity has already been consumed by toString();
-            // TODO: throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("JSONException reading response");
+            throw new HttpProtocolException("JSONException reading response");
           }
         } else {
           // This situation cannot be handled.
@@ -192,8 +168,7 @@ abstract class BaseHttp {
             // If we ever stop throwing an exception in the outside block,
             // this needs to be handled.
           }
-          // TODO: Throw something appropriate.
-          throw new RuntimeException("Non-Json response");
+          throw new HttpProtocolException("Non-Json response");
         }
       case SC_NO_CONTENT:
         // This is not an error.
@@ -201,11 +176,11 @@ abstract class BaseHttp {
           // Consume the entity to release HttpClient resources.
           EntityUtils.consume(entity);
         } catch (IOException e) {
-          // TODO: Throw something more appropriate.
-          e.printStackTrace();
-          throw new RuntimeException("Failed to consume HttpEntity");
+          throw new HttpProtocolException("Failed to consume HttpEntity");
         }
         return null;
+      case SC_NOT_FOUND:
+          throw new org.openstack.burrow.backend.NoSuchMessageException();
       default:
         // This is probably an error.
         try {
@@ -215,12 +190,11 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        // TODO: Throw something appropriate.
-        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+        throw new HttpProtocolException("Unhandled http response code " + status.getStatusCode());
     }
   }
 
-  static List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response) {
+  static List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response) throws HttpProtocolException, org.openstack.burrow.backend.NoSuchQueueException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -258,16 +232,14 @@ abstract class BaseHttp {
               // If we ever stop throwing an exception in the outside block,
               // this needs to be handled.
             }
-            // TODO: Throw something appropriate.
             e.printStackTrace();
-            throw new RuntimeException("IOException reading http response");
+            throw new HttpProtocolException("IOException reading http response");
           } catch (JSONException e) {
             // It is not necessary to consume the entity because at the
             // first point where this exception can be thrown,
             // the entity has already been consumed by toString();
-            // TODO: throw something appropriate.
             e.printStackTrace();
-            throw new RuntimeException("JSONException reading response");
+            throw new HttpProtocolException("JSONException reading response");
           }
         } else {
           // This situation cannot be handled.
@@ -278,8 +250,7 @@ abstract class BaseHttp {
             // If we ever stop throwing an exception in the outside block,
             // this needs to be handled.
           }
-          // TODO: Throw something appropriate.
-          throw new RuntimeException("Non-Json response");
+          throw new HttpProtocolException("Non-Json response");
         }
       case SC_NOT_FOUND:
         // This is not necessarily an error, but we must throw something.
@@ -290,7 +261,7 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new NoSuchAccountException();
+        throw new org.openstack.burrow.backend.NoSuchQueueException();
       default:
         // This is probably an error.
         try {
@@ -300,12 +271,11 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        // TODO: Throw something appropriate.
-        throw new RuntimeException("Unhandled http response code " + status.getStatusCode());
+        throw new HttpProtocolException("Unhandled http response code " + status.getStatusCode());
     }
   }
 
-  static Message handleSingleMessageHttpResponse(HttpResponse response) {
+  static Message handleSingleMessageHttpResponse(HttpResponse response) throws HttpProtocolException, CommandException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     switch (status.getStatusCode()) {
@@ -316,9 +286,7 @@ abstract class BaseHttp {
           try {
             EntityUtils.consume(entity);
           } catch (IOException e) {
-            // TODO: Throw something more appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("Failed to consume HttpEntity");
+            throw new HttpProtocolException("Failed to consume HttpEntity");
           }
           return null;
         } else if (responseMimeType.equals("application/json")) {
@@ -329,9 +297,7 @@ abstract class BaseHttp {
           } catch (JSONException e) {
             // At the first place this could be thrown,
             // the entity has already been consumed by toString(entity);
-            // TODO: Throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("Failed to decode json");
+            throw new HttpProtocolException("Failed to decode json");
           } catch (IOException e) {
             try {
               // Consume the entity to release HttpClient resources.
@@ -340,9 +306,7 @@ abstract class BaseHttp {
               // If we ever stop throwing an exception in the outside block,
               // this needs to be handled.
             }
-            // TODO: Throw something appropriate.
-            e.printStackTrace();
-            throw new RuntimeException("Failed to convert the entity to a string");
+            throw new HttpProtocolException("Failed to convert the entity to a string");
           }
         } else {
           // We can't do anything sensible yet.
@@ -354,15 +318,13 @@ abstract class BaseHttp {
             // this needs to be handled.
           }
           // TODO: Handle body-only responses.
-          throw new RuntimeException("Unhandled response mime type " + responseMimeType);
+          throw new HttpProtocolException("Unhandled response mime type " + responseMimeType);
         }
       case SC_NO_CONTENT:
         try {
           EntityUtils.consume(entity);
         } catch (IOException e) {
-          // TODO: Throw something more appropriate.
-          e.printStackTrace();
-          throw new RuntimeException("Failed to consume HttpEntity");
+          throw new HttpProtocolException("Failed to consume HttpEntity");
         }
         return null;
       case SC_NOT_FOUND:
@@ -373,10 +335,9 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new NoSuchMessageException();
+        throw new org.openstack.burrow.backend.NoSuchMessageException();
       default:
         // There was an error or an unexpected return condition.
-        // TODO: Throw something more appropriate for each error condition.
         try {
           // Consume the entity to release HttpClient resources.
           EntityUtils.consume(entity);
@@ -384,7 +345,7 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new RuntimeException("Unhandled return code");
+        throw new HttpProtocolException("Unhandled return code");
     }
   }
 
@@ -405,7 +366,7 @@ abstract class BaseHttp {
       httpRequest.setEntity(bodyEntity);
     } catch (UnsupportedEncodingException e) {
       // This should be impossible for any legal String.
-      throw new BackendInternalException("Unable to create body HttpEntity: " + e);
+      throw new BurrowRuntimeException("Unable to create body HttpEntity: " + e);
     }
     return httpRequest;
   }
@@ -695,7 +656,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -703,7 +664,7 @@ abstract class BaseHttp {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -713,7 +674,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -723,7 +684,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -732,7 +693,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -740,7 +701,7 @@ abstract class BaseHttp {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -750,7 +711,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -760,7 +721,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -769,7 +730,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -794,7 +755,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), request.getId(), getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
@@ -804,7 +765,7 @@ abstract class BaseHttp {
     try {
       return getUri(account.getId(), queue.getId(), null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
-      throw new BackendInternalException("Unable to build request URI: " + e);
+      throw new BurrowRuntimeException("Unable to build request URI: " + e);
     }
   }
 
