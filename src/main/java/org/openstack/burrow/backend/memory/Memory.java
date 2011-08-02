@@ -17,6 +17,7 @@
 package org.openstack.burrow.backend.memory;
 
 import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.backend.CommandException;
 import org.openstack.burrow.client.*;
 import org.openstack.burrow.client.methods.*;
 
@@ -58,17 +59,17 @@ public class Memory implements Backend {
         return mq;
 	}
 
-    private MemoryQueue ensurePresent(String account, String queue) {
+    private MemoryQueue ensurePresent(String account, String queue) throws CommandException {
         if (account == null || queue == null)
             throw new IllegalArgumentException("Neither account nor queue identifiers may be null.");
 
         if (!accountMap.containsKey(account)
                 || accountMap.get(account).isEmpty())
-            throw new NoSuchAccountException();
+            throw new CommandException("No such account.");
 
         if (!accountMap.get(account).containsKey(queue)
                 || accountMap.get(account).get(queue).isEmpty())
-            throw new NoSuchQueueException();
+            throw new CommandException("No such queue.");
 
         return accountMap.get(account).get(queue);
     }
@@ -125,8 +126,9 @@ public class Memory implements Backend {
      * @return A Message instance populated with any information returned by the
      *         queue about the deleted message, or null if the queue did not
      *         return any information.
+     * @throws CommandException Iff the requested account or queue does not exist.
      */
-    public Message execute(DeleteMessage request) {
+    public Message execute(DeleteMessage request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
@@ -148,8 +150,9 @@ public class Memory implements Backend {
      * @return A list of Message instances populated with any information returned
      *         by the queue about the deleted messages, or null if the queue did
      *         not return any information.
+     * @throws CommandException Iff the requested account or queue does not exist.
      */
-    public List<Message> execute(DeleteMessages request) {
+    public List<Message> execute(DeleteMessages request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
@@ -170,11 +173,12 @@ public class Memory implements Backend {
      * @param request The request to execute.
      * @return A list of Queue instances populated with any information returned
      *         about the queues, or null if no information was returned.
+     * @throws CommandException Iff the requested account does not exist.
      */
-    public List<Queue> execute(DeleteQueues request) {
+    public List<Queue> execute(DeleteQueues request) throws CommandException {
         String account = request.getAccount().getId();
 
-        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
+        if (!accountMap.containsKey(account)) throw new CommandException("No such account");
 
         List<Queue> deleted = new ArrayList<Queue>();
 
@@ -229,8 +233,9 @@ public class Memory implements Backend {
      * @return A Message instance populated with any information returned by the
      *         queue about the message, or null if the queue did not return any
      *         information.
+     * @throws CommandException Iff the requested message does not exist.
      */
-    public Message execute(GetMessage request) {
+    public Message execute(GetMessage request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
@@ -239,7 +244,7 @@ public class Memory implements Backend {
         MemoryQueue mq = ensurePresent(account, queue);
 
         Message msg = mq.get(request.getId());
-        if (msg == null) throw new NoSuchMessageException();
+        if (msg == null) throw new CommandException("No such message.");
 
         return msg;
     }
@@ -251,8 +256,9 @@ public class Memory implements Backend {
      * @return A list of Message instances populated with any information returned
      *         by the queue about the messages, or null if the queue did not
      *         return any information.
+     * @throws CommandException Iff the requested account or queue does not exist.
      */
-    public List<Message> execute(GetMessages request) {
+    public List<Message> execute(GetMessages request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
@@ -270,14 +276,16 @@ public class Memory implements Backend {
      * @return A list of Queue instances populated with any information returned
      *         by the queue about the queues, or null if the queue did not return
      *         any information.
+     * @throws CommandException Iff the requested account does not exist
      */
-    public List<Queue> execute(GetQueues request) {
+
+    public List<Queue> execute(GetQueues request) throws CommandException {
         if (!accountMap.containsKey(request.getAccount().getId()))
-                throw new NoSuchAccountException();
+                throw new CommandException("No such account.");
 
         MemoryAccount ma = accountMap.get(request.getAccount().getId());
 
-        if (ma.isEmpty()) throw new NoSuchAccountException();
+        if (ma.isEmpty()) throw new CommandException("No such account.");
 
         List<Queue> queues = new ArrayList<Queue>();
         Iterator<Entry<String, MemoryQueue>> iter;
@@ -304,8 +312,9 @@ public class Memory implements Backend {
      * @return A Message instance populated with any information returned by the
      *         queue about the message, or null if the queue did not return any
      *         information.
+     * @throws CommandException Iff the requested account or queue does not exist.
      */
-    public Message execute(UpdateMessage request) {
+    public Message execute(UpdateMessage request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
@@ -324,8 +333,9 @@ public class Memory implements Backend {
      * @return A list of Message instances populated with any information returned
      *         by the queue about the messages, or null if the queue did not
      *         return any information.
+     * @throws CommandException Iff the requested account or queue does not exist.
      */
-    public List<Message> execute(UpdateMessages request) {
+    public List<Message> execute(UpdateMessages request) throws CommandException {
         if (request == null)
                     throw new IllegalArgumentException();
 
