@@ -41,6 +41,7 @@ public class HashedList<K, V> {
      * @return The internal table entry associated with key, or null if the key does not exists in the map.
      */
     protected PrivEntry getEntry(K key) {
+        if (key == null) throw new IllegalArgumentException();
         int ind = Math.abs(key.hashCode()) % table.length;
         PrivEntry curr = table[ind];
 
@@ -151,6 +152,7 @@ public class HashedList<K, V> {
      * @param value The value to be inserted into the map.
      */
     public synchronized void put(K key, V value) {
+        if ((key == null) || (value == null)) throw new IllegalArgumentException();
 		int ind = Math.abs(key.hashCode()) % table.length;
         PrivEntry curr = table[ind];
 

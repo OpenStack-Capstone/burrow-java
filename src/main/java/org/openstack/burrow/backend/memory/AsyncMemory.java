@@ -19,6 +19,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         return any information.
      */
     public Future<Message> executeAsync(CreateMessage request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<Message>(execute(request));
         } catch (Exception e) {
@@ -34,6 +36,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         about the accounts, or null if no information was returned.
      */
     public Future<List<Account>> executeAsync(DeleteAccounts request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Account>>(execute(request));
         } catch (Exception e) {
@@ -50,6 +54,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         return any information.
      */
     public Future<Message> executeAsync(DeleteMessage request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<Message>(execute(request));
         } catch (Exception e) {
@@ -66,6 +72,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         not return any information.
      */
     public Future<List<Message>> executeAsync(DeleteMessages request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Message>>(execute(request));
         } catch (Exception e) {
@@ -81,6 +89,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         about the queues, or null if no information was returned.
      */
     public Future<List<Queue>> executeAsync(DeleteQueues request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Queue>>(execute(request));
         } catch (Exception e) {
@@ -96,6 +106,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         about the accounts, or null if no information was returned.
      */
     public Future<List<Account>> executeAsync(GetAccounts request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Account>>(execute(request));
         } catch (Exception e) {
@@ -112,6 +124,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         information.
      */
     public Future<Message> executeAsync(GetMessage request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<Message>(execute(request));
         } catch (Exception e) {
@@ -128,6 +142,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         return any information.
      */
     public Future<List<Message>> executeAsync(GetMessages request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Message>>(execute(request));
         } catch (Exception e) {
@@ -144,6 +160,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         any information.
      */
     public Future<List<Queue>> executeAsync(GetQueues request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Queue>>(execute(request));
         } catch (Exception e) {
@@ -160,6 +178,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         information.
      */
     public Future<Message> executeAsync(UpdateMessage request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<Message>(execute(request));
         } catch (Exception e) {
@@ -176,6 +196,8 @@ public class AsyncMemory extends Memory implements AsyncBackend {
      *         return any information.
      */
     public Future<List<Message>> executeAsync(UpdateMessages request) {
+        if (request == null)
+                throw new IllegalArgumentException("Request may not be null");
         try {
             return new MemoryFuture<List<Message>>(execute(request));
         } catch (Exception e) {

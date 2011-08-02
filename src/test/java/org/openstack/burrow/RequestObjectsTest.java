@@ -17,9 +17,7 @@
 package org.openstack.burrow;
 
 import org.junit.Test;
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.ProtocolException;
+import org.openstack.burrow.backend.*;
 import org.openstack.burrow.backend.http.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
@@ -34,7 +32,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testCreateMessage() throws CommandException, ProtocolException {
+    public void testCreateMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -57,7 +55,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessage() throws CommandException, ProtocolException {
+    public void testDeleteMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -74,7 +72,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessages() throws CommandException, ProtocolException {
+    public void testDeleteMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -82,7 +80,11 @@ public class RequestObjectsTest {
        stub(dms.getDetail()).toReturn("detail");
        stub(dms.getQueue()).toReturn(queue);
        stub(dms.getMarker()).toReturn("marker");
+       try {
        backend.execute(dms);
+       } catch (MessageNotFoundException m) {
+
+       }
        verify(dms).getDetail();
        verify(dms).getQueue();
        verify(dms).getMarker();
@@ -93,7 +95,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testGetMessage() throws CommandException, ProtocolException {
+    public void testGetMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -103,7 +105,12 @@ public class RequestObjectsTest {
        stub(gm.getWait()).toReturn(100L);
        stub(gm.getDetail()).toReturn("detail");
        stub(gm.getMatchHidden()).toReturn(true);
+       try {
        backend.execute(gm);
+       } catch (MessageNotFoundException m) {
+
+       }
+
        verify(gm).getDetail();
        verify(gm).getQueue();
        verify(gm).getId();
@@ -116,7 +123,7 @@ public class RequestObjectsTest {
       * calling all the correct functions.
       */
     @Test
-    public void testGetMessages() throws CommandException, ProtocolException {
+    public void testGetMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -126,7 +133,12 @@ public class RequestObjectsTest {
        //stub(gms.getWait()).toReturn(100L);
        stub(gms.getDetail()).toReturn("detail");
        //stub(gms.getMatchHidden()).toReturn(true);
+       try {
        backend.execute(gms);
+       } catch (MessageNotFoundException m) {
+
+       }
+
        verify(gms).getDetail();
        verify(gms).getQueue();
        verify(gms).getMarker();
@@ -139,20 +151,24 @@ public class RequestObjectsTest {
     * Unit test for the UpdateMessage request object.  The goal is to see if the backend is
     * calling all the correct functions.
     */
-   /*
+
    @Test
-    public void testUpdateMessage() {
+    public void testUpdateMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        UpdateMessage um = mock(UpdateMessage.class);
-       stub(um.getTtl()).toReturn(100L);
+       stub(um.getTtl()).toReturn(10L);
        stub(um.getQueue()).toReturn(queue);
-       stub(um.getWait()).toReturn(100L);
+       stub(um.getWait()).toReturn(1L);
        stub(um.getDetail()).toReturn("detail");
        stub(um.getMatchHidden()).toReturn(true);
        stub(um.getId()).toReturn("msgId");
+       try {
        backend.execute(um);
+       } catch (MessageNotFoundException m) {
+
+       }
        verify(um).getDetail();
        verify(um).getQueue();
        verify(um).getId();
@@ -160,27 +176,31 @@ public class RequestObjectsTest {
        verify(um).getTtl();
        verify(um).getWait();
     }
-    */
+
     /**
      * Unit test for UpdateMessages request object.  Checks if correct methods are called by
      * the backend.
      */
-    /*
+
    @Test
-    public void testUpdateMessages() {
+    public void testUpdateMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        UpdateMessages ums = mock(UpdateMessages.class);
-       stub(ums.getTtl()).toReturn(100L);
+       stub(ums.getTtl()).toReturn(10L);
        stub(ums.getQueue()).toReturn(queue);
-       stub(ums.getWait()).toReturn(100L);
+       stub(ums.getWait()).toReturn(1L);
        stub(ums.getDetail()).toReturn("detail");
        stub(ums.getMatchHidden()).toReturn(true);
        stub(ums.getMarker()).toReturn("marker");
-       stub(ums.getHide()).toReturn(100L);
-       stub(ums.getLimit()).toReturn(100L);
+       stub(ums.getHide()).toReturn(2L);
+       stub(ums.getLimit()).toReturn(2L);
+       try {
        backend.execute(ums);
+       } catch (MessageNotFoundException m) {
+
+       }
        verify(ums).getDetail();
        verify(ums).getQueue();
        verify(ums).getHide();
@@ -189,6 +209,6 @@ public class RequestObjectsTest {
        verify(ums).getWait();
        verify(ums).getLimit();
     }
-    */
+
 
 }

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//TODO: Handle 'detail' and 'wait'
+
 public class Memory implements Backend {
     private HashedList<String, MemoryAccount> accountMap;
 
@@ -33,6 +35,7 @@ public class Memory implements Backend {
     }
 
     private MemoryAccount createIfAbsent(String account) {
+        if (account == null) throw new IllegalArgumentException("Account identifier may be null.");
         MemoryAccount ma;
 
         if (!accountMap.containsKey(account)) {
@@ -46,6 +49,9 @@ public class Memory implements Backend {
 	}
 
     private MemoryQueue createIfAbsent(String account, String queue) {
+        if (account == null || queue == null)
+            throw new IllegalArgumentException("Neither account nor queue identifiers may be null.");
+
         MemoryAccount ma = createIfAbsent(account);
         MemoryQueue mq;
 
@@ -84,7 +90,7 @@ public class Memory implements Backend {
      */
     public Message execute(CreateMessage request) {
         if (request == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -101,6 +107,9 @@ public class Memory implements Backend {
      *         about the accounts, or null if no information was returned.
      */
     public List<Account> execute(DeleteAccounts request) {
+        if (request == null)
+            throw new IllegalArgumentException("Request object may not be null.");
+
         List<Account> deleted = new ArrayList<Account>();
 
         Iterator<Entry<String, MemoryAccount>> iter;
@@ -130,7 +139,7 @@ public class Memory implements Backend {
      */
     public Message execute(DeleteMessage request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -154,7 +163,7 @@ public class Memory implements Backend {
      */
     public List<Message> execute(DeleteMessages request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -176,6 +185,9 @@ public class Memory implements Backend {
      * @throws CommandException Iff the requested account does not exist.
      */
     public List<Queue> execute(DeleteQueues request) throws CommandException {
+        if (request == null)
+            throw new IllegalArgumentException("Request object may not be null.");
+
         String account = request.getAccount().getId();
 
         if (!accountMap.containsKey(account)) throw new CommandException("No such account");
@@ -209,6 +221,8 @@ public class Memory implements Backend {
      *         about the accounts, or null if no information was returned.
      */
     public List<Account> execute(GetAccounts request) {
+        if (request == null)
+            throw new IllegalArgumentException("Request object may not be null.");
         List<Account> accts = new ArrayList<Account>();
 
         Iterator<Entry<String, MemoryAccount>> iter;
@@ -237,7 +251,7 @@ public class Memory implements Backend {
      */
     public Message execute(GetMessage request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -260,7 +274,7 @@ public class Memory implements Backend {
      */
     public List<Message> execute(GetMessages request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -280,6 +294,10 @@ public class Memory implements Backend {
      */
 
     public List<Queue> execute(GetQueues request) throws CommandException {
+        if (request == null)
+            throw new IllegalArgumentException("Request object may not be null.");
+        if (request.getAccount().getId() == null)
+            throw new IllegalArgumentException("Account identifier may not be null");
         if (!accountMap.containsKey(request.getAccount().getId()))
                 throw new CommandException("No such account.");
 
@@ -316,7 +334,7 @@ public class Memory implements Backend {
      */
     public Message execute(UpdateMessage request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
@@ -337,7 +355,7 @@ public class Memory implements Backend {
      */
     public List<Message> execute(UpdateMessages request) throws CommandException {
         if (request == null)
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Request object may not be null.");
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();

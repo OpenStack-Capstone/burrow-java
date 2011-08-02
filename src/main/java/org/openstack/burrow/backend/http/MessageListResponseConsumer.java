@@ -16,11 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -32,10 +27,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.backend.BurrowRuntimeException;
 import org.openstack.burrow.backend.HttpProtocolException;
-import org.openstack.burrow.backend.NoSuchQueueException;
 import org.openstack.burrow.backend.ProtocolException;
+import org.openstack.burrow.backend.QueueNotFoundException;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.MessageListRequest;
+
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>> {
   private StringBuilder accumulator = null;
@@ -105,7 +105,7 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
         return;
       case HttpStatus.SC_NOT_FOUND:
         // This is an error condition, and we do not care about the body.
-        exception = new NoSuchQueueException();
+        exception = new QueueNotFoundException();
         return;
       default:
         // This is an error condition.

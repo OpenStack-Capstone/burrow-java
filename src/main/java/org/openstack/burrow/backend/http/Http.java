@@ -16,9 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -27,21 +24,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.openstack.burrow.backend.*;
+import org.openstack.burrow.backend.Backend;
+import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.HttpProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.client.methods.*;
+
+import java.io.IOException;
+import java.util.List;
 
 public class Http extends BaseHttp implements Backend {
   private HttpClient client;

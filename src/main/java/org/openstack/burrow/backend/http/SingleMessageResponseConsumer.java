@@ -16,9 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -28,10 +25,13 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openstack.burrow.backend.HttpProtocolException;
-import org.openstack.burrow.backend.NoSuchMessageException;
+import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.SingleMessageRequest;
+
+import java.io.IOException;
+import java.nio.CharBuffer;
 
 public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
   private StringBuilder accumulator = null;
@@ -97,7 +97,7 @@ public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
         return;
       case HttpStatus.SC_NOT_FOUND:
         // This is an error condition, and we do not care about the body.
-        exception = new NoSuchMessageException();
+        exception = new MessageNotFoundException();
         return;
       default:
         // This is an error condition.
