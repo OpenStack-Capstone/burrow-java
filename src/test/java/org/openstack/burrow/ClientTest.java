@@ -402,4 +402,94 @@ abstract class ClientTest extends TestCase {
     assertTrue(seen[0]);
   }
 
+    /**
+     * Make sure backend handles nulls sensibly.
+      */
+  public void testNullHandling() throws CommandException, ProtocolException {
+        try {
+            backend.execute(queue.createMessage(null, "foo"));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.createMessage("foo", null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.createMessage(null, null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.execute(queue.getMessage(null).withDetail("foo"));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.getMessage("foo").withDetail(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.getMessage(null).withDetail(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.execute(queue.deleteMessage(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.execute(queue.updateMessage(null).withDetail("foo"));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.updateMessage("foo").withDetail(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.updateMessage(null).withDetail(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.execute(queue.deleteMessages().withDetail(null).withMarker("foo"));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.deleteMessages().withDetail("foo").withMarker(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.deleteMessages().withDetail(null).withMarker(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+
+        try {
+            backend.execute(queue.updateMessages().withDetail(null).withMarker("foo"));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.updateMessages().withDetail("foo").withMarker(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+        try {
+            backend.execute(queue.updateMessages().withDetail(null).withMarker(null));
+        } catch (IllegalArgumentException e) {
+            //Expected
+        }
+  }
 }
