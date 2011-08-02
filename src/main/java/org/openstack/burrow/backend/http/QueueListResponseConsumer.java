@@ -30,8 +30,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.NoSuchAccountException;
+import org.openstack.burrow.backend.BurrowRuntimeException;
+import org.openstack.burrow.backend.NoSuchAccountException;
+import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.QueueListRequest;
 
@@ -42,7 +43,6 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
   private QueueListRequest request;
 
   QueueListResponseConsumer(QueueListRequest request) {
-    super();
     this.request = request;
   }
 
@@ -54,30 +54,35 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
       // It was not an error condition but we do not care about the response
       // body.
       return null;
-    } else if (mimeType.equals("application/json")) {
-      Account account = request.getAccount();
-      JSONArray queuesJson = new JSONArray(accumulator.toString());
-      List<Queue> queues = new ArrayList<Queue>(queuesJson.length());
+    } else if ("application/json".equals(mimeType)) {
       try {
-        // Assume the array is an array of objects.
-        for (int idx = 0; idx < queuesJson.length(); idx++) {
-          JSONObject queueJson = queuesJson.getJSONObject(idx);
-          Queue message = new QueueResponse(account, queueJson);
-          queues.add(idx, message);
+        JSONArray queuesJson = new JSONArray(accumulator.toString());
+        List<Queue> queues = new ArrayList<Queue>(queuesJson.length());
+        try {
+          // Assume the array is an array of objects.
+          for (int idx = 0; idx < queuesJson.length(); idx++) {
+            JSONObject queueJson = queuesJson.getJSONObject(idx);
+            Queue message = new QueueResponse(request, queueJson);
+            queues.add(idx, message);
+          }
+        } catch (JSONException e) {
+          // The array was not an array of objects. Try again assuming an array
+          // of strings.
+          for (int idx = 0; idx < queuesJson.length(); idx++) {
+            String queueId = queuesJson.getString(idx);
+            Queue message = new QueueResponse(request, queueId);
+            queues.add(idx, message);
+          }
         }
+        return queues;
       } catch (JSONException e) {
-        // The array was not an array of objects. Try again assuming an array of
-        // strings.
-        for (int idx = 0; idx < queuesJson.length(); idx++) {
-          String queueId = queuesJson.getString(idx);
-          Queue message = new QueueResponse(account, queueId);
-          queues.add(idx, message);
-        }
+        throw new ProtocolException("Unable to parse server response", e);
       }
-      return queues;
-    } else
-      throw new RuntimeException("Unhandled circumstance in QueueListResponseConsumer; mimeType="
-          + mimeType + ", acc=" + accumulator);
+    } else {
+      throw new BurrowRuntimeException(
+          "Unhandled circumstance in QueueListResponseConsumer; mimeType=" + mimeType + ", acc="
+              + accumulator);
+    }
   }
 
   @Override
@@ -98,11 +103,10 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
     switch (statusCode) {
       case HttpStatus.SC_OK:
         mimeType = EntityUtils.getContentMimeType(response.getEntity());
-        if (mimeType != null) {
-          if (mimeType.equals("application/json"))
-            accumulator = new StringBuilder();
-          else
-            exception = new RuntimeException("Unhandled response mime type: " + mimeType);
+        if ("application/json".equals(mimeType)) {
+          accumulator = new StringBuilder();
+        } else if (mimeType != null) {
+          exception = new ProtocolException("Unhandled response mime type: " + mimeType);
         }
         return;
       case HttpStatus.SC_NO_CONTENT:
@@ -115,7 +119,7 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
         return;
       default:
         // This is an error condition.
-        exception = new RuntimeException("Unhandled response status code: " + statusCode);
+        exception = new ProtocolException("Unhandled response status code: " + statusCode);
         return;
     }
   }
