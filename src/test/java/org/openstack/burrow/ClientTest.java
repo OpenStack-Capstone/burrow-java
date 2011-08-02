@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.NoSuchAccountException;
-import org.openstack.burrow.backend.NoSuchMessageException;
 import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
@@ -103,15 +101,19 @@ abstract class ClientTest extends TestCase {
   /**
    * Create then delete a message, then verify that a second delete fails.
    */
-  public void testCreateDeleteMessage() throws CommandException, ProtocolException {
+  public void testCreateDeleteMessage() throws ProtocolException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    backend.execute(queue.createMessage(id, body));
-    backend.execute(queue.deleteMessage(id));
+    try {
+        backend.execute(queue.createMessage(id, body));
+        backend.execute(queue.deleteMessage(id));
+    } catch (CommandException ce) {
+        fail("Initial create/delete should be successful.");
+    }
     try {
       backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed");
-    } catch (NoSuchMessageException e) {
+    } catch (CommandException ce) {
       // This is expected.
     }
   }
@@ -119,15 +121,19 @@ abstract class ClientTest extends TestCase {
   /**
    * Create and delete a hidden message.
    */
-  public void testCreateDeleteMessageWithMatchHidden() throws CommandException, ProtocolException {
+  public void testCreateDeleteMessageWithMatchHidden() throws ProtocolException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
+    try {
     backend.execute(queue.createMessage(id, body).withHide((100L)));
     backend.execute(queue.deleteMessage(id).withMatchHidden(true));
+    } catch (CommandException ce) {
+        fail("Initial create/delete should be successful.");
+    }
     try {
       backend.execute(queue.deleteMessage(id).withMatchHidden(true));
       fail("deleteMessage should have failed");
-    } catch (NoSuchMessageException e) {
+    } catch (CommandException ce) {
       // This is expected.
     }
   }
@@ -205,12 +211,12 @@ abstract class ClientTest extends TestCase {
   /**
    * Delete a message that does not exist.
    */
-  public void testDeleteAMessageThatDoesNotExist() throws CommandException, ProtocolException {
+  public void testDeleteAMessageThatDoesNotExist() throws ProtocolException {
     String id = "testDeleteAMessageThatDoesNotExist";
     try {
       backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed for a message that does not exist");
-    } catch (NoSuchMessageException e) {
+    } catch (CommandException e) {
       // Expected.
     }
   }
@@ -240,12 +246,13 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create two queues, then delete all queues on the account.
    */
-  public void testDeleteQueues() throws CommandException, ProtocolException {
+  public void testDeleteQueues() throws ProtocolException {
     String messageId = "testDeleteQueues";
     String queueIds[] = {"testDeleteQueues1", "testDeleteQueues2"};
     Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
     String body = "testDeleteQueuesMessageBody";
     boolean[] seenQueues;
+    try {
     // Create the messages, implicitly creating the queues.
     backend.execute(queues[0].createMessage(messageId, body));
     backend.execute(queues[1].createMessage(messageId, body));
@@ -256,10 +263,13 @@ abstract class ClientTest extends TestCase {
     // Delete all queues on the account.
     backend.execute(account.deleteQueues());
     // Verify that no queues exist on the account.
+    } catch (CommandException ce) {
+        fail("Initial create/getQueues should be successful.");
+    }
     try {
       backend.execute(account.getQueues());
       fail("getQueues should have raised NoSuchAccountException when no queues exist");
-    } catch (NoSuchAccountException e) {
+    } catch (CommandException e) {
       // This is expected.
     }
   }
@@ -276,7 +286,7 @@ abstract class ClientTest extends TestCase {
     // Blindly delete all queues to clear the account.
     try {
       backend.execute(account.deleteQueues());
-    } catch (NoSuchAccountException e) {
+    } catch (CommandException ce) {
       // This is okay.
     }
     // Create the messages, implicitly creating the queues.
@@ -317,12 +327,12 @@ abstract class ClientTest extends TestCase {
   /**
    * Get a message that does not exist.
    */
-  public void testGetAMessageThatDoesNotExist() throws CommandException, ProtocolException {
+  public void testGetAMessageThatDoesNotExist() throws ProtocolException {
     String id = "testGetAMessageThatDoesNotExist";
     try {
       backend.execute(queue.getMessage(id));
       fail("getMessage should have failed");
-    } catch (NoSuchMessageException e) {
+    } catch (CommandException ce) {
       // this is expected.
     }
   }
@@ -331,20 +341,24 @@ abstract class ClientTest extends TestCase {
    * Create a message, verify the queue exists, then delete all messages in the
    * queue and verify it goes away.
    */
-  public void testGetQueuesDeleteMessages() throws CommandException, ProtocolException {
+  public void testGetQueuesDeleteMessages() throws ProtocolException {
     String messageId = "testGetQueues";
     String messageBody = "testGetQueuesMessageBody";
     String queueIds[] = {queue.getId()};
     boolean[] seen;
+    try {
     backend.execute(queue.createMessage(messageId, messageBody));
     seen = scanQueues(backend.execute(account.getQueues()), queueIds);
     assertTrue(seen[0]);
+    } catch (CommandException ce) {
+        fail("Initial create/delete should be successful.");
+    }
     try {
       backend.execute(queue.deleteMessages().withMatchHidden(true));
       List<Queue> queues = backend.execute(account.getQueues());
       seen = scanQueues(queues, queueIds);
       assertFalse(seen[0]);
-    } catch (NoSuchAccountException e) {
+    } catch (CommandException ce) {
       // Expected, if there are no other queues in the account.
     }
   }
