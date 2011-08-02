@@ -3,6 +3,7 @@ package org.openstack.burrow.backend.memory;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.MessageHiddenException;
 import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.NoSuchQueueException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ class MemoryQueue {
                 this.id = id;
 
 
-                lastTick = System.currentTimeMillis();
+                lastTick = System.currentTimeMillis() / 1000;
             }
 
             private void tick() {
@@ -38,6 +39,8 @@ class MemoryQueue {
                     hide = hide - (now - lastTick);
                     if (hide < 0) hide = 0l;
                 }
+
+                lastTick = now;
             }
 
 
@@ -52,6 +55,11 @@ class MemoryQueue {
             queue = new HashedList<String, MessageRecord>();
         }
 
+        synchronized boolean isEmpty() {
+            clean();
+            return queue.isEmpty();
+        }
+
         synchronized Message put(String messageId, String body, Long ttl, Long hide) {
             clean();
             MessageRecord msg = new MessageRecord(messageId, body, ttl, hide);
@@ -61,6 +69,7 @@ class MemoryQueue {
 
         synchronized Message get(String messageId) {
             clean();
+
             MessageRecord msg = queue.get(messageId);
 
             if (msg == null) throw new NoSuchMessageException();
@@ -94,7 +103,9 @@ class MemoryQueue {
 
         synchronized Message remove(String id) {
             clean();
+
             MessageRecord msg = queue.remove(id);
+
 
             if (msg == null) throw new NoSuchMessageException();
 

@@ -62,10 +62,12 @@ public class Memory implements Backend {
         if (account == null || queue == null)
             throw new IllegalArgumentException("Neither account nor queue identifiers may be null.");
 
-        if (!accountMap.containsKey(account))
+        if (!accountMap.containsKey(account)
+                || accountMap.get(account).isEmpty())
             throw new NoSuchAccountException();
 
-        if (!accountMap.get(account).containsKey(queue))
+        if (!accountMap.get(account).containsKey(queue)
+                || accountMap.get(account).get(queue).isEmpty())
             throw new NoSuchQueueException();
 
         return accountMap.get(account).get(queue);
@@ -132,7 +134,11 @@ public class Memory implements Backend {
         String queue = request.getQueue().getId();
         MemoryQueue mq = ensurePresent(account, queue);
 
-        return mq.remove(request.getId());
+        Message msg = mq.remove(request.getId());
+
+        if (mq.isEmpty()) accountMap.get(account).remove(queue);
+
+        return msg;
     }
 
     /**
@@ -151,7 +157,11 @@ public class Memory implements Backend {
         String queue = request.getQueue().getId();
         MemoryQueue mq = ensurePresent(account, queue);
 
-        return mq.remove(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
+        List<Message> messages = mq.remove(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
+
+        if (mq.isEmpty()) accountMap.get(account).remove(queue);
+
+        return messages;
     }
 
     /**
@@ -162,14 +172,16 @@ public class Memory implements Backend {
      *         about the queues, or null if no information was returned.
      */
     public List<Queue> execute(DeleteQueues request) {
-        if (!accountMap.containsKey(request.getAccount().getId())) throw new NoSuchAccountException();
+        String account = request.getAccount().getId();
+
+        if (!accountMap.containsKey(account)) throw new NoSuchAccountException();
 
         List<Queue> deleted = new ArrayList<Queue>();
 
         Iterator<Entry<String, MemoryQueue>> iter;
         if (request.getMarker() != null) {
-            iter = accountMap.get(request.getAccount().getId()).newIteratorFrom(request.getMarker());
-        } else iter = accountMap.get(request.getAccount().getId()).newIterator();
+            iter = accountMap.get(account).newIteratorFrom(request.getMarker());
+        } else iter = accountMap.get(account).newIterator();
 
         long limit = request.getLimit() == null ? -1l : request.getLimit();
 
@@ -179,6 +191,8 @@ public class Memory implements Backend {
             iter.remove();
             limit--;
         }
+
+        if (accountMap.get(account).isEmpty()) accountMap.remove(account);
 
         return deleted;
     }
@@ -226,7 +240,9 @@ public class Memory implements Backend {
 
         Message msg = mq.get(request.getId());
         if (msg == null) throw new NoSuchMessageException();
-        if (!request.getMatchHidden() && (msg.getHide() != 0)) throw new MessageHiddenException();
+        if ((request.getMatchHidden() != null) &&
+                !request.getMatchHidden() &&
+                (msg.getHide() != 0)) throw new MessageHiddenException();
 
         return msg;
     }
@@ -262,12 +278,16 @@ public class Memory implements Backend {
         if (!accountMap.containsKey(request.getAccount().getId()))
                 throw new NoSuchAccountException();
 
+        MemoryAccount ma = accountMap.get(request.getAccount().getId());
+
+        if (ma.isEmpty()) throw new NoSuchAccountException();
+
         List<Queue> queues = new ArrayList<Queue>();
         Iterator<Entry<String, MemoryQueue>> iter;
 
         if (request.getMarker() != null) {
-            iter = accountMap.get(request.getAccount().getId()).newIteratorFrom(request.getMarker());
-        } else iter = accountMap.get(request.getAccount().getId()).newIterator();
+            iter = ma.newIteratorFrom(request.getMarker());
+        } else iter = ma.newIterator();
 
         long limit = request.getLimit() == null ? -1l : request.getLimit();
 

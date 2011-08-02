@@ -35,7 +35,6 @@ abstract class ClientTest extends TestCase {
   /**
    * Scan a list of accounts for the presence of one or more account ids.
    * 
-   * @param queues The accounts to scan.
    * @param ids The account ids to scan for.
    * @return for each id, true if the account id was seen and false otherwise.
    */
@@ -166,7 +165,8 @@ abstract class ClientTest extends TestCase {
     backend.execute(queue.createMessage(id, body).withTtl(ttl));
     Message message = backend.execute(queue.getMessage(id));
     assertEquals(message.getBody(), body);
-    assertTrue(message.getTtl() <= ttl);
+    assertTrue("Expected message.getTtl() <= ttl, found message.getTtl()=" + message.getTtl() + "  ttl=" + ttl,
+            message.getTtl() <= ttl);
   }
 
   /**
@@ -339,7 +339,8 @@ abstract class ClientTest extends TestCase {
     assertTrue(seen[0]);
     try {
       backend.execute(queue.deleteMessages().withMatchHidden(true));
-      seen = scanQueues(backend.execute(account.getQueues()), queueIds);
+      List<Queue> queues = backend.execute(account.getQueues());
+      seen = scanQueues(queues, queueIds);
       assertFalse(seen[0]);
     } catch (NoSuchAccountException e) {
       // Expected, if there are no other queues in the account.
