@@ -16,11 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -30,11 +25,16 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openstack.burrow.backend.AccountNotFoundException;
 import org.openstack.burrow.backend.BurrowRuntimeException;
-import org.openstack.burrow.backend.NoSuchAccountException;
 import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.QueueListRequest;
+
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
   private StringBuilder accumulator = null;
@@ -115,7 +115,7 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
         return;
       case HttpStatus.SC_NOT_FOUND:
         // This is an error condition, and we do not care about the body.
-        exception = new NoSuchAccountException();
+        exception = new AccountNotFoundException();
         return;
       default:
         // This is an error condition.
