@@ -14,23 +14,12 @@
  * the License.
  */
 
-package org.openstack.burrow.backend.http;
+package org.openstack.burrow.client.methods;
 
-public class BackendInternalException extends RuntimeException {
+import org.openstack.burrow.client.Queue;
 
-  public BackendInternalException() {
+public interface SingleMessageRequest {
+  public String getId();
 
-  }
-
-  public BackendInternalException(String s) {
-    super(s);
-  }
-
-  public BackendInternalException(String s, Throwable cause) {
-    super(s, cause);
-  }
-
-  public BackendInternalException(Throwable cause) {
-    super(cause);
-  }
+  public Queue getQueue();
 }

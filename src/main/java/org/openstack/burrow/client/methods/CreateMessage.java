@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
-public class CreateMessage {
+public class CreateMessage implements SingleMessageRequest {
   private String body;
   private Long hide;
   private String id;

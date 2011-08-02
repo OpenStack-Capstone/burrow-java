@@ -689,7 +689,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(CreateMessage request) {
+  protected URI getUri(CreateMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -699,7 +699,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(DeleteAccounts request) {
+  protected URI getUri(DeleteAccounts request) {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
@@ -707,7 +707,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(DeleteMessage request) {
+  protected URI getUri(DeleteMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -717,7 +717,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(DeleteMessages request) {
+  protected URI getUri(DeleteMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -727,7 +727,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(DeleteQueues request) {
+  protected URI getUri(DeleteQueues request) {
     Account account = request.getAccount();
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
@@ -736,7 +736,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(GetAccounts request) {
+  protected URI getUri(GetAccounts request) {
     try {
       return getUri(null, null, null, getQueryParamaters(request));
     } catch (URISyntaxException e) {
@@ -744,7 +744,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(GetMessage request) {
+  protected URI getUri(GetMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -754,7 +754,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(GetMessages request) {
+  protected URI getUri(GetMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -764,7 +764,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(GetQueues request) {
+  protected URI getUri(GetQueues request) {
     Account account = request.getAccount();
     try {
       return getUri(account.getId(), null, null, getQueryParamaters(request));
@@ -788,7 +788,7 @@ abstract class BaseHttp {
     return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
   }
 
-  private URI getUri(UpdateMessage request) {
+  protected URI getUri(UpdateMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {
@@ -798,7 +798,7 @@ abstract class BaseHttp {
     }
   }
 
-  private URI getUri(UpdateMessages request) {
+  protected URI getUri(UpdateMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
     try {

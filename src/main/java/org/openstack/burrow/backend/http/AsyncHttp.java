@@ -16,22 +16,24 @@
 
 package org.openstack.burrow.backend.http;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.nio.client.DefaultHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.apache.http.nio.concurrent.FutureCallback;
+import org.apache.http.nio.client.methods.HttpAsyncDelete;
+import org.apache.http.nio.client.methods.HttpAsyncGet;
+import org.apache.http.nio.client.methods.HttpAsyncPost;
+import org.apache.http.nio.client.methods.HttpAsyncPut;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.openstack.burrow.backend.AsyncBackend;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.NoSuchAccountException;
+import org.openstack.burrow.client.NoSuchMessageException;
+import org.openstack.burrow.client.NoSuchQueueException;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.CreateMessage;
 import org.openstack.burrow.client.methods.DeleteAccounts;
@@ -60,11 +62,9 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -73,11 +73,9 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -86,11 +84,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchMessageException)
+        throw (NoSuchMessageException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -99,11 +98,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchQueueException)
+        throw (NoSuchQueueException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -112,11 +112,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchAccountException)
+        throw (NoSuchAccountException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -125,11 +126,9 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -138,11 +137,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchMessageException)
+        throw (NoSuchMessageException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -151,11 +151,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchQueueException)
+        throw (NoSuchQueueException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -164,11 +165,12 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchAccountException)
+        throw (NoSuchAccountException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -177,11 +179,9 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
@@ -190,253 +190,90 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
     try {
       return executeAsync(request).get();
     } catch (InterruptedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new RuntimeException("InterruptedException executing HTTP request: " + e);
     } catch (ExecutionException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      Throwable t = e.getCause();
+      if (t instanceof NoSuchQueueException)
+        throw (NoSuchQueueException) t;
+      throw new RuntimeException("ExecutionException executing HTTP request: " + e);
     }
   }
 
   @Override
   public Future<Message> executeAsync(CreateMessage request) {
-    HttpPut httpRequest = getHttpRequest(request);
-    final FutureMessage futureMessage = new FutureMessage();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessage.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessage.setException(e);
-      }
-
-    });
-    return futureMessage;
+    URI uri = getUri(request);
+    HttpAsyncPut httpRequest =
+        new HttpAsyncPut(uri, request.getBody(), "application/json", "UTF-8");
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Account>> executeAsync(DeleteAccounts request) {
-    HttpDelete httpRequest = getHttpRequest(request);
-    final FutureAccountList futureAccountList = new FutureAccountList();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureAccountList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureAccountList.setException(e);
-      }
-
-    });
-    return futureAccountList;
+    URI uri = getUri(request);
+    HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
+    return client.execute(httpRequest, new AccountListResponseConsumer(request), null);
   }
 
   @Override
   public Future<Message> executeAsync(DeleteMessage request) {
-    HttpDelete httpRequest = getHttpRequest(request);
-    final FutureMessage futureMessage = new FutureMessage();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessage.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessage.setException(e);
-      }
-
-    });
-    return futureMessage;
+    URI uri = getUri(request);
+    HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(DeleteMessages request) {
-    HttpDelete httpRequest = getHttpRequest(request);
-    final FutureMessageList futureMessageList = new FutureMessageList();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessageList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessageList.setException(e);
-      }
-
-    });
-    return futureMessageList;
+    URI uri = getUri(request);
+    HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
+    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Queue>> executeAsync(DeleteQueues request) {
-    HttpDelete httpRequest = getHttpRequest(request);
-    final FutureQueueList futureQueueList = new FutureQueueList(request.getAccount());
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureQueueList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureQueueList.setException(e);
-      }
-
-    });
-    return futureQueueList;
+    URI uri = getUri(request);
+    HttpAsyncDelete httpRequest = new HttpAsyncDelete(uri);
+    return client.execute(httpRequest, new QueueListResponseConsumer(request), null);
   }
 
   @Override
   public Future<List<Account>> executeAsync(GetAccounts request) {
-    HttpGet httpRequest = getHttpRequest(request);
-    final FutureAccountList futureAccountList = new FutureAccountList();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureAccountList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureAccountList.setException(e);
-      }
-
-    });
-    return futureAccountList;
+    URI uri = getUri(request);
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new AccountListResponseConsumer(request), null);
   }
 
   @Override
   public Future<Message> executeAsync(GetMessage request) {
-    HttpGet httpRequest = getHttpRequest(request);
-    final FutureMessage futureMessage = new FutureMessage();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessage.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessage.setException(e);
-      }
-
-    });
-    return futureMessage;
+    URI uri = getUri(request);
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(GetMessages request) {
-    HttpGet httpRequest = getHttpRequest(request);
-    final FutureMessageList futureMessageList = new FutureMessageList();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessageList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessageList.setException(e);
-      }
-
-    });
-    return futureMessageList;
+    URI uri = getUri(request);
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Queue>> executeAsync(GetQueues request) {
-    HttpGet httpRequest = getHttpRequest(request);
-    final FutureQueueList futureQueueList = new FutureQueueList(request.getAccount());
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureQueueList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureQueueList.setException(e);
-      }
-
-    });
-    return futureQueueList;
+    URI uri = getUri(request);
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new QueueListResponseConsumer(request), null);
   }
 
   @Override
   public Future<Message> executeAsync(UpdateMessage request) {
-    HttpPost httpRequest = getHttpRequest(request);
-    final FutureMessage futureMessage = new FutureMessage();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessage.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessage.setException(e);
-      }
-
-    });
-    return futureMessage;
+    URI uri = getUri(request);
+    HttpAsyncPost httpRequest = new HttpAsyncPost(uri, "");
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(), null);
   }
 
   @Override
   public Future<List<Message>> executeAsync(UpdateMessages request) {
-    HttpPost httpRequest = getHttpRequest(request);
-    final FutureMessageList futureMessageList = new FutureMessageList();
-    client.execute(httpRequest, new FutureCallback<HttpResponse>() {
-
-      public void cancelled() {
-        throw new RuntimeException("Should not have called .cancelled() on FutureCallBack");
-      }
-
-      public void completed(final HttpResponse response) {
-        futureMessageList.setHttpResponse(response);
-      }
-
-      public void failed(final Exception e) {
-        futureMessageList.setException(e);
-      }
-
-    });
-    return futureMessageList;
+    URI uri = getUri(request);
+    HttpAsyncPost httpRequest = new HttpAsyncPost(uri, "");
+    return client.execute(httpRequest, new MessageListResponseConsumer(), null);
   }
 }

@@ -14,23 +14,7 @@
  * the License.
  */
 
-package org.openstack.burrow.backend.http;
+package org.openstack.burrow.client.methods;
 
-public class BackendInternalException extends RuntimeException {
-
-  public BackendInternalException() {
-
-  }
-
-  public BackendInternalException(String s) {
-    super(s);
-  }
-
-  public BackendInternalException(String s, Throwable cause) {
-    super(s, cause);
-  }
-
-  public BackendInternalException(Throwable cause) {
-    super(cause);
-  }
+public interface AccountListRequest {
 }

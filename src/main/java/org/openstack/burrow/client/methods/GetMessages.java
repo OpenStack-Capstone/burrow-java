@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
-public class GetMessages {
+public class GetMessages implements MessageListRequest {
   private String detail;
   private Long limit;
   private String marker;

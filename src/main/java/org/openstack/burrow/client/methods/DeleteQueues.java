@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Account;
 
-public class DeleteQueues {
+public class DeleteQueues implements QueueListRequest {
   private Account account;
   private String detail;
   private Long limit;

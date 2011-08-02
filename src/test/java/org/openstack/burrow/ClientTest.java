@@ -139,8 +139,8 @@ abstract class ClientTest extends TestCase {
     String body = "testCreateGetMessageBody";
     backend.execute(queue.createMessage(id, body));
     Message message = backend.execute(queue.getMessage(id));
-    assertEquals(message.getId(), id);
-    assertEquals(message.getBody(), body);
+    assertEquals(id, message.getId());
+    assertEquals(body, message.getBody());
   }
 
   /**

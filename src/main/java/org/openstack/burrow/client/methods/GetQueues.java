@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Account;
 
-public class GetQueues {
+public class GetQueues implements QueueListRequest {
   private Account account;
   private Long limit;
   private String marker;

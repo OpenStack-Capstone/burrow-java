@@ -16,7 +16,7 @@
 
 package org.openstack.burrow.client.methods;
 
-public class DeleteAccounts {
+public class DeleteAccounts implements AccountListRequest {
   private String detail;
   private Long limit;
   private String marker;

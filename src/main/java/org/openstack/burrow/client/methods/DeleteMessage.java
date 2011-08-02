@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
-public class DeleteMessage {
+public class DeleteMessage implements SingleMessageRequest {
   private String id;
   private Boolean matchHidden;
   private Queue queue;

@@ -45,6 +45,7 @@ import org.openstack.burrow.client.methods.UpdateMessages;
 
 public class Http extends BaseHttp implements Backend {
   private HttpClient client;
+
   public Http(String host, int port) {
     super(host, port);
     this.client = new DefaultHttpClient();

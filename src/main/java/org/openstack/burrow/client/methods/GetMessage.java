@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
-public class GetMessage {
+public class GetMessage implements SingleMessageRequest {
   private String detail;
   private String id;
   private Boolean matchHidden;

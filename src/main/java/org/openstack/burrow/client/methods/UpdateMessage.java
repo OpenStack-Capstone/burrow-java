@@ -18,7 +18,7 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
-public class UpdateMessage {
+public class UpdateMessage implements SingleMessageRequest {
   private String detail;
   private Long hide;
   private String id;
