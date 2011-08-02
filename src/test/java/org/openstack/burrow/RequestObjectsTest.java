@@ -17,9 +17,7 @@
 package org.openstack.burrow;
 
 import org.junit.Test;
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.ProtocolException;
+import org.openstack.burrow.backend.*;
 import org.openstack.burrow.backend.http.Http;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
@@ -34,7 +32,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testCreateMessage() throws CommandException, ProtocolException {
+    public void testCreateMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -57,7 +55,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessage() throws CommandException, ProtocolException {
+    public void testDeleteMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -74,7 +72,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testDeleteMessages() throws CommandException, ProtocolException {
+    public void testDeleteMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -93,7 +91,7 @@ public class RequestObjectsTest {
      * calling all the correct functions.
      */
     @Test
-    public void testGetMessage() throws CommandException, ProtocolException {
+    public void testGetMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -116,7 +114,7 @@ public class RequestObjectsTest {
       * calling all the correct functions.
       */
     @Test
-    public void testGetMessages() throws CommandException, ProtocolException {
+    public void testGetMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -141,7 +139,7 @@ public class RequestObjectsTest {
     */
    /*
    @Test
-    public void testUpdateMessage() {
+    public void testUpdateMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
@@ -167,7 +165,7 @@ public class RequestObjectsTest {
      */
     /*
    @Test
-    public void testUpdateMessages() {
+    public void testUpdateMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
