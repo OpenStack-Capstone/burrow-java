@@ -32,7 +32,7 @@ public interface Backend {
    *         queue about the created message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(CreateMessage request) throws CommandException, HttpProtocolException;
+  public Message execute(CreateMessage request) throws CommandException, ProtocolException;
 
   /**
    * Execute a DeleteAccounts request.
@@ -41,7 +41,7 @@ public interface Backend {
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(DeleteAccounts request) throws NoSuchAccountException, HttpProtocolException;
+  public List<Account> execute(DeleteAccounts request) throws CommandException, ProtocolException;
 
   /**
    * Execute a DeleteMessage request.
@@ -51,7 +51,7 @@ public interface Backend {
    *         queue about the deleted message, or null if the queue did not
    *         return any information.
    */
-  public Message execute(DeleteMessage request) throws CommandException, HttpProtocolException;
+  public Message execute(DeleteMessage request) throws CommandException, ProtocolException;
 
   /**
    * Execute a DeleteMessages request.
@@ -61,7 +61,7 @@ public interface Backend {
    *         by the queue about the deleted messages, or null if the queue did
    *         not return any information.
    */
-  public List<Message> execute(DeleteMessages request) throws NoSuchMessageException, HttpProtocolException;
+  public List<Message> execute(DeleteMessages request) throws CommandException, ProtocolException;
 
   /**
    * Execute a DeleteQueues request.
@@ -70,7 +70,7 @@ public interface Backend {
    * @return A list of Queue instances populated with any information returned
    *         about the queues, or null if no information was returned.
    */
-  public List<Queue> execute(DeleteQueues request) throws NoSuchQueueException, HttpProtocolException;
+  public List<Queue> execute(DeleteQueues request) throws CommandException, ProtocolException;
 
   /**
    * Execute a GetAccounts request.
@@ -79,7 +79,7 @@ public interface Backend {
    * @return A list of Account instances populated with any information returned
    *         about the accounts, or null if no information was returned.
    */
-  public List<Account> execute(GetAccounts request) throws NoSuchAccountException, HttpProtocolException;
+  public List<Account> execute(GetAccounts request) throws CommandException, ProtocolException;
 
   /**
    * Execute a GetMessage request.
@@ -89,7 +89,7 @@ public interface Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(GetMessage request) throws CommandException, HttpProtocolException;
+  public Message execute(GetMessage request) throws CommandException, ProtocolException;
 
   /**
    * Execute a GetMessages request.
@@ -99,7 +99,7 @@ public interface Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(GetMessages request) throws NoSuchMessageException, HttpProtocolException;
+  public List<Message> execute(GetMessages request) throws CommandException, ProtocolException;
 
   /**
    * Execute a GetQueues request.
@@ -109,7 +109,7 @@ public interface Backend {
    *         by the queue about the queues, or null if the queue did not return
    *         any information.
    */
-  public List<Queue> execute(GetQueues request) throws NoSuchQueueException, HttpProtocolException;
+  public List<Queue> execute(GetQueues request) throws CommandException, ProtocolException;
 
   /**
    * Execute an UpdateMessage request.
@@ -119,7 +119,7 @@ public interface Backend {
    *         queue about the message, or null if the queue did not return any
    *         information.
    */
-  public Message execute(UpdateMessage request) throws CommandException, HttpProtocolException;
+  public Message execute(UpdateMessage request) throws CommandException, ProtocolException;
 
   /**
    * Execute an UpdateMessages request.
@@ -129,5 +129,5 @@ public interface Backend {
    *         by the queue about the messages, or null if the queue did not
    *         return any information.
    */
-  public List<Message> execute(UpdateMessages request) throws NoSuchMessageException, HttpProtocolException;
+  public List<Message> execute(UpdateMessages request) throws CommandException, ProtocolException;
 }
