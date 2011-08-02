@@ -12,6 +12,11 @@ import java.lang.Math;
  * When using an iterator over this collection in a multithreaded environment, the life of the iterator must be
  * wrapped in a <pre>synchronized (hashListInstance) {..}</pre> block in order to be threadsafe.
  *
+ * This class is used instead of LinkedHashMap due to LinkedHashMap's lack of an iterator starting at an arbitrary
+ * position, and because inserting a value with an existing key does not alter the position in the insertion-order
+ * list.  The members of LinkedHashMap which would need to be altered to change this behaviour are all package or
+ * private access, and the license under which it is distributed does not allow direct copying and modification.
+ *
  * @param <K> Key type for hash lookups
  * @param <V> Type of values to be contained.
  */
