@@ -16,17 +16,13 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-
 import junit.framework.TestCase;
-
 import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.client.Account;
-import org.openstack.burrow.client.Client;
-import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchAccountException;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.backend.CommandException;
+import org.openstack.burrow.backend.ProtocolException;
+import org.openstack.burrow.client.*;
+
+import java.util.List;
 
 /**
  * Unit tests for the Burrow Client.
@@ -101,7 +97,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create then delete a message, then verify that a second delete fails.
    */
-  public void testCreateDeleteMessage() {
+  public void testCreateDeleteMessage() throws CommandException, ProtocolException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
     backend.execute(queue.createMessage(id, body));
@@ -117,7 +113,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create and delete a hidden message.
    */
-  public void testCreateDeleteMessageWithMatchHidden() {
+  public void testCreateDeleteMessageWithMatchHidden() throws CommandException, ProtocolException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
     backend.execute(queue.createMessage(id, body).withHide((100L)));
@@ -133,7 +129,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create and then get a message.
    */
-  public void testCreateGetMessage() {
+  public void testCreateGetMessage() throws CommandException, ProtocolException {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
     backend.execute(queue.createMessage(id, body));
@@ -145,7 +141,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create two messages and then verify their presence in getMessages.
    */
-  public void testCreateGetMessages() {
+  public void testCreateGetMessages() throws CommandException, ProtocolException {
     String[] ids = {"testCreateGetMessages1", "testCreateGetMessages2"};
     String body = "testCreateGetMessagesBody";
     backend.execute(queue.createMessage(ids[0], body));
@@ -158,7 +154,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create a message with a TTL.
    */
-  public void testCreateGetMessageWithTtl() {
+  public void testCreateGetMessageWithTtl() throws CommandException, ProtocolException {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
     int ttl = 100;
@@ -173,7 +169,7 @@ abstract class ClientTest extends TestCase {
    * Delete all accounts, then implicitly create two and delete them one at a
    * time.
    */
-  public void testDeleteAccounts() {
+  public void testDeleteAccounts() throws CommandException, ProtocolException {
     String messageId = "testDeleteAccountsMessageId";
     String messageBody = "testDeleteAccountsMessageBody";
     String queueId = "testDeleteAccountsQueueId";
@@ -203,7 +199,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Delete a message that does not exist.
    */
-  public void testDeleteAMessageThatDoesNotExist() {
+  public void testDeleteAMessageThatDoesNotExist() throws CommandException, ProtocolException {
     String id = "testDeleteAMessageThatDoesNotExist";
     try {
       backend.execute(queue.deleteMessage(id));
@@ -217,7 +213,7 @@ abstract class ClientTest extends TestCase {
    * Create a visible and a hidden message, then delete all non-hidden messages
    * in the queue.
    */
-  public void testDeleteMessagesWithHide() {
+  public void testDeleteMessagesWithHide() throws CommandException, ProtocolException {
     String[] ids = {"testDeleteMessagesWithHide1", "testDeleteMessagesWithHide2"};
     String body = "testDeleteMessagesBodyWithHide";
     boolean[] seen;
@@ -238,7 +234,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create two queues, then delete all queues on the account.
    */
-  public void testDeleteQueues() {
+  public void testDeleteQueues() throws CommandException, ProtocolException {
     String messageId = "testDeleteQueues";
     String queueIds[] = {"testDeleteQueues1", "testDeleteQueues2"};
     Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
@@ -265,7 +261,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create two queues then delete them one at a time.
    */
-  public void testDeleteQueuesWithDetail() {
+  public void testDeleteQueuesWithDetail() throws CommandException, ProtocolException {
     String messageId = "testDeleteQueuesWithDetail";
     String messageBody = "testDeleteQueuesWithDetailMessageBody";
     String queueIds[] = {"testDeleteQueuesWithDetailQueue1", "testDeleteQueuesWithDetailQueue2"};
@@ -301,7 +297,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create an account by creating a message.
    */
-  public void testGetAccounts() {
+  public void testGetAccounts() throws CommandException, ProtocolException {
     String messageId = "testGetAccountsMessageId";
     String messageBody = "testGetAccountsMessageBody";
     String accountIds[] = {account.getId()};
@@ -315,7 +311,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Get a message that does not exist.
    */
-  public void testGetAMessageThatDoesNotExist() {
+  public void testGetAMessageThatDoesNotExist() throws CommandException, ProtocolException {
     String id = "testGetAMessageThatDoesNotExist";
     try {
       backend.execute(queue.getMessage(id));
@@ -329,7 +325,7 @@ abstract class ClientTest extends TestCase {
    * Create a message, verify the queue exists, then delete all messages in the
    * queue and verify it goes away.
    */
-  public void testGetQueuesDeleteMessages() {
+  public void testGetQueuesDeleteMessages() throws CommandException, ProtocolException {
     String messageId = "testGetQueues";
     String messageBody = "testGetQueuesMessageBody";
     String queueIds[] = {queue.getId()};
@@ -350,7 +346,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create hidden messages then use updateMessages to reveal them.
    */
-  public void testMultipleUpdateHide() {
+  public void testMultipleUpdateHide() throws CommandException, ProtocolException {
     String[] ids = {"testMultipleUpdateHideMessage1", "testMultipleUpdateHideMessage2"};
     String body = "testMultipleUpdateHideMessageBody";
     boolean[] seen;
@@ -371,7 +367,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Create a hidden message then use updateMessage to reveal it.
    */
-  public void testUpdateHide() {
+  public void testUpdateHide() throws CommandException, ProtocolException {
     String ids[] = {"testUpdateHideMessage"};
     String body = "testUpdateHideMessageBody";
     boolean[] seen;
