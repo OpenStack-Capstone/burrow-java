@@ -240,9 +240,6 @@ public class Memory implements Backend {
 
         Message msg = mq.get(request.getId());
         if (msg == null) throw new NoSuchMessageException();
-        if ((request.getMatchHidden() != null) &&
-                !request.getMatchHidden() &&
-                (msg.getHide() != 0)) throw new MessageHiddenException();
 
         return msg;
     }

@@ -1,7 +1,6 @@
 package org.openstack.burrow.backend.memory;
 
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.MessageHiddenException;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.NoSuchQueueException;
 
@@ -73,8 +72,6 @@ class MemoryQueue {
             MessageRecord msg = queue.get(messageId);
 
             if (msg == null) throw new NoSuchMessageException();
-
-            if (msg.getHide() != 0) throw new MessageHiddenException();
 
             return msg;
         }
