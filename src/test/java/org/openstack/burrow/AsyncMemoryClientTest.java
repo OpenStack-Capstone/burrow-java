@@ -14,23 +14,19 @@
  * the License.
  */
 
-package org.openstack.burrow.backend;
+package org.openstack.burrow;
 
-public class NoSuchAccountException extends CommandException {
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.openstack.burrow.backend.memory.AsyncMemory;
+import org.openstack.burrow.backend.memory.Memory;
 
-  public NoSuchAccountException() {
+public class AsyncMemoryClientTest extends ClientTest {
+  public static Test suite() {
+    return new TestSuite(AsyncMemoryClientTest.class);
   }
 
-  public NoSuchAccountException(String s) {
-    super(s);
+  public AsyncMemoryClientTest(String testName) {
+    super(testName, new AsyncMemory());
   }
-
-  public NoSuchAccountException(String s, Throwable cause) {
-    super(s, cause);
-  }
-
-  public NoSuchAccountException(Throwable cause) {
-    super(cause);
-  }
-
 }
