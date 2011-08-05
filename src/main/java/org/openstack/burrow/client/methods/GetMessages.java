@@ -18,6 +18,9 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ * GetMessages is a request object
+ */
 public class GetMessages implements MessageListRequest {
   private String detail;
   private Long limit;
@@ -26,6 +29,10 @@ public class GetMessages implements MessageListRequest {
   private Queue queue;
   private Long wait;
 
+    /**
+     * Constructor for GetMessages
+     * @param queue
+     */
   public GetMessages(Queue queue) {
     this.queue = queue;
     this.marker = null;
@@ -35,6 +42,15 @@ public class GetMessages implements MessageListRequest {
     this.wait = null;
   }
 
+    /**
+     * Private Constructor for GetMessages
+     * @param queue
+     * @param marker
+     * @param limit
+     * @param matchHidden
+     * @param detail
+     * @param wait
+     */
   private GetMessages(Queue queue, String marker, Long limit, Boolean matchHidden, String detail,
       Long wait) {
     this.queue = queue;
@@ -45,46 +61,95 @@ public class GetMessages implements MessageListRequest {
     this.wait = wait;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getDetail() {
     return detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getLimit() {
     return limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getMarker() {
     return marker;
   }
 
+    /**
+     *
+     * @return
+     */
   public Boolean getMatchHidden() {
     return matchHidden;
   }
 
+    /**
+     *
+     * @return
+     */
   public Queue getQueue() {
     return queue;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getWait() {
     return wait;
   }
 
+    /**
+     *
+     * @param detail
+     * @return
+     */
   public GetMessages withDetail(String detail) {
     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param limit
+     * @return
+     */
   public GetMessages withLimit(long limit) {
     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
   public GetMessages withMarker(String marker) {
     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param matchHidden
+     * @return
+     */
   public GetMessages withMatchHidden(boolean matchHidden) {
     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param wait
+     * @return
+     */
   public GetMessages withWait(long wait) {
     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
   }

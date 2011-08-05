@@ -18,35 +18,66 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ * CreateMessage is a request object
+ */
 public class DeleteMessage implements SingleMessageRequest {
   private String id;
   private Boolean matchHidden;
   private Queue queue;
 
+    /**
+     *
+     * @param queue
+     * @param id
+     */
   public DeleteMessage(Queue queue, String id) {
     this.queue = queue;
     this.id = id;
     this.matchHidden = null;
   }
 
+    /**
+     *
+     * @param queue
+     * @param id
+     * @param matchHidden
+     */
   private DeleteMessage(Queue queue, String id, Boolean matchHidden) {
     this.queue = queue;
     this.id = id;
     this.matchHidden = matchHidden;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getId() {
     return id;
   }
 
+    /**
+     *
+     * @return
+     */
   public Boolean getMatchHidden() {
     return matchHidden;
   }
 
+    /**
+     *
+     * @return
+     */
   public Queue getQueue() {
     return queue;
   }
 
+    /**
+     *
+     * @param matchHidden
+     * @return
+     */
   public DeleteMessage withMatchHidden(boolean matchHidden) {
     return new DeleteMessage(queue, id, matchHidden);
   }

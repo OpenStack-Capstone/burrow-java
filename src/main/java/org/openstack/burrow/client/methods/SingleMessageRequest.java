@@ -18,6 +18,9 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ * Interface for a SingleMessageRequest
+ */
 public interface SingleMessageRequest {
   public String getId();
 

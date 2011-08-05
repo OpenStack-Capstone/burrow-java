@@ -18,6 +18,9 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Account;
 
+/**
+ *  Interface for QueueListRequest
+ */
 public interface QueueListRequest {
   public Account getAccount();
 }

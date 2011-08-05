@@ -18,6 +18,10 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ * CreateMessage is a request object
+ */
+
 public class CreateMessage implements SingleMessageRequest {
   private String body;
   private Long hide;
@@ -25,6 +29,12 @@ public class CreateMessage implements SingleMessageRequest {
   private Queue queue;
   private Long ttl;
 
+    /**
+     *
+     * @param queue
+     * @param id
+     * @param body
+     */
   public CreateMessage(Queue queue, String id, String body) {
     this.queue = queue;
     this.id = id;
@@ -33,6 +43,14 @@ public class CreateMessage implements SingleMessageRequest {
     this.hide = null;
   }
 
+    /**
+     *
+     * @param queue
+     * @param id
+     * @param body
+     * @param ttl
+     * @param hide
+     */
   private CreateMessage(Queue queue, String id, String body, Long ttl, Long hide) {
     this.queue = queue;
     this.id = id;
@@ -41,30 +59,60 @@ public class CreateMessage implements SingleMessageRequest {
     this.hide = hide;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getBody() {
     return body;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getHide() {
     return hide;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getId() {
     return id;
   }
 
+    /**
+     *
+     * @return
+     */
   public Queue getQueue() {
     return queue;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getTtl() {
     return ttl;
   }
 
+    /**
+     *
+     * @param hide
+     * @return
+     */
   public CreateMessage withHide(long hide) {
     return new CreateMessage(queue, id, body, ttl, hide);
   }
 
+    /**
+     *
+     * @param ttl
+     * @return
+     */
   public CreateMessage withTtl(long ttl) {
     return new CreateMessage(queue, id, body, ttl, hide);
   }
