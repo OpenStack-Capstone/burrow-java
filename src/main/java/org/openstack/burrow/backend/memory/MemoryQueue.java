@@ -53,6 +53,7 @@ class MemoryQueue {
                 if (hide != null) this.hide = hide;
                 else {
                     this.hide = this.hide - (now - lastTick);
+                    this.hide = this.hide < 0 ? 0 : this.hide;
                 }
 
                 lastTick = now;
@@ -75,12 +76,13 @@ class MemoryQueue {
             return msg;
         }
 
-        synchronized Message get(String messageId) throws MessageNotFoundException {
+        synchronized Message get(String messageId, Long hide) throws MessageNotFoundException {
             clean();
 
             MessageRecord msg = queue.get(messageId);
 
             if (msg == null) throw new MessageNotFoundException();
+            msg.update(null, hide);
 
             return msg;
         }
@@ -100,7 +102,7 @@ class MemoryQueue {
                 MessageRecord msg = iter.next().getValue();
                 if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
-                    if (hide != null) msg.hide =
+                    msg.update(null, hide);
                     limit--;
                 }
             }
