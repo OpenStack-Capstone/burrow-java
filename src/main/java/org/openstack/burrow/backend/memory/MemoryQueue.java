@@ -2,8 +2,6 @@ package org.openstack.burrow.backend.memory;
 
 import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.client.Message;
-import org.openstack.burrow.client.NoSuchMessageException;
-import org.openstack.burrow.client.NoSuchQueueException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -110,13 +108,13 @@ class MemoryQueue {
             return messages;
         }
 
-        synchronized Message remove(String id) {
+        synchronized Message remove(String id) throws MessageNotFoundException {
             clean();
 
             MessageRecord msg = queue.remove(id);
 
 
-            if (msg == null) throw new NoSuchMessageException();
+            if (msg == null) throw new MessageNotFoundException();
 
             return msg;
         }
@@ -167,11 +165,11 @@ class MemoryQueue {
             return messages;
         }
 
-        synchronized Message update(String messageId, Long ttl, Long hide) {
+        synchronized Message update(String messageId, Long ttl, Long hide) throws MessageNotFoundException {
             clean();
 
             MessageRecord msg = queue.get(messageId);
-            if (msg == null) throw new NoSuchMessageException();
+            if (msg == null) throw new MessageNotFoundException();
 
             msg.update(ttl, hide);
 
