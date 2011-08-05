@@ -16,19 +16,40 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * ProtocolException is a subclass of BurrowException.  This type of exception is thrown if an
+ * issue arising in processing the request such as the response from the server is not parsable.
+ * This is the parent of HttpProtocolException.
+ */
 public class ProtocolException extends BurrowException {
 
+    /**
+     * Constructor for ProtocolException that takes no arguments
+     */
   public ProtocolException() {
   }
 
+    /**
+     * Constructor for ProtocolException that takes a message as an argument
+     * @param s A string that holds a message to be printed if exception is thrown
+     */
   public ProtocolException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for ProtocolException that takes a message and a cause as arguments
+     * @param s A string that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public ProtocolException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for ProtocolException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public ProtocolException(Throwable cause) {
     super(cause);
   }

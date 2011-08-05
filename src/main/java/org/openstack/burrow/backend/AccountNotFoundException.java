@@ -16,19 +16,40 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * AccountNotFoundException is a subclass of CommandException.  This type of exception is thrown if the
+ * request was correctly formatted but could not be fulfilled as the requested Account does not
+ * exist.
+ */
 public class AccountNotFoundException extends CommandException {
 
+    /**
+     * Constructor for AccountNotFoundException that takes no arguments
+     */
   public AccountNotFoundException() {
   }
 
+    /**
+     * Constructor for AccountNotFoundException that takes a message as an argument
+     * @param s A String that holds a message to be printed if exception is thrown
+     */
   public AccountNotFoundException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for AccountNotFoundException that takes a message and a cause as arguments
+     * @param s A String that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public AccountNotFoundException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for QueueNotFoundException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public AccountNotFoundException(Throwable cause) {
     super(cause);
   }

@@ -16,19 +16,40 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * MessageNotFoundException is a subclass of CommandException.  This type of exception is thrown if the
+ * request was correctly formatted but could not be fulfilled as the requested Message does not
+ * exist.
+ */
 public class MessageNotFoundException extends CommandException {
 
+    /**
+     * Constructor for MessageNotFoundException that takes no arguments
+     */
   public MessageNotFoundException() {
   }
 
+    /**
+     * Constructor for MessageNotFoundException that takes a message as an argument
+     * @param s A string that holds a message to be printed if exception is thrown
+     */
   public MessageNotFoundException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for MessageNotFoundException that takes a message and a cause as arguments
+     * @param s A string that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public MessageNotFoundException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for MessageNotFoundException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public MessageNotFoundException(Throwable cause) {
     super(cause);
   }

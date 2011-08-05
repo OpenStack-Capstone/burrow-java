@@ -16,19 +16,40 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * QueueNotFoundException is a subclass of CommandException.  This type of exception is thrown if the
+ * request was correctly formatted but could not be fulfilled as the requested Queue does not
+ * exist.
+ */
 public class QueueNotFoundException extends CommandException {
 
+    /**
+     * Constructor for QueueNotFoundException that takes no arguments
+     */
   public QueueNotFoundException() {
   }
 
+    /**
+     * Constructor for QueueNotFoundException that takes a message as an argument
+     * @param s A String that holds a message to be printed if exception is thrown
+     */
   public QueueNotFoundException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for QueueNotFoundException that takes a message and a cause as arguments
+     * @param s A String that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public QueueNotFoundException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for QueueNotFoundException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public QueueNotFoundException(Throwable cause) {
     super(cause);
   }
