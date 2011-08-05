@@ -1,5 +1,6 @@
 package org.openstack.burrow.backend.memory;
 
+import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.NoSuchMessageException;
 import org.openstack.burrow.client.NoSuchQueueException;
@@ -42,11 +43,21 @@ class MemoryQueue {
                 lastTick = now;
             }
 
-
             private void update(Long ttl, Long hide) {
+                long now = System.currentTimeMillis() / 1000;
+
                 if (ttl != null) this.ttl = ttl;
+                else {
+                    this.ttl = this.ttl - (now - lastTick);
+                    this.ttl = this.ttl < 0 ? 0 : this.ttl;
+                }
+
                 if (hide != null) this.hide = hide;
-                tick();
+                else {
+                    this.hide = this.hide - (now - lastTick);
+                }
+
+                lastTick = now;
             }
         }
 
@@ -66,17 +77,17 @@ class MemoryQueue {
             return msg;
         }
 
-        synchronized Message get(String messageId) {
+        synchronized Message get(String messageId) throws MessageNotFoundException {
             clean();
 
             MessageRecord msg = queue.get(messageId);
 
-            if (msg == null) throw new NoSuchMessageException();
+            if (msg == null) throw new MessageNotFoundException();
 
             return msg;
         }
 
-        synchronized List<Message> get(String marker, Long limit, Boolean matchHidden, Long wait) {
+        synchronized List<Message> get(String marker, Long limit, Boolean matchHidden, Long wait, Long hide) {
             clean();
             List<Message> messages = new ArrayList<Message>();
 
@@ -91,6 +102,7 @@ class MemoryQueue {
                 MessageRecord msg = iter.next().getValue();
                 if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
+                    if (hide != null) msg.hide =
                     limit--;
                 }
             }

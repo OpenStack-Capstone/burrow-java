@@ -32,7 +32,7 @@ public class MergeSorter implements Runnable {
         while (true) {
             while (jobs.size() < 2) {
                 Future<List<Message>> future =
-                            back.executeAsync(queue.getMessages().withLimit(2l).withMatchHidden(false));
+                            back.executeAsync(queue.getMessages().withLimit(2l).withMatchHidden(false));//withhide?
                 try {
                     jobs.addAll(future.get());
                 } catch (InterruptedException ie) {
@@ -77,7 +77,7 @@ public class MergeSorter implements Runnable {
             System.err.println("Error: Malformed job");
             System.exit(1);
         } catch (IOException ioe) {
-            //Shouldn't be possible from local source
+            //Shouldn't be possible from an in memory source
         } catch (ClassNotFoundException cnfe) {
             //Impossible, pretty sure int[] exists everywhere
         }

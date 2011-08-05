@@ -24,6 +24,7 @@ public class GetMessage implements SingleMessageRequest {
   private Boolean matchHidden;
   private Queue queue;
   private Long wait;
+  private Long hide;
 
   public GetMessage(Queue queue, String id) {
     this.queue = queue;
@@ -33,12 +34,13 @@ public class GetMessage implements SingleMessageRequest {
     this.wait = null;
   }
 
-  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait) {
+  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait, Long hide) {
     this.queue = queue;
     this.id = id;
     this.matchHidden = matchHidden;
     this.detail = detail;
     this.wait = wait;
+    this.hide = hide;
   }
 
   public String getDetail() {
@@ -48,6 +50,10 @@ public class GetMessage implements SingleMessageRequest {
   public String getId() {
     return id;
   }
+
+    public Long getHide() {
+        return hide;
+    }
 
   public Boolean getMatchHidden() {
     return matchHidden;
@@ -62,14 +68,18 @@ public class GetMessage implements SingleMessageRequest {
   }
 
   public GetMessage withDetail(String detail) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
+  }
+
+  public GetMessage withHide(long hide) {
+    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
   }
 
   public GetMessage withMatchHidden(boolean matchHidden) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
   }
 
   public GetMessage withWait(long wait) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
   }
 }
