@@ -28,7 +28,6 @@ public class GetMessage implements SingleMessageRequest {
   private Boolean matchHidden;
   private Queue queue;
   private Long wait;
-  private Long hide;
 
     /**
      * Constructor for GetMessage
@@ -44,9 +43,6 @@ public class GetMessage implements SingleMessageRequest {
     this.wait = null;
   }
 
-<<<<<<< HEAD
-  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait, Long hide) {
-=======
     /**
      * Private Constructor for GetMessage
      * @param queue
@@ -56,7 +52,6 @@ public class GetMessage implements SingleMessageRequest {
      * @param wait
      */
   private GetMessage(Queue queue, String id, Long hide, Boolean matchHidden, String detail, Long wait) {
->>>>>>> e3c94ed0e8ea6fd09c1ff47bc9a9805cbb5abd03
     this.queue = queue;
     this.id = id;
     this.hide = hide;
@@ -82,12 +77,6 @@ public class GetMessage implements SingleMessageRequest {
     return id;
   }
 
-<<<<<<< HEAD
-    public Long getHide() {
-        return hide;
-    }
-
-=======
     /**
      *
      * @return
@@ -100,7 +89,7 @@ public class GetMessage implements SingleMessageRequest {
      *
      * @return
      */
->>>>>>> e3c94ed0e8ea6fd09c1ff47bc9a9805cbb5abd03
+
   public Boolean getMatchHidden() {
     return matchHidden;
   }
@@ -124,28 +113,11 @@ public class GetMessage implements SingleMessageRequest {
 
     /**
      *
-     * @param detail
-     * @return
-     */
-  public GetMessage withDetail(String detail) {
-<<<<<<< HEAD
-    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
-  }
-
-  public GetMessage withHide(long hide) {
-    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
-=======
-    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
-  }
-
-    /**
-     *
      * @param hide
      * @return
      */
   public GetMessage withHide(long hide) {
     return new GetMessage(queue, id, hide, matchHidden, detail, wait);
->>>>>>> e3c94ed0e8ea6fd09c1ff47bc9a9805cbb5abd03
   }
 
     /**
@@ -154,11 +126,7 @@ public class GetMessage implements SingleMessageRequest {
      * @return
      */
   public GetMessage withMatchHidden(boolean matchHidden) {
-<<<<<<< HEAD
-    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
-=======
     return new GetMessage(queue, id, hide, matchHidden, detail, wait);
->>>>>>> e3c94ed0e8ea6fd09c1ff47bc9a9805cbb5abd03
   }
 
     /**
@@ -167,10 +135,6 @@ public class GetMessage implements SingleMessageRequest {
      * @return
      */
   public GetMessage withWait(long wait) {
-<<<<<<< HEAD
-    return new GetMessage(queue, id, matchHidden, detail, wait, hide);
-=======
     return new GetMessage(queue, id, hide, matchHidden, detail, wait);
->>>>>>> e3c94ed0e8ea6fd09c1ff47bc9a9805cbb5abd03
   }
 }
