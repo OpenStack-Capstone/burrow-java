@@ -15,19 +15,21 @@ public class SyslogClient implements Runnable {
 
     private Queue syslog;
     private Backend back;
-    private ConcurrentLinkedQueue<LogEntry> entries;
-    private Logger log; //Who logs the loggers?
+    private ConcurrentLinkedQueue<LogEntry> channel;
+    private Logger log;
     private int consecutiveErrors;
     private int waitTime;
-    private boolean keepGoing;
     private boolean running;
+    private boolean keepGoing;
 
-    public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> entries, Logger log, int waitTime) {
+    public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, /*Logger log,*/ int waitTime) {
         this.syslog = syslog;
         this.back = back;
-        this.entries = entries;
-        this.log = log;
+        this.channel = channel;
+        //this.log = log
         this.waitTime = waitTime;
+        this.keepGoing = true;
+        this.running = false;
     }
 
     public void run() {
@@ -39,12 +41,12 @@ public class SyslogClient implements Runnable {
                 grabbed = back.execute(new DeleteMessages(syslog).withWait(waitTime).withDetail("all"));
             } catch (ProtocolException pe) {
                 consecutiveErrors++;
-                log.log(Level.WARNING, "Attempt to retrieve log entries failed", pe);
+                //log.log(Level.WARNING, "Attempt to retrieve log entries failed", pe);
                 continue;
 
             } catch (ConnectionException ce) {
                 consecutiveErrors++;
-                log.log(Level.WARNING, "Connection attempt failed", ce);
+                //log.log(Level.WARNING, "Connection attempt failed", ce);
                 continue;
 
             } catch (QueueNotFoundException qe) {
@@ -54,21 +56,27 @@ public class SyslogClient implements Runnable {
 
             } catch (CommandException ce) {
                 consecutiveErrors++;
-                log.log(Level.WARNING, "Connection attempt failed", ce);
+                //log.log(Level.WARNING, "Connection attempt failed", ce);
                 continue;
 
             } catch (Exception e) {
                 //Not reachable with the current BurrowException hierarchy,
                 //barring something going seriously wrong.
-                log.log(Level.SEVERE, "An unexpected error has occurred", e);
+                //log.log(Level.SEVERE, "An unexpected error has occurred", e);
                 throw new Error(e); //Per Bart: Crash early, crash often.
             }
 
             consecutiveErrors = 0;
 
             for (Message message : grabbed) {
-                entries.add(munge(message));
+                try {
+                    channel.add(LogEntry.fromRawEntry(message.getBody()));
+                } catch (MalformedEntryException mfe) {
+                    //log.log(Level.WARNING, "Malformed Entry: " + message.getBody());
+                }
             }
+
+            if (!grabbed.isEmpty()) channel.notifyAll();
         }
         running = false;
         //cleanup?
@@ -86,9 +94,5 @@ public class SyslogClient implements Runnable {
 
     public int getConsecutiveErrors() {
         return consecutiveErrors;
-    }
-
-    private LogEntry munge(Message msg) {
-        return null;
     }
 }
