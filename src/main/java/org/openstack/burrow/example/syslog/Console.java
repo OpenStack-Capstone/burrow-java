@@ -42,11 +42,13 @@ public class Console {
         ConcurrentLinkedQueue<LogEntry> channel = new ConcurrentLinkedQueue<LogEntry>();
 
         SyslogClient client = new SyslogClient(queue, backend, channel, 10);
+        new Thread(client).start();
 
         while (true) {
             try {
-                synchronized (channel) {
-                    while (channel.isEmpty()) {
+                        synchronized (channel) {
+                            while (channel.isEmpty()) {
+
                         channel.wait(60l);
                     }
                 }
