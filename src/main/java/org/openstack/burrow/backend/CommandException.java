@@ -16,19 +16,40 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * CommandException is a subclass of BurrowException.  This type of exception is thrown if the
+ * request was correctly formatted but could not be fulfilled as the request information was
+ * not found.  This is the parent of MessageNotFound, QueueNotFound, AccountNotFound.
+ */
 public class CommandException extends BurrowException {
 
+    /**
+     * Constructor for CommandException that takes no arguments
+     */
   public CommandException() {
   }
 
+    /**
+     * Constructor for CommandException that takes a message as an argument
+     * @param s A string that holds a message to be printed if exception is thrown
+     */
   public CommandException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for CommandException that takes a message and a cause as arguments
+     * @param s A string that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public CommandException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for CommandException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public CommandException(Throwable cause) {
     super(cause);
   }

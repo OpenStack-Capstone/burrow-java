@@ -16,17 +16,26 @@
 
 package org.openstack.burrow.client.methods;
 
+/**
+ * GetAccounts is a request object
+ */
 public class GetAccounts implements AccountListRequest {
   private String detail;
   private Long limit;
   private String marker;
 
+    /**
+     * Public Constructor for GetAccounts
+     */
   public GetAccounts() {
     this.marker = null;
     this.limit = null;
     this.detail = null;
   }
 
+    /**
+     * Private Constructor for GetAccounts
+     */
   private GetAccounts(String marker, Long limit, String detail) {
     this.marker = marker;
     this.limit = limit;

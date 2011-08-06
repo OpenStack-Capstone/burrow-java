@@ -18,6 +18,9 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ *  Interface for MessageListRequest
+ */
 public interface MessageListRequest {
   public Queue getQueue();
 }

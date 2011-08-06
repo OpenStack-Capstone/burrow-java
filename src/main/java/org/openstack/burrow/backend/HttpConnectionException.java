@@ -16,19 +16,39 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * HttpConnectionException is a subclass of ConnectionException.  This type of exception is thrown
+ * if a connection error occurred while accessing the server using Http.
+ */
 public class HttpConnectionException extends ConnectionException {
 
+    /**
+     * Constructor for HttpConnectionException that takes no arguments
+     */
   public HttpConnectionException() {
   }
 
+    /**
+     * Constructor for HttpConnectionException that takes a message as an argument
+     * @param s A string that holds a message to be printed if exception is thrown
+     */
   public HttpConnectionException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for HttpConnectionException that takes a message and a cause as arguments
+     * @param s A string that holds a message to be printed if exception is thrown
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public HttpConnectionException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for HttpConnectionException that takes a message and a cause as arguments
+     * @param cause A Throwable object that signifies the cause of the exception being raised
+     */
   public HttpConnectionException(Throwable cause) {
     super(cause);
   }

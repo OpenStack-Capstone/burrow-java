@@ -19,19 +19,38 @@ package org.openstack.burrow.client;
 import org.openstack.burrow.client.methods.DeleteAccounts;
 import org.openstack.burrow.client.methods.GetAccounts;
 
+/**
+ * Class Client
+ */
 public class Client {
 
+    /**
+     * Constructor for Client
+     */
   public Client() {
   }
 
+    /**
+     *
+     * @param accountName
+     * @return
+     */
   public Account Account(String accountName) {
     return new Account(accountName);
   }
 
+    /**
+     *
+     * @return
+     */
   public DeleteAccounts deleteAccounts() {
     return new DeleteAccounts();
   }
 
+    /**
+     *
+     * @return
+     */
   public GetAccounts getAccounts() {
     return new GetAccounts();
   }

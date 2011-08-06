@@ -16,43 +16,82 @@
 
 package org.openstack.burrow.client.methods;
 
+/**
+ * DeleteAccounts is a request object
+ */
 public class DeleteAccounts implements AccountListRequest {
   private String detail;
   private Long limit;
   private String marker;
 
+    /**
+     * Constructor for DeleteAccounts
+     */
   public DeleteAccounts() {
     this.marker = null;
     this.limit = null;
     this.detail = null;
   }
 
+    /**
+     * Private Constructor for DeleteAccounts
+     * @param marker
+     * @param limit
+     * @param detail
+     */
   private DeleteAccounts(String marker, Long limit, String detail) {
     this.marker = marker;
     this.limit = limit;
     this.detail = detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getDetail() {
     return detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getLimit() {
     return limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getMarker() {
     return marker;
   }
 
+    /**
+     *
+     * @param detail
+     * @return
+     */
   public DeleteAccounts withDetail(String detail) {
     return new DeleteAccounts(marker, limit, detail);
   }
 
+    /**
+     *
+     * @param limit
+     * @return
+     */
   public DeleteAccounts withLimit(long limit) {
     return new DeleteAccounts(marker, limit, detail);
   }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
   public DeleteAccounts withMarker(String marker) {
     return new DeleteAccounts(marker, limit, detail);
   }

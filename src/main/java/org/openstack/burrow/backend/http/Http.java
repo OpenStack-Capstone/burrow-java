@@ -161,8 +161,17 @@ public class Http extends BaseHttp implements Backend {
   @Override
   public Message execute(GetMessage request) throws CommandException, HttpProtocolException {
     HttpGet httpRequest = getHttpRequest(request);
+    HttpPost httpPostRequest = null;
+    if (request.getHide() != null) {
+        httpPostRequest = getHttpPostRequest(request);
+    }
     try {
-      HttpResponse response = client.execute(httpRequest);
+      HttpResponse response = null;
+      if (httpPostRequest != null) {
+          response = client.execute(httpPostRequest);
+      } else {
+        response = client.execute(httpRequest);
+      }
       return handleSingleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
@@ -180,8 +189,17 @@ public class Http extends BaseHttp implements Backend {
   @Override
   public List<Message> execute(GetMessages request) throws CommandException, HttpProtocolException {
     HttpGet httpRequest = getHttpRequest(request);
+    HttpPost httpPostRequest = null;
+    if (request.getHide() != null) {
+        httpPostRequest = getHttpPostRequest(request);
+    }
     try {
-      HttpResponse response = client.execute(httpRequest);
+      HttpResponse response = null;
+      if (httpPostRequest != null) {
+          response = client.execute(httpPostRequest);
+      } else {
+        response = client.execute(httpRequest);
+      }
       return handleMultipleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()

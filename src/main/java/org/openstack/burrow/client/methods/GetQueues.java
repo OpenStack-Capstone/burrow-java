@@ -18,39 +18,74 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Account;
 
+/**
+ * GetQueues is a request object
+ */
 public class GetQueues implements QueueListRequest {
   private Account account;
   private Long limit;
   private String marker;
 
+    /**
+     * Constructor for GetQueues
+     * @param account
+     */
   public GetQueues(Account account) {
     this.account = account;
     this.marker = null;
     this.limit = null;
   }
 
+    /**
+     *
+     * @param account
+     * @param marker
+     * @param limit
+     */
   private GetQueues(Account account, String marker, Long limit) {
     this.account = account;
     this.marker = marker;
     this.limit = limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public Account getAccount() {
     return account;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getLimit() {
     return limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getMarker() {
     return marker;
   }
 
+    /**
+     *
+     * @param limit
+     * @return
+     */
   public GetQueues withLimit(long limit) {
     return new GetQueues(account, marker, limit);
   }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
   public GetQueues withMarker(String marker) {
     return new GetQueues(account, marker, limit);
   }

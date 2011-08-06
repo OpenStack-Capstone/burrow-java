@@ -18,6 +18,9 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Queue;
 
+/**
+ * DeleteMessages is a request object
+ */
 public class DeleteMessages implements MessageListRequest {
   private String detail;
   private Long limit;
@@ -26,6 +29,10 @@ public class DeleteMessages implements MessageListRequest {
   private Queue queue;
   private Long wait;
 
+    /**
+     * Constructor for DeleteMessages
+     * @param queue
+     */
   public DeleteMessages(Queue queue) {
     this.queue = queue;
     this.marker = null;
@@ -34,6 +41,15 @@ public class DeleteMessages implements MessageListRequest {
     this.wait = null;
   }
 
+    /**
+     * Private Constructor for DeleteMessages
+     * @param queue
+     * @param marker
+     * @param limit
+     * @param matchHidden
+     * @param detail
+     * @param wait
+     */
   private DeleteMessages(Queue queue, String marker, Long limit, Boolean matchHidden,
       String detail, Long wait) {
     this.queue = queue;
@@ -43,46 +59,95 @@ public class DeleteMessages implements MessageListRequest {
     this.wait = wait;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getDetail() {
     return detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getLimit() {
     return limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getMarker() {
     return marker;
   }
 
+    /**
+     *
+     * @return
+     */
   public Boolean getMatchHidden() {
     return matchHidden;
   }
 
+    /**
+     *
+     * @return
+     */
   public Queue getQueue() {
     return queue;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getWait() {
     return wait;
   }
 
+    /**
+     *
+     * @param detail
+     * @return
+     */
   public DeleteMessages withDetail(String detail) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param limit
+     * @return
+     */
   public DeleteMessages withLimit(long limit) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
   public DeleteMessages withMarker(String marker) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param matchHidden
+     * @return
+     */
   public DeleteMessages withMatchHidden(boolean matchHidden) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }
 
+    /**
+     *
+     * @param wait
+     * @return
+     */
   public DeleteMessages withWait(long wait) {
     return new DeleteMessages(queue, marker, limit, matchHidden, detail, wait);
   }

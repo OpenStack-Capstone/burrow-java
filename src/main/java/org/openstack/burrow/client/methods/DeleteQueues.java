@@ -18,12 +18,19 @@ package org.openstack.burrow.client.methods;
 
 import org.openstack.burrow.client.Account;
 
+/**
+ * DeleteQueues is a request object
+ */
 public class DeleteQueues implements QueueListRequest {
   private Account account;
   private String detail;
   private Long limit;
   private String marker;
 
+    /**
+     * Constructor for DeleteQueues
+     * @param account
+     */
   public DeleteQueues(Account account) {
     this.account = account;
     this.marker = null;
@@ -31,6 +38,13 @@ public class DeleteQueues implements QueueListRequest {
     this.detail = null;
   }
 
+    /**
+     * Private Constructor for DeleteQueues
+     * @param account
+     * @param marker
+     * @param limit
+     * @param detail
+     */
   private DeleteQueues(Account account, String marker, Long limit, String detail) {
     this.account = account;
     this.marker = marker;
@@ -38,30 +52,61 @@ public class DeleteQueues implements QueueListRequest {
     this.detail = detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public Account getAccount() {
     return account;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getDetail() {
     return detail;
   }
 
+    /**
+     *
+     * @return
+     */
   public Long getLimit() {
     return limit;
   }
 
+    /**
+     *
+     * @return
+     */
   public String getMarker() {
     return marker;
   }
 
+    /**
+     *
+     * @param detail
+     * @return
+     */
   public DeleteQueues withDetail(String detail) {
     return new DeleteQueues(account, marker, limit, detail);
   }
 
+    /**
+     *
+     * @param limit
+     * @return
+     */
   public DeleteQueues withLimit(long limit) {
     return new DeleteQueues(account, marker, limit, detail);
   }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
   public DeleteQueues withMarker(String marker) {
     return new DeleteQueues(account, marker, limit, detail);
   }

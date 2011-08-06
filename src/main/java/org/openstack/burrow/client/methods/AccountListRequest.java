@@ -16,5 +16,8 @@
 
 package org.openstack.burrow.client.methods;
 
+/**
+ *  Interface for AccountListRequest
+ */
 public interface AccountListRequest {
 }

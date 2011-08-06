@@ -16,19 +16,39 @@
 
 package org.openstack.burrow.backend;
 
+/**
+ * BurrowRuntimeException is a subclass of RuntimeException.  This will be thrown when a Runtime
+ * occurs when accessing the burrow server.
+ */
 public class BurrowRuntimeException extends RuntimeException {
 
+    /**
+     * Constructor for BurrowRuntimeException that takes no arguments
+     */
   public BurrowRuntimeException() {
   }
 
+    /**
+     * Constructor for BurrowRuntimeException that takes a message argument as a String
+     * @param s A string that holds the message to be shown when the exception is thrown
+     */
   public BurrowRuntimeException(String s) {
     super(s);
   }
 
+    /**
+     * Constructor for BurrowRuntimeException that takes a message argument as a String
+     * @param s A string that holds the message to be shown when the exception is thrown
+     * @param cause A Throwable object that signifies the cause for the exception to be thrown
+     */
   public BurrowRuntimeException(String s, Throwable cause) {
     super(s, cause);
   }
 
+    /**
+     * Constructor for BurrowRuntimeException that takes a message argument as a String
+     * @param cause A Throwable object that signifies the cause for the exception to be thrown
+     */
   public BurrowRuntimeException(Throwable cause) {
     super(cause);
   }
