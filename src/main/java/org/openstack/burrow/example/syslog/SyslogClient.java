@@ -22,7 +22,7 @@ public class SyslogClient implements Runnable {
     private boolean running;
     private boolean keepGoing;
 
-    public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, /*Logger log,*/ int waitTime) {
+    public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, int waitTime) {
         this.syslog = syslog;
         this.back = back;
         this.channel = channel;

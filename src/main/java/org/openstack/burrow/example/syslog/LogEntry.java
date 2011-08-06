@@ -1,7 +1,5 @@
 package org.openstack.burrow.example.syslog;
 
-import java.nio.charset.MalformedInputException;
-
 public class LogEntry {
     private String time;
     private String level;
