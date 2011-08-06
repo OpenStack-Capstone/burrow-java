@@ -47,6 +47,9 @@ import java.util.List;
 
 import static org.apache.http.HttpStatus.*;
 
+/**
+ * BaseHttp is the Interface for Http functionality
+ */
 abstract class BaseHttp {
   static List<Account> handleMultipleAccountHttpResponse(HttpResponse response)
           throws HttpProtocolException, AccountNotFoundException {
