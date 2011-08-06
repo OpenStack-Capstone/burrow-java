@@ -14,23 +14,13 @@
  * the License.
  */
 
-package org.openstack.burrow;
+package org.openstack.burrow.client.methods;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.openstack.burrow.client.Account;
 
 /**
- * Client class for Burrow.
+ *  Interface for QueueListRequest
  */
-public class Client {
-
-  public Client(String url) {
-  }
-
-  /**
-   * Get the list of accounts.
-   */
-  public List<String> getAccounts() {
-    return new ArrayList<String>();
-  }
+public interface QueueListRequest {
+  public Account getAccount();
 }

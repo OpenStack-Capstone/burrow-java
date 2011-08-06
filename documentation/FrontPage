@@ -1,0 +1,12 @@
+Burrow Java Client
+
+Burrow Java Client is a Java library that works with Burrow - a message queue suitable for single in-process use as well as cloud services.  Before using, please visit (http://burrow.openstack.org/) for a full explanation of Burrow and how to get started using it.  For instructions of using the Burrow Java Client, take a look at Getting Started.  Provided below is an example with explanations as well as source code documentation.
+
+Basics:
+Getting Started
+
+Details:
+Examples
+
+Source Code:
+Link to JavaDocs
