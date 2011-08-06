@@ -25,6 +25,7 @@ public class GetMessages implements MessageListRequest {
   private String detail;
   private Long limit;
   private String marker;
+  private Long hide;
   private Boolean matchHidden;
   private Queue queue;
   private Long wait;
@@ -37,6 +38,7 @@ public class GetMessages implements MessageListRequest {
     this.queue = queue;
     this.marker = null;
     this.limit = null;
+    this.hide = null;
     this.matchHidden = null;
     this.detail = null;
     this.wait = null;
@@ -51,11 +53,12 @@ public class GetMessages implements MessageListRequest {
      * @param detail
      * @param wait
      */
-  private GetMessages(Queue queue, String marker, Long limit, Boolean matchHidden, String detail,
+  private GetMessages(Queue queue, String marker, Long limit, Long hide, Boolean matchHidden, String detail,
       Long wait) {
     this.queue = queue;
     this.marker = marker;
     this.limit = limit;
+    this.hide = hide;
     this.matchHidden = matchHidden;
     this.detail = detail;
     this.wait = wait;
@@ -89,6 +92,14 @@ public class GetMessages implements MessageListRequest {
      *
      * @return
      */
+  public Long getHide() {
+    return hide;
+  }
+
+    /**
+     *
+     * @return
+     */
   public Boolean getMatchHidden() {
     return matchHidden;
   }
@@ -115,7 +126,7 @@ public class GetMessages implements MessageListRequest {
      * @return
      */
   public GetMessages withDetail(String detail) {
-    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -124,7 +135,7 @@ public class GetMessages implements MessageListRequest {
      * @return
      */
   public GetMessages withLimit(long limit) {
-    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -133,7 +144,16 @@ public class GetMessages implements MessageListRequest {
      * @return
      */
   public GetMessages withMarker(String marker) {
-    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
+  }
+
+    /**
+     *
+     * @param hide
+     * @return
+     */
+  public GetMessages withHide(long hide) {
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -142,7 +162,7 @@ public class GetMessages implements MessageListRequest {
      * @return
      */
   public GetMessages withMatchHidden(boolean matchHidden) {
-    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -151,6 +171,6 @@ public class GetMessages implements MessageListRequest {
      * @return
      */
   public GetMessages withWait(long wait) {
-    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+    return new GetMessages(queue, marker, limit, hide, matchHidden, detail, wait);
   }
 }

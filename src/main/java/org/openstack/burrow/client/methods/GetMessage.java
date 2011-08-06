@@ -24,6 +24,7 @@ import org.openstack.burrow.client.Queue;
 public class GetMessage implements SingleMessageRequest {
   private String detail;
   private String id;
+  private Long hide;
   private Boolean matchHidden;
   private Queue queue;
   private Long wait;
@@ -36,6 +37,7 @@ public class GetMessage implements SingleMessageRequest {
   public GetMessage(Queue queue, String id) {
     this.queue = queue;
     this.id = id;
+    this.hide = null;
     this.matchHidden = null;
     this.detail = null;
     this.wait = null;
@@ -49,9 +51,10 @@ public class GetMessage implements SingleMessageRequest {
      * @param detail
      * @param wait
      */
-  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait) {
+  private GetMessage(Queue queue, String id, Long hide, Boolean matchHidden, String detail, Long wait) {
     this.queue = queue;
     this.id = id;
+    this.hide = hide;
     this.matchHidden = matchHidden;
     this.detail = detail;
     this.wait = wait;
@@ -71,6 +74,14 @@ public class GetMessage implements SingleMessageRequest {
      */
   public String getId() {
     return id;
+  }
+
+    /**
+     *
+     * @return
+     */
+  public Long getHide() {
+    return hide;
   }
 
     /**
@@ -97,13 +108,23 @@ public class GetMessage implements SingleMessageRequest {
     return wait;
   }
 
+
     /**
      *
      * @param detail
      * @return
      */
   public GetMessage withDetail(String detail) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
+  }
+
+    /**
+     *
+     * @param hide
+     * @return
+     */
+  public GetMessage withHide(long hide) {
+    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -112,7 +133,7 @@ public class GetMessage implements SingleMessageRequest {
      * @return
      */
   public GetMessage withMatchHidden(boolean matchHidden) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
   }
 
     /**
@@ -121,6 +142,6 @@ public class GetMessage implements SingleMessageRequest {
      * @return
      */
   public GetMessage withWait(long wait) {
-    return new GetMessage(queue, id, matchHidden, detail, wait);
+    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
   }
 }

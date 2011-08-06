@@ -429,6 +429,18 @@ abstract class BaseHttp {
     return httpRequest;
   }
 
+  protected HttpPost getHttpPostRequest(GetMessage request) {
+      URI uri = getUri(request);
+      HttpPost httpRequest = new HttpPost(uri);
+      return httpRequest;
+    }
+
+  protected HttpPost getHttpPostRequest(GetMessages request) {
+      URI uri = getUri(request);
+      HttpPost httpRequest = new HttpPost(uri);
+      return httpRequest;
+    }
+
   private List<NameValuePair> getQueryParamaters(CreateMessage request) {
     Long ttl = request.getTtl();
     Long hide = request.getHide();
