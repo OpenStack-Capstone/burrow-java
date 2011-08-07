@@ -17,7 +17,9 @@
 package org.openstack.burrow.client.methods;
 
 /**
- * DeleteAccounts is a request object
+ * DeleteAccounts is a request object that is executed by the client.  A DeleteAccounts object
+ * has several filters including detail - the details of an object to return, limit -
+ * the number of messages to process, and marker - a range of ids to match against.
  */
 public class DeleteAccounts implements AccountListRequest {
   private String detail;
@@ -25,7 +27,7 @@ public class DeleteAccounts implements AccountListRequest {
   private String marker;
 
     /**
-     * Constructor for DeleteAccounts
+     * Public Constructor for DeleteAccounts that takes no arguments
      */
   public DeleteAccounts() {
     this.marker = null;
@@ -34,10 +36,10 @@ public class DeleteAccounts implements AccountListRequest {
   }
 
     /**
-     * Private Constructor for DeleteAccounts
-     * @param marker
-     * @param limit
-     * @param detail
+     * Private Constructor for DeleteAccounts that takes a marker, limit, and detail as arguments
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @param limit  A Long denoting the number of messages to match
+     * @param detail A String denoting which attributes of a message to return
      */
   private DeleteAccounts(String marker, Long limit, String detail) {
     this.marker = marker;
@@ -46,51 +48,51 @@ public class DeleteAccounts implements AccountListRequest {
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return which attributes of a message to be sent back on request
+     * @return  A String containing the desired attributes
      */
   public String getDetail() {
     return detail;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the number of matched messages to be sent back on request
+     * @return  A Long signifying the determined limit
      */
   public Long getLimit() {
     return limit;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the range of message ids to be matched against
+     * @return  A String of the message Id to match Ids after
      */
   public String getMarker() {
     return marker;
   }
 
     /**
-     *
-     * @param detail
-     * @return
+     * Constructor for DeleteAccounts with a detail filter set
+     * @param detail A String denoting which attributes of a message to return
+     * @return A DeleteAccounts object with the detail set accordingly
      */
   public DeleteAccounts withDetail(String detail) {
     return new DeleteAccounts(marker, limit, detail);
   }
 
     /**
-     *
-     * @param limit
-     * @return
+     * Constructor for DeleteAccounts with a limit filter set
+     * @param limit A Long denoting the number of messages to match
+     * @return A DeleteAccounts object with the limit set accordingly
      */
   public DeleteAccounts withLimit(long limit) {
     return new DeleteAccounts(marker, limit, detail);
   }
 
     /**
-     *
-     * @param marker
-     * @return
+     * Constructor for DeleteAccounts with a marker filter set
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @return A DeleteAccounts object with the marker set accordingly
      */
   public DeleteAccounts withMarker(String marker) {
     return new DeleteAccounts(marker, limit, detail);

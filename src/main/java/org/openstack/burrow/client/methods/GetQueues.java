@@ -19,7 +19,10 @@ package org.openstack.burrow.client.methods;
 import org.openstack.burrow.client.Account;
 
 /**
- * GetQueues is a request object
+ * GetQueues is a request object that is executed by the client.  A GetQueues object
+ * has several filters including the account to delete the queue from,
+ * detail - the details of an object to return, limit - the number of messages to process,
+ * and marker - a range of ids to match against.
  */
 public class GetQueues implements QueueListRequest {
   private Account account;
@@ -27,8 +30,8 @@ public class GetQueues implements QueueListRequest {
   private String marker;
 
     /**
-     * Constructor for GetQueues
-     * @param account
+     * Public Constructor for GetQueues that takes an Account as an argument
+     * @param account The Account to delete the queues of
      */
   public GetQueues(Account account) {
     this.account = account;
@@ -37,10 +40,11 @@ public class GetQueues implements QueueListRequest {
   }
 
     /**
-     *
-     * @param account
-     * @param marker
-     * @param limit
+     * Private Constructor for GetQueues that takes an Account, a marker, a limit, and a detail
+     * as arguments
+     * @param account The Account to delete the queues of
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @param limit  A Long denoting the number of messages to match
      */
   private GetQueues(Account account, String marker, Long limit) {
     this.account = account;
@@ -49,42 +53,42 @@ public class GetQueues implements QueueListRequest {
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the designated Account
+     * @return An account from which the queues will be deleted
      */
   public Account getAccount() {
     return account;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the number of matched messages to be sent back on request
+     * @return  A Long signifying the determined limit
      */
   public Long getLimit() {
     return limit;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the range of message ids to be matched against
+     * @return  A String of the message Id to match Ids after
      */
   public String getMarker() {
     return marker;
   }
 
     /**
-     *
-     * @param limit
-     * @return
+     * Constructor for GetQueues with a limit filter set
+     * @param limit A Long denoting the number of messages to match
+     * @return A GetQueues object with the limit set accordingly
      */
   public GetQueues withLimit(long limit) {
     return new GetQueues(account, marker, limit);
   }
 
     /**
-     *
-     * @param marker
-     * @return
+     * Constructor for GetQueues with a marker filter set
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @return A GetQueues object with the marker set accordingly
      */
   public GetQueues withMarker(String marker) {
     return new GetQueues(account, marker, limit);
