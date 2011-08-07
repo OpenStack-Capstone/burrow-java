@@ -32,12 +32,13 @@ public class ListView<E> extends ArrayList<E> implements ListModel {
         for (ListDataListener ldl : listeners) ldl.intervalRemoved(event);
     }
 
-    private void addElement(E e) {
-        super.add(e);
+    protected boolean addElement(E e) {
+        boolean b = super.add(e);
         int i = size() - 1;
         ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, i, i);
 
         for (ListDataListener ldl : listeners) ldl.intervalAdded(event);
+        return b;
     }
 
     public ListView<E> getListView(Filter<E> filter) {
@@ -111,10 +112,10 @@ public class ListView<E> extends ArrayList<E> implements ListModel {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void ensureCapacity(int i) {
-        throw new UnsupportedOperationException();
-    }
+    //@Override
+    //public void ensureCapacity(int i) {
+    //    throw new UnsupportedOperationException();
+    //}
 
     @Override
     public Object clone() {
