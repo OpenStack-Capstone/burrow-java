@@ -20,7 +20,9 @@ import org.openstack.burrow.client.methods.MessageListRequest;
 import org.openstack.burrow.client.methods.SingleMessageRequest;
 
 /**
- * Class Message
+ * A Message contains several attributes including a message body, an id, the Queue the
+ * Message resides in, a ttl, and a hide time length.  A Message can get and set these
+ * attributes.
  */
 public class Message {
   // TODO Add more attributes.
@@ -31,7 +33,8 @@ public class Message {
   protected Long ttl;
 
     /**
-     * Protected constructor for Message that takes no arguments
+     * Protected constructor for Message that takes no arguments.  Sets all attribute
+     * fields to null.
      */
   protected Message() {
     this.id = null;
@@ -42,8 +45,9 @@ public class Message {
   }
 
     /**
-     *
-     * @param request
+     * Protected Constructor for Message that takes a SingleMessageRequest as an
+     * argument
+     * @param request A SingleMessageRequest object that sets the message id and Queue
      */
   protected Message(SingleMessageRequest request) {
     this.id = request.getId();
@@ -54,8 +58,9 @@ public class Message {
   }
 
     /**
-     *
-     * @param request
+     * Protected Constructor for Message that takes a MessageListRequest as an
+     * argument
+     * @param request A SingleMessageRequest object that sets the Queue
      */
   protected Message(MessageListRequest request) {
     this.queue = request.getQueue();
@@ -66,79 +71,80 @@ public class Message {
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message body
+     * @return The message body as a String
      */
   public String getBody() {
     return body;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message's hide
+     * @return The message's hide as a Long
      */
   public long getHide() {
     return hide;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message id
+     * @return The message id as a String
      */
   public String getId() {
     return id;
   }
 
     /**
-     *
+     * A getter function that returns the message Queue
+     * @return The message queue as a Queue
      */
   public Queue getQueue() {
     return queue;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message's ttl
+     * @return The message's ttl as a Long
      */
   public long getTtl() {
     return ttl;
   }
 
     /**
-     *
-     * @param body
+     * A setter function that sets the message body
+     * @param body The message body as a String
      */
   protected void setBody(String body) {
     this.body = body;
   }
 
     /**
-     *
-     * @param hide
+     * A setter function that sets the message's hide
+     * @param hide The message's hide as a Long
      */
   protected void setHide(Long hide) {
     this.hide = hide;
   }
 
     /**
-     *
-     * @param id
+     * A setter function that sets the message id
+     * @param id The message id as a String
      */
   protected void setId(String id) {
     this.id = id;
   }
 
     /**
-     *
-     * @param queue
+     * A setter function that sets the message Queue
+     * @param queue The message queue as a Queue
      */
   protected void setQueue(Queue queue) {
     this.queue = queue;
   }
 
     /**
-     *
-     * @param ttl
+     * A setter function that sets the message's ttl
+     * @param ttl The message's ttl as a Long
      */
   protected void setTtl(Long ttl) {
     this.ttl = ttl;
