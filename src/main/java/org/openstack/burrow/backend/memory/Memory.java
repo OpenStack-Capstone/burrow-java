@@ -17,9 +17,10 @@
 package org.openstack.burrow.backend.memory;
 
 import org.openstack.burrow.backend.AccountNotFoundException;
+import org.openstack.burrow.backend.MessageNotFoundException;
+import org.openstack.burrow.backend.QueueNotFoundException;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
@@ -75,11 +76,11 @@ public class Memory implements Backend {
 
         if (!accountMap.containsKey(account)
                 || accountMap.get(account).isEmpty())
-            throw new CommandException("No such account.");
+            throw new AccountNotFoundException("No such account.");
 
         if (!accountMap.get(account).containsKey(queue)
                 || accountMap.get(account).get(queue).isEmpty())
-            throw new AccountNotFoundException("No such queue.");
+            throw new QueueNotFoundException("No such queue.");
 
         return accountMap.get(account).get(queue);
     }
@@ -149,7 +150,13 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new MessageNotFoundException();
+	}
 
         Message msg = mq.remove(request.getId());
 
@@ -173,7 +180,13 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+        
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new QueueNotFoundException();
+	}
 
         List<Message> messages = mq.remove(request.getMarker(), request.getLimit(), request.getMatchHidden(), request.getWait());
 
@@ -261,7 +274,13 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+	
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new MessageNotFoundException();
+	}
 
         Message msg = mq.get(request.getId());
         if (msg == null) throw new MessageNotFoundException("No such message.");
@@ -284,7 +303,13 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new QueueNotFoundException();
+	}
 
         return mq.get(request.getMarker(), request.getLimit(), request.getMatchHidden(),
                       request.getWait());
@@ -345,7 +370,13 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new MessageNotFoundException();
+	}
 
         return mq.update(request.getId(), request.getTtl(), request.getHide());
 
@@ -366,7 +397,14 @@ public class Memory implements Backend {
 
         String account = request.getQueue().getAccount().getId();
         String queue = request.getQueue().getId();
-        MemoryQueue mq = ensurePresent(account, queue);
+
+	MemoryQueue mq = null;
+        try { //TODO: Fix this when http returns more than a 404
+	    mq = ensurePresent(account, queue);
+	} catch (CommandException ce) {
+	    throw new QueueNotFoundException();
+	}
+
 
         return mq.update(request.getMarker(), request.getLimit(), request.getMatchHidden(),
                          request.getTtl(), request.getHide(), request.getWait());
