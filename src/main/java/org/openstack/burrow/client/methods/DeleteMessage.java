@@ -82,7 +82,7 @@ public class DeleteMessage implements SingleMessageRequest {
      * @param matchHidden The matchHidden flag as a Boolean
      * @return A DeleteMessage request object with matchHidden set
      */
-  public DeleteMessage withMatchHidden(Boolean matchHidden) {
+  public DeleteMessage withMatchHidden(boolean matchHidden) {
     return new DeleteMessage(queue, id, matchHidden);
   }
 }
