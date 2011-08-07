@@ -6,9 +6,8 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
-public class Console {
+public class GUI {
     private static final String USAGE = "Usage: burrow-syslog <server> <port> <account> <queue>";
 
 

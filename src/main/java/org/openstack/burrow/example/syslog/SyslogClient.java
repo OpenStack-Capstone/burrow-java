@@ -24,7 +24,7 @@ public class SyslogClient implements Runnable {
 
     public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, int waitTime) {
         this.syslog = syslog;
-        this.back = back;
+             this.back = back;
         this.channel = channel;
         //this.log = log
         this.waitTime = waitTime;
@@ -63,20 +63,22 @@ public class SyslogClient implements Runnable {
                 //Not reachable with the current BurrowException hierarchy,
                 //barring something going seriously wrong.
                 //log.log(Level.SEVERE, "An unexpected error has occurred", e);
-                throw new Error(e); //Per Bart: Crash early, crash often.
+                //throw new Error(e); //Per Bart: Crash early, crash often.
+                e.printStackTrace();
+                continue;
             }
 
             consecutiveErrors = 0;
-
-            for (Message message : grabbed) {
-                try {
-                    channel.add(LogEntry.fromRawEntry(message.getBody()));
-                } catch (MalformedEntryException mfe) {
-                    //log.log(Level.WARNING, "Malformed Entry: " + message.getBody());
+            synchronized (channel) {
+                for (Message message : grabbed) {
+                    try {
+                        channel.add(LogEntry.fromRawEntry(message.getBody()));
+                    } catch (MalformedEntryException mfe) {
+                       //log.log(Level.WARNING, "Malformed Entry: " + message.getBody());
+                    }
                 }
             }
 
-            if (!grabbed.isEmpty()) channel.notifyAll();
         }
         running = false;
         //cleanup?

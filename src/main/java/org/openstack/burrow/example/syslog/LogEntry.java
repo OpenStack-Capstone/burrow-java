@@ -13,7 +13,7 @@ public class LogEntry {
         String date = raw.substring(0, DATE_WIDTH);
         raw = raw.substring(DATE_WIDTH);
 
-        String[] split = raw.trim().split(" *", 3);
+        String[] split = raw.trim().split(":? +", 3);
         if (split.length < 3) throw new MalformedEntryException();
 
         return new LogEntry(date, split[0], split[1], split[2]);
@@ -27,7 +27,7 @@ public class LogEntry {
     }
 
     public String toString() {
-        return time + "//" + host + "//" + tag + "//" + body;
+        return time + " " + host + " " + tag + ": " + body;
     }
 
     public String getTimeStamp() {
