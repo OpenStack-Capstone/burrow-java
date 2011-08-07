@@ -45,18 +45,6 @@ public class Console {
         new Thread(client).start();
 
         while (true) {
-            try {
-                        synchronized (channel) {
-                            while (channel.isEmpty()) {
-
-                        channel.wait(60l);
-                    }
-                }
-            } catch (InterruptedException ie) {
-                System.err.println("Warning: Interrupted while waiting for new messages.");
-                continue;
-            }
-
             while (!channel.isEmpty()) {
                 LogEntry entry = channel.poll();
                 if (entry != null) {
