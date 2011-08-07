@@ -112,11 +112,6 @@ public class ListView<E> extends ArrayList<E> implements ListModel {
         throw new UnsupportedOperationException();
     }
 
-    //@Override
-    //public void ensureCapacity(int i) {
-    //    throw new UnsupportedOperationException();
-    //}
-
     @Override
     public Object clone() {
         throw new UnsupportedOperationException();
