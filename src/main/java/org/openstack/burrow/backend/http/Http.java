@@ -51,14 +51,10 @@ public class Http extends BaseHttp implements Backend {
       return handleSingleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -70,14 +66,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleAccountHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -89,14 +81,10 @@ public class Http extends BaseHttp implements Backend {
       return handleSingleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -108,14 +96,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -128,14 +112,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleQueueHttpResponse(account, response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -147,14 +127,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleAccountHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -177,14 +153,10 @@ public class Http extends BaseHttp implements Backend {
       return handleSingleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -207,14 +179,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -227,14 +195,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleQueueHttpResponse(account, response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -246,14 +210,10 @@ public class Http extends BaseHttp implements Backend {
       return handleSingleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 
@@ -265,14 +225,10 @@ public class Http extends BaseHttp implements Backend {
       return handleMultipleMessageHttpResponse(response);
     } catch (ClientProtocolException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     } catch (IOException e) {
       // Thrown by client.execute()
-      // TODO: Throw something that isn't a RuntimeException
-      e.printStackTrace();
-      throw new RuntimeException("Error executing HTTP request: " + e);
+      throw new HttpProtocolException("Error executing HTTP request: " + e);
     }
   }
 }

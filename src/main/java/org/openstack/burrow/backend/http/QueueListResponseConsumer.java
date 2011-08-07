@@ -36,16 +36,32 @@ import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * QueueListResponseConsumer extends AsyncCharConsumer and helps with processing the
+ * response asynchronously from the server.  Has a StringBuilder, an Exception, a
+ * String denoting mimeType, and a QueueListRequest as fields.
+ */
 public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
   private StringBuilder accumulator = null;
   private Exception exception = null;
   private String mimeType = null;
   private QueueListRequest request;
 
+    /**
+     * Constructor for QueueListResponse that takes a QueueListRequest object as an
+     * arguments
+     * @param request A QueueListRequest object
+     */
   QueueListResponseConsumer(QueueListRequest request) {
     this.request = request;
   }
 
+    /**
+     * Processes the response and builds a List of Queues to be returned to client
+     * @return A List of Queue objects
+     * @throws Exception Arises if an issue has occurred with the response from the
+     *                   server
+     */
   @Override
   protected List<Queue> buildResult() throws Exception {
     if (exception != null)
@@ -85,17 +101,31 @@ public class QueueListResponseConsumer extends AsyncCharConsumer<List<Queue>> {
     }
   }
 
+    /**
+     * A function that helps with building the response
+     * @param buf A CharBuffer that holds the response received so far
+     * @param ioctrl An IOControl object
+     * @throws IOException Arises if an issue occurs with adding the received character
+     */
   @Override
   protected void onCharReceived(CharBuffer buf, IOControl ioctrl) throws IOException {
     if (accumulator != null)
       accumulator.append(buf);
   }
 
+    /**
+     * A helper function that clears the class's private StringBuilder field
+     */
   @Override
   protected void onCleanup() {
     this.accumulator = null;
   }
 
+    /**
+     * Processes the response as it is received from the server and sets the class's
+     * exception field as needed
+     * @param response An HttpResponse object that contains the information requested
+     */
   @Override
   protected void onResponseReceived(HttpResponse response) {
     StatusLine status = response.getStatusLine();
