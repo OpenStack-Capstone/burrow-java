@@ -20,36 +20,37 @@ import org.openstack.burrow.client.methods.DeleteAccounts;
 import org.openstack.burrow.client.methods.GetAccounts;
 
 /**
- * Class Client
+ * A Client can create Accounts and can either get Accounts for that
+ * Client or delete Accounts for that Client
  */
 public class Client {
 
     /**
-     * Constructor for Client
+     * Constructor for Client which takes no arguments
      */
   public Client() {
   }
 
     /**
-     *
-     * @param accountName
-     * @return
+     * Takes in an accountName and returns a new Account object with that name
+     * @param accountName The name of the Account for the Client as a String
+     * @return A new Account with the passed in accountName
      */
   public Account Account(String accountName) {
     return new Account(accountName);
   }
 
     /**
-     *
-     * @return
+     * Takes no arguments and returns a new DeleteAccounts object
+     * @return A DeleteAccounts request object
      */
   public DeleteAccounts deleteAccounts() {
     return new DeleteAccounts();
   }
 
     /**
-     *
-     * @return
+     * Takes no arguments and returns a new GetAccounts object
+     * @return A GetAccounts request object
      */
   public GetAccounts getAccounts() {
     return new GetAccounts();
