@@ -160,10 +160,12 @@ public class Http extends BaseHttp implements Backend {
 
   @Override
   public Message execute(GetMessage request) throws CommandException, HttpProtocolException {
-    HttpGet httpRequest = getHttpRequest(request);
+    HttpGet httpRequest = null;
     HttpPost httpPostRequest = null;
     if (request.getHide() != null) {
         httpPostRequest = getHttpPostRequest(request);
+    } else {
+        httpRequest = getHttpRequest(request);
     }
     try {
       HttpResponse response = null;
@@ -188,10 +190,12 @@ public class Http extends BaseHttp implements Backend {
 
   @Override
   public List<Message> execute(GetMessages request) throws CommandException, HttpProtocolException {
-    HttpGet httpRequest = getHttpRequest(request);
+    HttpGet httpRequest = null;
     HttpPost httpPostRequest = null;
     if (request.getHide() != null) {
         httpPostRequest = getHttpPostRequest(request);
+    } else {
+        httpRequest = getHttpRequest(request);
     }
     try {
       HttpResponse response = null;
