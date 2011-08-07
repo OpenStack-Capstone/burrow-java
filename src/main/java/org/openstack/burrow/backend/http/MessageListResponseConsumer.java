@@ -16,6 +16,11 @@
 
 package org.openstack.burrow.backend.http;
 
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -32,15 +37,10 @@ import org.openstack.burrow.backend.QueueNotFoundException;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.MessageListRequest;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * MessageListResponseConsumer extends AsyncCharConsumer and helps with processing the
- * response asynchronously from the server.  Has a StringBuilder, an Exception, a
- * String denoting mimeType, and a MessageListRequest as fields.
+ * MessageListResponseConsumer extends AsyncCharConsumer and helps with
+ * processing the response asynchronously from the server. Has a StringBuilder,
+ * an Exception, a String denoting mimeType, and a MessageListRequest as fields.
  */
 public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>> {
   private StringBuilder accumulator = null;
@@ -48,21 +48,24 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
   private String mimeType = null;
   private MessageListRequest request;
 
-    /**
-     * Constructor for MessageListResponse that takes a MessageListRequest object as an
-     * arguments
-     * @param request A MessageListRequest object
-     */
+  /**
+   * Constructor for MessageListResponse that takes a MessageListRequest object
+   * as an arguments
+   * 
+   * @param request A MessageListRequest object
+   */
   MessageListResponseConsumer(MessageListRequest request) {
     this.request = request;
   }
 
-    /**
-     * Processes the response and builds a List of Messages to be returned to client
-     * @return A List of Message objects
-     * @throws Exception Arises if an issue has occurred with the response from the
-     *                   server
-     */
+  /**
+   * Processes the response and builds a List of Messages to be returned to
+   * client
+   * 
+   * @return A List of Message objects
+   * @throws Exception Arises if an issue has occurred with the response from
+   *           the server
+   */
   @Override
   protected List<Message> buildResult() throws Exception {
     if (exception != null)
@@ -91,31 +94,35 @@ public class MessageListResponseConsumer extends AsyncCharConsumer<List<Message>
     }
   }
 
-    /**
-     * A function that helps with building the response
-     * @param buf A CharBuffer that holds the response received so far
-     * @param ioctrl An IOControl object
-     * @throws IOException Arises if an issue occurs with adding the received character
-     */
+  /**
+   * A function that helps with building the response
+   * 
+   * @param buf A CharBuffer that holds the response received so far
+   * @param ioctrl An IOControl object
+   * @throws IOException Arises if an issue occurs with adding the received
+   *           character
+   */
   @Override
   protected void onCharReceived(CharBuffer buf, IOControl ioctrl) throws IOException {
     if (accumulator != null)
       accumulator.append(buf);
   }
 
-    /**
-     * A helper function that clears the class's private StringBuilder field
-     */
+  /**
+   * A helper function that clears the class's private StringBuilder field
+   */
   @Override
   protected void onCleanup() {
     this.accumulator = null;
   }
 
-    /**
-     * Processes the response as it is received from the server and sets the class's
-     * exception field as needed
-     * @param response An HttpResponse object that contains the information requested
-     */
+  /**
+   * Processes the response as it is received from the server and sets the
+   * class's exception field as needed
+   * 
+   * @param response An HttpResponse object that contains the information
+   *          requested
+   */
   @Override
   protected void onResponseReceived(HttpResponse response) {
     StatusLine status = response.getStatusLine();

@@ -48,35 +48,25 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 
 /**
- * BaseHttp is the Interface for Http functionality.  Has methods that package and create
- * http requests as well as process an http response,
+ * BaseHttp is the Interface for Http functionality. Has methods that package
+ * and create http requests as well as process an http response,
  */
 abstract class BaseHttp {
 
-  protected String host;
-  protected int port;
-  protected String scheme = "http";
-
-    /**
-     * Constructor for BaseHttp that takes a host name and port number as arguments
-     * @param host A host name as a String
-     * @param port A port number as an int
-     */
-  protected BaseHttp(String host, int port) {
-    this.host = host;
-    this.port = port;
-  }
-
-    /**
-     * Processes an HttpResponse.  First gets all necessary information from the response's
-     * JSONObject and then builds the List of Accounts
-     * @param response An HttpResponse from the server that should contain requested Accounts
-     * @return A List of Accounts requested
-     * @throws HttpProtocolException  Thrown if an issue with processes HttpResponse occurs
-     * @throws AccountNotFoundException  Thrown if the requested Account was not found
-     */
+  /**
+   * Processes an HttpResponse. First gets all necessary information from the
+   * response's JSONObject and then builds the List of Accounts
+   * 
+   * @param response An HttpResponse from the server that should contain
+   *          requested Accounts
+   * @return A List of Accounts requested
+   * @throws HttpProtocolException Thrown if an issue with processes
+   *           HttpResponse occurs
+   * @throws AccountNotFoundException Thrown if the requested Account was not
+   *           found
+   */
   static List<Account> handleMultipleAccountHttpResponse(HttpResponse response)
-          throws HttpProtocolException, AccountNotFoundException {
+      throws HttpProtocolException, AccountNotFoundException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -154,16 +144,20 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Processes an HttpResponse.  First gets all necessary information from the response's
-     * JSONObject and then builds the List of Messages requested
-     * @param response An HttpResponse from the server that should contain requested Messages
-     * @return A List of Messages
-     * @throws HttpProtocolException  Thrown if an issue with processes HttpResponse occurs
-     * @throws MessageNotFoundException  Thrown if the requested Messages were not found
-     */
+  /**
+   * Processes an HttpResponse. First gets all necessary information from the
+   * response's JSONObject and then builds the List of Messages requested
+   * 
+   * @param response An HttpResponse from the server that should contain
+   *          requested Messages
+   * @return A List of Messages
+   * @throws HttpProtocolException Thrown if an issue with processes
+   *           HttpResponse occurs
+   * @throws MessageNotFoundException Thrown if the requested Messages were not
+   *           found
+   */
   static List<Message> handleMultipleMessageHttpResponse(HttpResponse response)
-          throws HttpProtocolException, MessageNotFoundException {
+          throws HttpProtocolException, CommandException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -223,15 +217,15 @@ abstract class BaseHttp {
         try {
           EntityUtils.consume(entity);
         } catch (IOException e1) {
-        // If we ever stop throwing an exception in the outside block,
-        // this needs to be handled.
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
         }
-        throw new MessageNotFoundException();
+        throw new QueueNotFoundException();
       default:
         // This is probably an error.
         try {
           // Consume the entity to release HttpClient resources.
-            EntityUtils.consume(entity);
+          EntityUtils.consume(entity);
         } catch (IOException e1) {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
@@ -240,16 +234,19 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Processes an HttpResponse.  First gets all necessary information from the response's
-     * JSONObject and then builds the List of Queues
-     * @param response An HttpResponse from the server that should contain requested Queues
-     * @return A List of Queues
-     * @throws HttpProtocolException  Thrown if an issue with processes HttpResponse occurs
-     * @throws QueueNotFoundException  Thrown if a requested Queue was not found
-     */
+  /**
+   * Processes an HttpResponse. First gets all necessary information from the
+   * response's JSONObject and then builds the List of Queues
+   * 
+   * @param response An HttpResponse from the server that should contain
+   *          requested Queues
+   * @return A List of Queues
+   * @throws HttpProtocolException Thrown if an issue with processes
+   *           HttpResponse occurs
+   * @throws QueueNotFoundException Thrown if a requested Queue was not found
+   */
   static List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response)
-      throws HttpProtocolException, QueueNotFoundException {
+          throws HttpProtocolException, AccountNotFoundException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -316,7 +313,7 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new QueueNotFoundException();
+        throw new AccountNotFoundException();
       default:
         // This is probably an error.
         try {
@@ -330,16 +327,20 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Processes an HttpResponse.  First gets all necessary information from the response's
-     * JSONObject and then builds the Message to be returned
-     * @param response An HttpResponse from the server that should contain the requested Message
-     * @return A Message object
-     * @throws HttpProtocolException  Thrown if an issue with processes HttpResponse occurs
-     * @throws MessageNotFoundException  Thrown if the requested Message was not found
-     */
+  /**
+   * Processes an HttpResponse. First gets all necessary information from the
+   * response's JSONObject and then builds the Message to be returned
+   * 
+   * @param response An HttpResponse from the server that should contain the
+   *          requested Message
+   * @return A Message object
+   * @throws HttpProtocolException Thrown if an issue with processes
+   *           HttpResponse occurs
+   * @throws MessageNotFoundException Thrown if the requested Message was not
+   *           found
+   */
   static Message handleSingleMessageHttpResponse(HttpResponse response)
-          throws HttpProtocolException, CommandException, MessageNotFoundException {
+      throws HttpProtocolException, CommandException, MessageNotFoundException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     switch (status.getStatusCode()) {
@@ -413,11 +414,28 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates an HttpPut in order for a CreateMessage request to be carried out
-     * @param request  A CreateMessage request object
-     * @return         An HttpPut command
-     */
+  protected String host;
+  protected int port;
+  protected String scheme = "http";
+
+  /**
+   * Constructor for BaseHttp that takes a host name and port number as
+   * arguments
+   * 
+   * @param host A host name as a String
+   * @param port A port number as an int
+   */
+  protected BaseHttp(String host, int port) {
+    this.host = host;
+    this.port = port;
+  }
+
+  /**
+   * Generates an HttpPut in order for a CreateMessage request to be carried out
+   * 
+   * @param request A CreateMessage request object
+   * @return An HttpPut command
+   */
   protected HttpPut getHttpRequest(CreateMessage request) {
     URI uri = getUri(request);
     HttpPut httpRequest = new HttpPut(uri);
@@ -431,121 +449,138 @@ abstract class BaseHttp {
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpDelete in order for a DeleteAccounts request to be carried out
-     * @param request  A DeleteAccounts request object
-     * @return         An HttpDelete command
-     */
+  /**
+   * Generates an HttpDelete in order for a DeleteAccounts request to be carried
+   * out
+   * 
+   * @param request A DeleteAccounts request object
+   * @return An HttpDelete command
+   */
   protected HttpDelete getHttpRequest(DeleteAccounts request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpDelete in order for a DeleteMessage request to be carried out
-     * @param request  A DeleteMessage request object
-     * @return         An HttpDelete command
-     */
+  /**
+   * Generates an HttpDelete in order for a DeleteMessage request to be carried
+   * out
+   * 
+   * @param request A DeleteMessage request object
+   * @return An HttpDelete command
+   */
   protected HttpDelete getHttpRequest(DeleteMessage request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpDelete in order for a DeleteMessages request to be carried out
-     * @param request  A DeleteMessages request object
-     * @return         An HttpDelete command
-     */
+  /**
+   * Generates an HttpDelete in order for a DeleteMessages request to be carried
+   * out
+   * 
+   * @param request A DeleteMessages request object
+   * @return An HttpDelete command
+   */
   protected HttpDelete getHttpRequest(DeleteMessages request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpDelete in order for a DeleteQueues request to be carried out
-     * @param request  A DeleteQueues request object
-     * @return         An HttpDelete command
-     */
+  /**
+   * Generates an HttpDelete in order for a DeleteQueues request to be carried
+   * out
+   * 
+   * @param request A DeleteQueues request object
+   * @return An HttpDelete command
+   */
   protected HttpDelete getHttpRequest(DeleteQueues request) {
     URI uri = getUri(request);
     HttpDelete httpRequest = new HttpDelete(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpPut in order for a GetAccounts request to be carried out
-     * @param request  A GetAccounts request object
-     * @return         An HttpPut command
-     */
+  /**
+   * Generates an HttpPut in order for a GetAccounts request to be carried out
+   * 
+   * @param request A GetAccounts request object
+   * @return An HttpPut command
+   */
   protected HttpGet getHttpRequest(GetAccounts request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpGet in order for a GetMessage request to be carried out
-     * @param request  A GetMessage request object
-     * @return         An HttpGet command
-     */
+  /**
+   * Generates an HttpGet in order for a GetMessage request to be carried out
+   * 
+   * @param request A GetMessage request object
+   * @return An HttpGet command
+   */
   protected HttpGet getHttpRequest(GetMessage request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpGet in order for a GetMessages request to be carried out
-     * @param request  A GetMessages request object
-     * @return         An HttpGet command
-     */
+  /**
+   * Generates an HttpGet in order for a GetMessages request to be carried out
+   * 
+   * @param request A GetMessages request object
+   * @return An HttpGet command
+   */
   protected HttpGet getHttpRequest(GetMessages request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpGet in order for a GetQueues request to be carried out
-     * @param request  A GetQueues request object
-     * @return         An HttpGet command
-     */
+  /**
+   * Generates an HttpGet in order for a GetQueues request to be carried out
+   * 
+   * @param request A GetQueues request object
+   * @return An HttpGet command
+   */
   protected HttpGet getHttpRequest(GetQueues request) {
     URI uri = getUri(request);
     HttpGet httpRequest = new HttpGet(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpPost in order for a UpdateMessage request to be carried out
-     * @param request  An UpdateMessage request object
-     * @return         An HttpPost command
-     */
+  /**
+   * Generates an HttpPost in order for a UpdateMessage request to be carried
+   * out
+   * 
+   * @param request An UpdateMessage request object
+   * @return An HttpPost command
+   */
   protected HttpPost getHttpRequest(UpdateMessage request) {
     URI uri = getUri(request);
     HttpPost httpRequest = new HttpPost(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates an HttpPost in order for a UpdateMessages request to be carried out
-     * @param request  An UpdateMessages request object
-     * @return         An HttpPost command
-     */
+  /**
+   * Generates an HttpPost in order for a UpdateMessages request to be carried
+   * out
+   * 
+   * @param request An UpdateMessages request object
+   * @return An HttpPost command
+   */
   protected HttpPost getHttpRequest(UpdateMessages request) {
     URI uri = getUri(request);
     HttpPost httpRequest = new HttpPost(uri);
     return httpRequest;
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a CreateMessage to be carried out
-     * @param request A CreateMessage object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a CreateMessage to be carried out
+   * 
+   * @param request A CreateMessage object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(CreateMessage request) {
     Long ttl = request.getTtl();
     Long hide = request.getHide();
@@ -561,11 +596,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a DeleteAccounts to be carried out
-     * @param request A DeleteAccounts object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a DeleteAccounts to be carried out
+   * 
+   * @param request A DeleteAccounts object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(DeleteAccounts request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -584,11 +620,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a DeleteMessage to be carried out
-     * @param request A DeleteMessage object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a DeleteMessage to be carried out
+   * 
+   * @param request A DeleteMessage object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(DeleteMessage request) {
     Boolean matchHidden = request.getMatchHidden();
     if (matchHidden != null) {
@@ -600,11 +637,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a DeleteMessages to be carried out
-     * @param request A DeleteMessages object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a DeleteMessages to be carried out
+   * 
+   * @param request A DeleteMessages object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(DeleteMessages request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -630,11 +668,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a DeleteQueues to be carried out
-     * @param request A DeleteQueues object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a DeleteQueues to be carried out
+   * 
+   * @param request A DeleteQueues object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(DeleteQueues request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -653,11 +692,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a GetAccounts to be carried out
-     * @param request A GetAccounts object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a GetAccounts to be carried out
+   * 
+   * @param request A GetAccounts object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(GetAccounts request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -676,11 +716,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a GetMessage to be carried out
-     * @param request A GetMessage object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a GetMessage to be carried out
+   * 
+   * @param request A GetMessage object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(GetMessage request) {
     Boolean matchHidden = request.getMatchHidden();
     String detail = request.getDetail();
@@ -699,11 +740,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a GetMessages to be carried out
-     * @param request A GetMessages object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a GetMessages to be carried out
+   * 
+   * @param request A GetMessages object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(GetMessages request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -729,11 +771,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a GetQueues to be carried out
-     * @param request A GetQueues object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a GetQueues to be carried out
+   * 
+   * @param request A GetQueues object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(GetQueues request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -749,11 +792,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a UpdateMessage to be carried out
-     * @param request A UpdateMessage object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a UpdateMessage to be carried out
+   * 
+   * @param request A UpdateMessage object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(UpdateMessage request) {
     Boolean matchHidden = request.getMatchHidden();
     Long ttl = request.getTtl();
@@ -779,11 +823,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a List of Name/Value Pairs for a UpdateMessages to be carried out
-     * @param request A UpdateMessages object
-     * @return A List of Name/Value Pairs
-     */
+  /**
+   * Generates a List of Name/Value Pairs for a UpdateMessages to be carried out
+   * 
+   * @param request A UpdateMessages object
+   * @return A List of Name/Value Pairs
+   */
   private List<NameValuePair> getQueryParameters(UpdateMessages request) {
     String marker = request.getMarker();
     Long limit = request.getLimit();
@@ -815,11 +860,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a CreateMessage request to be carried out
-     * @param request A CreateMessage request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a CreateMessage request to be carried out
+   * 
+   * @param request A CreateMessage request object
+   * @return A URI object
+   */
   protected URI getUri(CreateMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -830,11 +876,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a DeleteAccounts request to be carried out
-     * @param request A DeleteAccounts request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a DeleteAccounts request to be carried out
+   * 
+   * @param request A DeleteAccounts request object
+   * @return A URI object
+   */
   protected URI getUri(DeleteAccounts request) {
     try {
       return getUri(null, null, null, getQueryParameters(request));
@@ -843,11 +890,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a DeleteMessage request to be carried out
-     * @param request A DeleteMessage request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a DeleteMessage request to be carried out
+   * 
+   * @param request A DeleteMessage request object
+   * @return A URI object
+   */
   protected URI getUri(DeleteMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -858,11 +906,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a DeleteMessages request to be carried out
-     * @param request A DeleteMessages request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a DeleteMessages request to be carried out
+   * 
+   * @param request A DeleteMessages request object
+   * @return A URI object
+   */
   protected URI getUri(DeleteMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -873,11 +922,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a DeleteQueues request to be carried out
-     * @param request A DeleteQueues request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a DeleteQueues request to be carried out
+   * 
+   * @param request A DeleteQueues request object
+   * @return A URI object
+   */
   protected URI getUri(DeleteQueues request) {
     Account account = request.getAccount();
     try {
@@ -887,11 +937,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a GetAccounts request to be carried out
-     * @param request A GetAccounts request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a GetAccounts request to be carried out
+   * 
+   * @param request A GetAccounts request object
+   * @return A URI object
+   */
   protected URI getUri(GetAccounts request) {
     try {
       return getUri(null, null, null, getQueryParameters(request));
@@ -900,11 +951,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a GetMessage request to be carried out
-     * @param request A GetMessage request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a GetMessage request to be carried out
+   * 
+   * @param request A GetMessage request object
+   * @return A URI object
+   */
   protected URI getUri(GetMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -915,11 +967,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a GetMessages request to be carried out
-     * @param request A GetMessages request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a GetMessages request to be carried out
+   * 
+   * @param request A GetMessages request object
+   * @return A URI object
+   */
   protected URI getUri(GetMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -930,11 +983,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a GetQueues request to be carried out
-     * @param request A GetQueues request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a GetQueues request to be carried out
+   * 
+   * @param request A GetQueues request object
+   * @return A URI object
+   */
   protected URI getUri(GetQueues request) {
     Account account = request.getAccount();
     try {
@@ -944,16 +998,17 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Generates a URI object from the passed in account name, queue name, message id, and a
-     * List of Name/Value pairs
-     * @param account An Account name as a String
-     * @param queue   A Queue name as a String
-     * @param message A Message id as a String
-     * @param params  A List of Name/Value pairs
-     * @return        A URI object as requested
-     * @throws URISyntaxException Thrown if an issue arises with creating the URI
-     */
+  /**
+   * Generates a URI object from the passed in account name, queue name, message
+   * id, and a List of Name/Value pairs
+   * 
+   * @param account An Account name as a String
+   * @param queue A Queue name as a String
+   * @param message A Message id as a String
+   * @param params A List of Name/Value pairs
+   * @return A URI object as requested
+   * @throws URISyntaxException Thrown if an issue arises with creating the URI
+   */
   private URI getUri(String account, String queue, String message, List<NameValuePair> params)
       throws URISyntaxException {
     String path = "/v1.0";
@@ -969,11 +1024,12 @@ abstract class BaseHttp {
     return URIUtils.createURI(scheme, host, port, path, encodedParams, null);
   }
 
-    /**
-     * Creates a URI for a UpdateMessage request to be carried out
-     * @param request A UpdateMessage request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a UpdateMessage request to be carried out
+   * 
+   * @param request A UpdateMessage request object
+   * @return A URI object
+   */
   protected URI getUri(UpdateMessage request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();
@@ -984,11 +1040,12 @@ abstract class BaseHttp {
     }
   }
 
-    /**
-     * Creates a URI for a UpdateMessages request to be carried out
-     * @param request A UpdateMessages request object
-     * @return        A URI object
-     */
+  /**
+   * Creates a URI for a UpdateMessages request to be carried out
+   * 
+   * @param request A UpdateMessages request object
+   * @return A URI object
+   */
   protected URI getUri(UpdateMessages request) {
     Queue queue = request.getQueue();
     Account account = queue.getAccount();

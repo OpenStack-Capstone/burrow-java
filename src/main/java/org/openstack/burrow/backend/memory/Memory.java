@@ -16,9 +16,13 @@
 
 package org.openstack.burrow.backend.memory;
 
+import org.openstack.burrow.backend.AccountNotFoundException;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.client.*;
+import org.openstack.burrow.backend.MessageNotFoundException;
+import org.openstack.burrow.client.Account;
+import org.openstack.burrow.client.Message;
+import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.*;
 
 import java.util.ArrayList;
@@ -75,7 +79,7 @@ public class Memory implements Backend {
 
         if (!accountMap.get(account).containsKey(queue)
                 || accountMap.get(account).get(queue).isEmpty())
-            throw new CommandException("No such queue.");
+            throw new AccountNotFoundException("No such queue.");
 
         return accountMap.get(account).get(queue);
     }
@@ -192,7 +196,7 @@ public class Memory implements Backend {
 
         String account = request.getAccount().getId();
 
-        if (!accountMap.containsKey(account)) throw new CommandException("No such account");
+        if (!accountMap.containsKey(account)) throw new AccountNotFoundException("No such account");
 
         List<Queue> deleted = new ArrayList<Queue>();
 
@@ -260,7 +264,7 @@ public class Memory implements Backend {
         MemoryQueue mq = ensurePresent(account, queue);
 
         Message msg = mq.get(request.getId());
-        if (msg == null) throw new CommandException("No such message.");
+        if (msg == null) throw new MessageNotFoundException("No such message.");
 
         return msg;
     }
@@ -302,11 +306,11 @@ public class Memory implements Backend {
         if (request.getAccount().getId() == null)
             throw new IllegalArgumentException("Account identifier may not be null");
         if (!accountMap.containsKey(request.getAccount().getId()))
-                throw new CommandException("No such account.");
+                throw new AccountNotFoundException("No such account.");
 
         MemoryAccount ma = accountMap.get(request.getAccount().getId());
 
-        if (ma.isEmpty()) throw new CommandException("No such account.");
+        if (ma.isEmpty()) throw new AccountNotFoundException("No such account.");
 
         List<Queue> queues = new ArrayList<Queue>();
         Iterator<Entry<String, MemoryQueue>> iter;

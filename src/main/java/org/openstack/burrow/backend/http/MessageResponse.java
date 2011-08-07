@@ -22,18 +22,19 @@ import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.MessageListRequest;
 import org.openstack.burrow.client.methods.SingleMessageRequest;
 
-
 /**
- * MessageResponse extends Message and provides the ability to handle responses from the
- * server asynchronously
+ * MessageResponse extends Message and provides the ability to handle responses
+ * from the server asynchronously
  */
 class MessageResponse extends Message {
 
-    /**
-     * Constructor for MessageResponse that takes a JSONObject as an argument
-     * @param message A JSONObject that contains the id, body, ttl, and hide of the message
-     * @throws JSONException Thrown if an issue occurs when parsing JSONObject
-     */
+  /**
+   * Constructor for MessageResponse that takes a JSONObject as an argument
+   * 
+   * @param message A JSONObject that contains the id, body, ttl, and hide of
+   *          the message
+   * @throws JSONException Thrown if an issue occurs when parsing JSONObject
+   */
   MessageResponse(JSONObject message) throws JSONException {
     setId(message.optString("id", null));
     setBody(message.optString("body", null));
@@ -43,13 +44,34 @@ class MessageResponse extends Message {
       setTtl(message.getLong("hide"));
   }
 
-    /**
-     * Constructor for MessageResponse that takes a JSONObject and a SingleMessageRequest
-     * as arguments
-     * @param request A SingleMessageRequest object
-     * @param message A JSONObject that contains the id, body, ttl, and hide of the message
-     * @throws JSONException Thrown if an issue occurs when parsing JSONObject
-     */
+  /**
+   * Constructor for MessageResponse that takes a JSONObject and a
+   * MessageListRequest as arguments
+   * 
+   * @param request A MessageListRequest object
+   * @param message A JSONObject that contains the id, body, ttl, and hide of
+   *          the message
+   * @throws JSONException Thrown if an issue occurs when parsing JSONObject
+   */
+  MessageResponse(MessageListRequest request, JSONObject message) throws JSONException {
+    super(request);
+    setId(message.optString("id", null));
+    setBody(message.optString("body", null));
+    if (message.has("ttl"))
+      setTtl(message.getLong("ttl"));
+    if (message.has("hide"))
+      setTtl(message.getLong("hide"));
+  }
+
+  /**
+   * Constructor for MessageResponse that takes a JSONObject and a
+   * SingleMessageRequest as arguments
+   * 
+   * @param request A SingleMessageRequest object
+   * @param message A JSONObject that contains the id, body, ttl, and hide of
+   *          the message
+   * @throws JSONException Thrown if an issue occurs when parsing JSONObject
+   */
   MessageResponse(SingleMessageRequest request, JSONObject message) throws JSONException {
     super(request);
     setId(message.optString("id", id));
@@ -60,29 +82,13 @@ class MessageResponse extends Message {
       setTtl(message.getLong("hide"));
   }
 
-    /**
-     * Constructor for MessageResponse that takes a JSONObject and a MessageListRequest
-     * as arguments
-     * @param request A MessageListRequest object
-     * @param message A JSONObject that contains the id, body, ttl, and hide of the message
-     * @throws JSONException Thrown if an issue occurs when parsing JSONObject
-     */
-  MessageResponse(MessageListRequest request, JSONObject message) throws JSONException {
-    super(request);
-    setId(message.optString("id", null));
-    setBody(message.optString("body", null));
-    if (message.has("ttl"))
-      setTtl(message.getLong("ttl"));
-    if (message.has("hide"))
-      setTtl(message.getLong("hide"));    
-  }
-
-    /**
-     * Constructor for MessageResponse that takes a StringBuilder and a SingleMessageRequest
-     * as arguments
-     * @param request A SingleMessageRequest object
-     * @param accumulator A StringBuilder that will hold response information
-     */
+  /**
+   * Constructor for MessageResponse that takes a StringBuilder and a
+   * SingleMessageRequest as arguments
+   * 
+   * @param request A SingleMessageRequest object
+   * @param accumulator A StringBuilder that will hold response information
+   */
   MessageResponse(SingleMessageRequest request, StringBuilder accumulator) {
     super(request);
     setBody(accumulator.toString());
