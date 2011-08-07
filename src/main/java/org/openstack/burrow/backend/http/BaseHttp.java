@@ -109,6 +109,13 @@ abstract class BaseHttp {
           throw new HttpProtocolException("Non-Json response");
         }
       case SC_NOT_FOUND:
+        try {
+          // Consume the entity to release HttpClient resources.
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+          // If we ever stop throwing an exception in the outside block,
+          // this needs to be handled.
+        }
         throw new AccountNotFoundException("No accounts found");
       default:
         // This is probably an error.
@@ -142,11 +149,13 @@ abstract class BaseHttp {
               Message message = new MessageResponse(messageJson);
               messages.add(idx, message);
             }
+            EntityUtils.consume(entity);
             return messages;
           } catch (IOException e) {
             try {
               // Consume the entity to release HttpClient resources.
               EntityUtils.consume(entity);
+
             } catch (IOException e1) {
               // If we ever stop throwing an exception in the outside block,
               // this needs to be handled.
@@ -179,12 +188,18 @@ abstract class BaseHttp {
         }
         return null;
       case SC_NOT_FOUND:
+        try {
+          EntityUtils.consume(entity);
+        } catch (IOException e1) {
+        // If we ever stop throwing an exception in the outside block,
+        // this needs to be handled.
+        }
         throw new MessageNotFoundException();
       default:
         // This is probably an error.
         try {
           // Consume the entity to release HttpClient resources.
-          EntityUtils.consume(entity);
+            EntityUtils.consume(entity);
         } catch (IOException e1) {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
