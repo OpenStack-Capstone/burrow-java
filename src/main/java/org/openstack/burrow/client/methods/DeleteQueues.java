@@ -19,7 +19,10 @@ package org.openstack.burrow.client.methods;
 import org.openstack.burrow.client.Account;
 
 /**
- * DeleteQueues is a request object
+ * DeleteQueues is a request object that is executed by the client.  A DeleteQueues object
+ * has several filters including the account to delete the queue from,
+ * detail - the details of an object to return, limit - the number of messages to process,
+ * and marker - a range of ids to match against.
  */
 public class DeleteQueues implements QueueListRequest {
   private Account account;
@@ -28,8 +31,8 @@ public class DeleteQueues implements QueueListRequest {
   private String marker;
 
     /**
-     * Constructor for DeleteQueues
-     * @param account
+     * Public Constructor for DeleteQueues that takes an Account as an argument
+     * @param account The Account to delete the queues of
      */
   public DeleteQueues(Account account) {
     this.account = account;
@@ -39,11 +42,12 @@ public class DeleteQueues implements QueueListRequest {
   }
 
     /**
-     * Private Constructor for DeleteQueues
-     * @param account
-     * @param marker
-     * @param limit
-     * @param detail
+     * Private Constructor for DeleteQueues that takes an Account, a marker, a limit, and a detail
+     * as arguments
+     * @param account The Account to delete the queues of
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @param limit  A Long denoting the number of messages to match
+     * @param detail A String denoting which attributes of a message to return
      */
   private DeleteQueues(Account account, String marker, Long limit, String detail) {
     this.account = account;
@@ -53,59 +57,59 @@ public class DeleteQueues implements QueueListRequest {
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the designated Account
+     * @return An account from which the queues will be deleted
      */
   public Account getAccount() {
     return account;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return which attributes of a message to be sent back on request
+     * @return  A String containing the desired attributes
      */
   public String getDetail() {
     return detail;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the number of matched messages to be sent back on request
+     * @return  A Long signifying the determined limit
      */
   public Long getLimit() {
     return limit;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the range of message ids to be matched against
+     * @return  A String of the message Id to match Ids after
      */
   public String getMarker() {
     return marker;
   }
 
     /**
-     *
-     * @param detail
-     * @return
+     * Constructor for DeleteQueues with a detail filter set
+     * @param detail A String denoting which attributes of a message to return
+     * @return A DeleteQueues object with the detail set accordingly
      */
   public DeleteQueues withDetail(String detail) {
     return new DeleteQueues(account, marker, limit, detail);
   }
 
     /**
-     *
-     * @param limit
-     * @return
+     * Constructor for DeleteQueues with a limit filter set
+     * @param limit A Long denoting the number of messages to match
+     * @return A DeleteQueues object with the limit set accordingly
      */
   public DeleteQueues withLimit(long limit) {
     return new DeleteQueues(account, marker, limit, detail);
   }
 
     /**
-     *
-     * @param marker
-     * @return
+     * Constructor for DeleteQueues with a marker filter set
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @return A DeleteQueues object with the marker set accordingly
      */
   public DeleteQueues withMarker(String marker) {
     return new DeleteQueues(account, marker, limit, detail);

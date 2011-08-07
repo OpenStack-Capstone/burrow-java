@@ -19,7 +19,13 @@ package org.openstack.burrow.client.methods;
 import org.openstack.burrow.client.Queue;
 
 /**
- * UpdateMessages is a request object
+ * UpdateMessages is a request object that is executed by the client.  An UpdateMessages has several
+ * attribute fields including a flag to match hidden messages or not, the message's queue,
+ * detail - the details of an object to return, the message's time to live, limit - the number of
+ * messages to process, marker - a range of ids to match against, and
+ * wait - the amount of time to wait for a message to appear in a queue,
+ * and hide - the amount of time to hide the message from other
+ * requests after getting it.
  */
 public class UpdateMessages implements MessageListRequest {
   private String detail;
@@ -32,8 +38,8 @@ public class UpdateMessages implements MessageListRequest {
   private Long wait;
 
     /**
-     * Constructor for UpdateMessages
-     * @param queue
+     * Public Constructor for UpdateMessages that takes a Queue as an argument
+     * @param queue The Queue to update the messages of
      */
   public UpdateMessages(Queue queue) {
     this.queue = queue;
@@ -47,15 +53,17 @@ public class UpdateMessages implements MessageListRequest {
   }
 
     /**
-     * Private Constructor for UpdateMessages
-     * @param queue
-     * @param marker
-     * @param limit
-     * @param matchHidden
-     * @param ttl
-     * @param hide
-     * @param detail
-     * @param wait
+     * Private Constructor for UpdateMessages that takes a Queue, a marker, a limit, the matchHidden
+     * flag, the detail, a wait time, a message id, and a ttl as arguments.
+     * @param queue A Queue object from which Messages are supposed to be deleted
+     * @param matchHidden A Boolean that signifies if hidden messages should be matched
+     * @param detail A String denoting which attributes of a message to return
+     * @param wait   A Long denoting the amount of time to wait for a Message to show up in
+     *               a queue
+     * @param hide  The message hide as a Long
+     * @param ttl   The message ttl as a Long
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @param limit  A Long denoting the number of messages to match
      */
   private UpdateMessages(Queue queue, String marker, Long limit, Boolean matchHidden, Long ttl,
       Long hide, String detail, Long wait) {
@@ -70,127 +78,130 @@ public class UpdateMessages implements MessageListRequest {
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return which attributes of a message to be sent back on request
+     * @return  A String containing the desired attributes
      */
   public String getDetail() {
     return detail;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message's hide
+     * @return The message's hide as a Long
      */
   public Long getHide() {
     return hide;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the number of matched messages to be sent back on request
+     * @return  A Long signifying the determined limit
      */
   public Long getLimit() {
     return limit;
   }
 
     /**
-     *
-     * @return
+     * A getter function that will return the range of message ids to be matched against
+     * @return  A String of the message Id to match Ids after
      */
   public String getMarker() {
     return marker;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the matchHidden Boolean
+     * @return The matchHidden flag as a Boolean
      */
   public Boolean getMatchHidden() {
     return matchHidden;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the messages Queue
+     * @return The messages queue as a Queue
      */
   public Queue getQueue() {
     return queue;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the message's ttl
+     * @return The message's ttl as a Long
      */
   public Long getTtl() {
     return ttl;
   }
 
     /**
-     *
-     * @return
+     * A getter function that returns the amount of time to wait for a message to appear
+     * in the queue
+     * @return The amount of wait time as a Long
      */
   public Long getWait() {
     return wait;
   }
 
     /**
-     *
-     * @param detail
-     * @return
+     * Constructor for UpdateMessages with a detail filter set
+     * @param detail A String denoting which attributes of a message to return
+     * @return A UpdateMessages object with the detail set accordingly
      */
   public UpdateMessages withDetail(String detail) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
     /**
-     *
-     * @param hide
-     * @return
+     * Constructor for UpdateMessages with the hide time set
+     * @param hide The hide time for a message as a Long
+     * @return A UpdateMessages request object that will hide the message for the set amount
+     *         of time
      */
   public UpdateMessages withHide(long hide) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
     /**
-     *
-     * @param limit
-     * @return
+     * Constructor for UpdateMessages with a limit filter set
+     * @param limit A Long denoting the number of messages to match
+     * @return A UpdateMessages object with the limit set accordingly
      */
   public UpdateMessages withLimit(long limit) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
     /**
-     *
-     * @param marker
-     * @return
+     * Constructor for UpdateMessages with a marker filter set
+     * @param marker A String denoting a range to limit matching of message Ids to
+     * @return A UpdateMessages object with the marker set accordingly
      */
   public UpdateMessages withMarker(String marker) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
     /**
-     *
-     * @param matchHidden
-     * @return
+     * Constructor for UpdateMessages with the matchHidden flag set
+     * @param matchHidden The matchHidden flag as a Boolean
+     * @return A UpdateMessages request object with matchHidden set
      */
   public UpdateMessages withMatchHidden(boolean matchHidden) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
-    /**
-     *
-     * @param ttl
-     * @return
+     /**
+     * Constructor for UpdateMessages with the ttl set
+     * @param ttl The time to live for a message as a Long
+     * @return A UpdateMessages request object that will the set amount of time for a message to
+     *         be alive
      */
   public UpdateMessages withTtl(long ttl) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
   }
 
     /**
-     *
-     * @param wait
-     * @return
+     * Constructor for UpdateMessages with the wait set
+     * @param wait The amount of time to wait for a message to arrive in a queue
+     * @return A UpdateMessages request object with the wait set
      */
   public UpdateMessages withWait(long wait) {
     return new UpdateMessages(queue, marker, limit, matchHidden, ttl, hide, detail, wait);
