@@ -23,6 +23,7 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.*;
 
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class RequestObjectsTest {
@@ -82,8 +83,9 @@ public class RequestObjectsTest {
        stub(dms.getMarker()).toReturn("marker");
        try {
        backend.execute(dms);
+       fail();
        } catch (MessageNotFoundException m) {
-
+          //Expected
        }
        verify(dms).getDetail();
        verify(dms).getQueue();
@@ -107,10 +109,10 @@ public class RequestObjectsTest {
        stub(gm.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gm);
+       fail();
        } catch (MessageNotFoundException m) {
-
+          //Expected
        }
-
        verify(gm).getDetail();
        verify(gm).getQueue();
        verify(gm).getId();
@@ -135,10 +137,10 @@ public class RequestObjectsTest {
        //stub(gms.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gms);
+       fail();
        } catch (MessageNotFoundException m) {
-
+          //Expected
        }
-
        verify(gms).getDetail();
        verify(gms).getQueue();
        verify(gms).getMarker();
@@ -151,7 +153,6 @@ public class RequestObjectsTest {
     * Unit test for the UpdateMessage request object.  The goal is to see if the backend is
     * calling all the correct functions.
     */
-
    @Test
     public void testUpdateMessage() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
@@ -160,14 +161,15 @@ public class RequestObjectsTest {
        UpdateMessage um = mock(UpdateMessage.class);
        stub(um.getTtl()).toReturn(10L);
        stub(um.getQueue()).toReturn(queue);
-       stub(um.getWait()).toReturn(1L);
+       stub(um.getWait()).toReturn(0L);
        stub(um.getDetail()).toReturn("detail");
        stub(um.getMatchHidden()).toReturn(true);
        stub(um.getId()).toReturn("msgId");
        try {
        backend.execute(um);
+       fail();
        } catch (MessageNotFoundException m) {
-
+          //Expected
        }
        verify(um).getDetail();
        verify(um).getQueue();
@@ -181,8 +183,7 @@ public class RequestObjectsTest {
      * Unit test for UpdateMessages request object.  Checks if correct methods are called by
      * the backend.
      */
-
-   @Test
+    @Test
     public void testUpdateMessages() throws BurrowException {
        Backend backend = new Http("localhost", 8080);
        Account account = new Account("acct");
@@ -190,7 +191,7 @@ public class RequestObjectsTest {
        UpdateMessages ums = mock(UpdateMessages.class);
        stub(ums.getTtl()).toReturn(10L);
        stub(ums.getQueue()).toReturn(queue);
-       stub(ums.getWait()).toReturn(1L);
+       stub(ums.getWait()).toReturn(0L);
        stub(ums.getDetail()).toReturn("detail");
        stub(ums.getMatchHidden()).toReturn(true);
        stub(ums.getMarker()).toReturn("marker");
@@ -198,8 +199,9 @@ public class RequestObjectsTest {
        stub(ums.getLimit()).toReturn(2L);
        try {
        backend.execute(ums);
+       fail();
        } catch (MessageNotFoundException m) {
-
+          //Expected
        }
        verify(ums).getDetail();
        verify(ums).getQueue();
@@ -210,5 +212,98 @@ public class RequestObjectsTest {
        verify(ums).getLimit();
     }
 
+    /**
+     * Unit test for DeleteAccounts request object.  Checks if correct methods are called by
+     * the backend.
+     * @throws BurrowException
+     */
+    @Test
+     public void testDeleteAccounts() throws BurrowException {
+        Backend backend = new Http("localhost", 8080);
+        DeleteAccounts das = mock(DeleteAccounts.class);
+        stub(das.getDetail()).toReturn("detail");
+        stub(das.getMarker()).toReturn("marker");
+        stub(das.getLimit()).toReturn(2L);
+        try {
+        backend.execute(das);
+        fail();
+        } catch (HttpProtocolException m) {
+           //Expected
+        }
+        verify(das).getDetail();
+        verify(das).getLimit();
+        verify(das).getMarker();
+     }
 
+    /**
+     * Unit test for GetAccounts request object.  Checks if correct methods are called by
+     * the backend.
+     * @throws BurrowException
+     */
+    @Test
+     public void testGetAccounts() throws BurrowException {
+        Backend backend = new Http("localhost", 8080);
+        GetAccounts gas = mock(GetAccounts.class);
+        stub(gas.getDetail()).toReturn("detail");
+        stub(gas.getMarker()).toReturn("marker");
+        stub(gas.getLimit()).toReturn(2L);
+        try {
+        backend.execute(gas);
+        fail();
+        } catch (HttpProtocolException m) {
+           //Expected
+        }
+        verify(gas).getDetail();
+        verify(gas).getMarker();
+        verify(gas).getLimit();
+     }
+
+    /**
+     * Unit test for DeleteQueues request object.  Checks if correct methods are called by
+     * the backend.
+     * @throws BurrowException
+     */
+    @Test
+     public void testDeleteQueues() throws BurrowException {
+        Backend backend = new Http("localhost", 8080);
+        Account account = new Account("acct");
+        DeleteQueues dqs = mock(DeleteQueues.class);
+        stub(dqs.getDetail()).toReturn("detail");
+        stub(dqs.getMarker()).toReturn("marker");
+        stub(dqs.getLimit()).toReturn(2L);
+        stub(dqs.getAccount()).toReturn(account);
+        try {
+        backend.execute(dqs);
+        fail();
+        } catch (HttpProtocolException m) {
+           //Expected
+        }
+        verify(dqs).getDetail();
+        verify(dqs).getLimit();
+        verify(dqs).getMarker();
+        verify(dqs, times(2)).getAccount();
+     }
+
+    /**
+     *
+     * @throws BurrowException
+     */
+    @Test
+     public void testGetQueues() throws BurrowException {
+        Backend backend = new Http("localhost", 8080);
+        Account account = new Account("acct");
+        GetQueues gqs = mock(GetQueues.class);
+        stub(gqs.getMarker()).toReturn("marker");
+        stub(gqs.getLimit()).toReturn(2L);
+        stub(gqs.getAccount()).toReturn(account);
+        try {
+        backend.execute(gqs);
+        fail();
+        } catch (QueueNotFoundException m) {
+           //Expected
+        }
+        verify(gqs).getLimit();
+        verify(gqs).getMarker();
+        verify(gqs, times(2)).getAccount();
+     }
 }

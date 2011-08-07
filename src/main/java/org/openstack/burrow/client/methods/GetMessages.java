@@ -32,7 +32,6 @@ public class GetMessages implements MessageListRequest {
     private String marker;
     private Boolean matchHidden;
     private Queue queue;
-    private Long hide;
     private Long wait;
 
     /**
@@ -56,27 +55,19 @@ public class GetMessages implements MessageListRequest {
      * @param detail A String denoting which attributes of a message to return
      * @param wait   A Long denoting the amount of time to wait for a Message to show up in
      *               a queue
-     * @param hide  The message hide as a Long
      * @param marker A String denoting a range to limit matching of message Ids to
      * @param limit  A Long denoting the number of messages to match
      */
-    public GetMessages(Queue queue, String marker, Long limit, Boolean matchHidden, String detail, Long wait, Long hide) {
-        this.detail = detail;
-        this.limit = limit;
-        this.marker = marker;
-        this.matchHidden = matchHidden;
-        this.queue = queue;
-        this.hide = hide;
-        this.wait = wait;
-    }
 
-    /**
-     * A getter function that returns the message's hide time
-     * @return The message's hide as a Long
-     */
-    public Long getHide() {
-        return hide;
-    }
+  private GetMessages(Queue queue, String marker, Long limit, Boolean matchHidden, String detail,
+      Long wait) {
+    this.queue = queue;
+    this.marker = marker;
+    this.limit = limit;
+    this.matchHidden = matchHidden;
+    this.detail = detail;
+    this.wait = wait;
+  }
 
     /**
      * A getter function that will return which attributes of a message to be sent back on request
@@ -132,18 +123,19 @@ public class GetMessages implements MessageListRequest {
      * @param detail A String denoting which attributes of a message to return
      * @return A GetMessages object with the detail set accordingly
      */
-    public GetMessages withDetail(String detail) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
-    }
+
+  public GetMessages withDetail(String detail) {
+    return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+  }
 
     /**
      * Constructor for GetMessages with a limit filter set
      * @param limit A Long denoting the number of messages to match
      * @return A GetMessages object with the limit set accordingly
      */
-    public GetMessages withLimit(long limit) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
-    }
+  public GetMessages withLimit(long limit) {
+     return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
+   }
 
     /**
      * Constructor for GetMessages with a marker filter set
@@ -151,7 +143,7 @@ public class GetMessages implements MessageListRequest {
      * @return A GetMessages object with the marker set accordingly
      */
     public GetMessages withMarker(String marker) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
+        return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
     }
 
     /**
@@ -160,7 +152,7 @@ public class GetMessages implements MessageListRequest {
      * @return A GetMessages request object with matchHidden set
      */
     public GetMessages withMatchHidden(boolean matchHidden) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
+        return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
     }
 
     /**
@@ -169,16 +161,7 @@ public class GetMessages implements MessageListRequest {
      * @return A GetMessages request object with the wait set
      */
     public GetMessages withWait(long wait) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
+        return new GetMessages(queue, marker, limit, matchHidden, detail, wait);
     }
 
-    /**
-     * Constructor for GetMessages with the hide time set
-     * @param hide The hide time for a message as a Long
-     * @return A GetMessages request object that will hide the message for the set amount
-     *         of time
-     */
-    public GetMessages withHide(long hide) {
-        return new GetMessages(queue, marker, limit, matchHidden, detail, wait, hide);
-    }
 }

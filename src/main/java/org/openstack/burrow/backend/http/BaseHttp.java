@@ -542,28 +542,6 @@ abstract class BaseHttp {
   }
 
     /**
-     * Generates an HttpPost in order for a GetMessage request to be carried out
-     * @param request  An GetMessage request object
-     * @return         An HttpPost command
-     */
-  protected HttpPost getHttpPostRequest(GetMessage request) {
-      URI uri = getUri(request);
-      HttpPost httpRequest = new HttpPost(uri);
-      return httpRequest;
-    }
-
-    /**
-     * Generates an HttpPost in order for a GetMessages request to be carried out
-     * @param request  An GetMessages request object
-     * @return         An HttpPost command
-     */
-  protected HttpPost getHttpPostRequest(GetMessages request) {
-      URI uri = getUri(request);
-      HttpPost httpRequest = new HttpPost(uri);
-      return httpRequest;
-    }
-
-    /**
      * Generates a List of Name/Value Pairs for a CreateMessage to be carried out
      * @param request A CreateMessage object
      * @return A List of Name/Value Pairs
