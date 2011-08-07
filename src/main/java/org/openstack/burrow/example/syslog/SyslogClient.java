@@ -24,7 +24,7 @@ public class SyslogClient implements Runnable {
 
     public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, int waitTime) {
         this.syslog = syslog;
-        this.back = back;
+             this.back = back;
         this.channel = channel;
         //this.log = log
         this.waitTime = waitTime;
@@ -65,8 +65,7 @@ public class SyslogClient implements Runnable {
                 //log.log(Level.SEVERE, "An unexpected error has occurred", e);
                 //throw new Error(e); //Per Bart: Crash early, crash often.
                 e.printStackTrace();
-                System.exit(1);
- //               continue;
+                continue;
             }
 
             consecutiveErrors = 0;
@@ -80,8 +79,6 @@ public class SyslogClient implements Runnable {
                 }
             }
 
-
-            //if (!grabbed.isEmpty()) channel.notifyAll();
         }
         running = false;
         //cleanup?
