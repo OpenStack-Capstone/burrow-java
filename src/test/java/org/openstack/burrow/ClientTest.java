@@ -199,14 +199,14 @@ abstract class ClientTest extends TestCase {
     seen =
         scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("id")),
             accountIds);
-    assertTrue(seen[0] || seen[1]);
-    assertFalse(seen[0] && seen[1]);
+    assertTrue("Expected to see one message", seen[0] || seen[1]);
+    assertFalse("Expected to not see both messages", seen[0] && seen[1]);
     // Delete one account with detail=all.
     seen =
         scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("all")),
             accountIds);
-    assertTrue(seen[0] || seen[1]);
-    assertFalse(seen[0] && seen[1]);
+    assertTrue("Expected to see one message", seen[0] || seen[1]);
+    assertFalse("Expected to not see both messages", seen[0] && seen[1]);
   }
 
   /**
