@@ -76,18 +76,17 @@ class MemoryQueue {
             return msg;
         }
 
-        synchronized Message get(String messageId, Long hide) throws MessageNotFoundException {
+        synchronized Message get(String messageId) throws MessageNotFoundException {
             clean();
 
             MessageRecord msg = queue.get(messageId);
 
             if (msg == null) throw new MessageNotFoundException();
-            msg.update(null, hide);
-
+  
             return msg;
         }
 
-        synchronized List<Message> get(String marker, Long limit, Boolean matchHidden, Long wait, Long hide) {
+        synchronized List<Message> get(String marker, Long limit, Boolean matchHidden, Long wait) {
             clean();
             List<Message> messages = new ArrayList<Message>();
 
@@ -102,7 +101,6 @@ class MemoryQueue {
                 MessageRecord msg = iter.next().getValue();
                 if (matchHidden || (msg.getHide() == 0)) {
                     messages.add(msg);
-                    msg.update(null, hide);
                     limit--;
                 }
             }

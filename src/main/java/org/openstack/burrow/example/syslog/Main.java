@@ -14,7 +14,7 @@ public class Main {
         SyslogHUD hud = new SyslogHUD();
         hud.embedIn(frame);
 
-        String accountName = "teamd", queueName = "syslog", server = "localhost";
+        String accountName = "teamd", queueName = "syslog", server = "capstoneCC.cs.pdx.edu";
         int port = 8080;
 
         Queue queue = new Queue(new Account(accountName), queueName);
