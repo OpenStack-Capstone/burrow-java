@@ -16,6 +16,11 @@
 
 package org.openstack.burrow.backend.http;
 
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.apache.http.impl.nio.client.DefaultHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.client.methods.HttpAsyncDelete;
@@ -30,12 +35,17 @@ import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.*;
-
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
+import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
+import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
+import org.openstack.burrow.client.methods.UpdateMessage;
+import org.openstack.burrow.client.methods.UpdateMessages;
 
 /**
  * AsyncHttp extends BaseHttp and provides asynchronous service to send request to and
@@ -402,15 +412,8 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   @Override
   public Future<Message> executeAsync(GetMessage request) {
     URI uri = getUri(request);
-    HttpAsyncGet httpGetRequest = null;
-    HttpAsyncPost httpPostRequest = null;
-      if(request.getHide()!= null) {
-         httpGetRequest = new HttpAsyncGet(uri);
-         return client.execute(httpGetRequest, new SingleMessageResponseConsumer(request), null);
-      } else {
-         httpPostRequest = new HttpAsyncPost(uri, "");
-        return client.execute(httpPostRequest, new SingleMessageResponseConsumer(request), null);
-      }
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new SingleMessageResponseConsumer(request), null);
   }
 
     /**
@@ -421,15 +424,8 @@ public class AsyncHttp extends BaseHttp implements AsyncBackend {
   @Override
   public Future<List<Message>> executeAsync(GetMessages request) {
     URI uri = getUri(request);
-    HttpAsyncGet httpGetRequest = null;
-    HttpAsyncPost httpPostRequest = null;
-      if(request.getHide()!= null) {
-         httpGetRequest = new HttpAsyncGet(uri);
-         return client.execute(httpGetRequest, new MessageListResponseConsumer(request), null);
-      } else {
-         httpGetRequest = new HttpAsyncGet(uri);
-         return client.execute(httpPostRequest, new MessageListResponseConsumer(request), null);
-      }
+    HttpAsyncGet httpRequest = new HttpAsyncGet(uri);
+    return client.execute(httpRequest, new MessageListResponseConsumer(request), null);
   }
 
     /**
