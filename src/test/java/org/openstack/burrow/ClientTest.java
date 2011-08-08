@@ -22,12 +22,22 @@ import junit.framework.TestCase;
 
 import org.openstack.burrow.backend.AccountNotFoundException;
 import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.BurrowException;
 import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
+import org.openstack.burrow.client.methods.CreateMessage;
+import org.openstack.burrow.client.methods.DeleteAccounts;
+import org.openstack.burrow.client.methods.DeleteMessage;
+import org.openstack.burrow.client.methods.DeleteMessages;
+import org.openstack.burrow.client.methods.DeleteQueues;
+import org.openstack.burrow.client.methods.GetAccounts;
+import org.openstack.burrow.client.methods.GetMessage;
+import org.openstack.burrow.client.methods.GetMessages;
+import org.openstack.burrow.client.methods.GetQueues;
+import org.openstack.burrow.client.methods.UpdateMessage;
+import org.openstack.burrow.client.methods.UpdateMessages;
 
 /**
  * Unit tests for the Burrow Client.
@@ -99,16 +109,60 @@ abstract class ClientTest extends TestCase {
     queue = account.Queue("testQueue");
   }
 
+  protected Message execute(CreateMessage request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Account> execute(DeleteAccounts request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected Message execute(DeleteMessage request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Message> execute(DeleteMessages request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Queue> execute(DeleteQueues request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Account> execute(GetAccounts request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected Message execute(GetMessage request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Message> execute(GetMessages request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Queue> execute(GetQueues request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected Message execute(UpdateMessage request) throws Throwable {
+    return backend.execute(request);
+  }
+
+  protected List<Message> execute(UpdateMessages request) throws Throwable {
+    return backend.execute(request);
+  }
+
   /**
    * Create then delete a message, then verify that a second delete fails.
    */
-  public void testCreateDeleteMessage() throws BurrowException {
+  public void testCreateDeleteMessage() throws Throwable {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    backend.execute(queue.createMessage(id, body));
-    backend.execute(queue.deleteMessage(id));
+    execute(queue.createMessage(id, body));
+    execute(queue.deleteMessage(id));
     try {
-      backend.execute(queue.deleteMessage(id));
+      execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed");
     } catch (MessageNotFoundException e) {
       // This is expected.
@@ -117,14 +171,16 @@ abstract class ClientTest extends TestCase {
 
   /**
    * Create and delete a hidden message.
+   * 
+   * @throws Throwable
    */
-  public void testCreateDeleteMessageWithMatchHidden() throws BurrowException {
+  public void testCreateDeleteMessageWithMatchHidden() throws Throwable {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    backend.execute(queue.createMessage(id, body).withHide((100L)));
-    backend.execute(queue.deleteMessage(id).withMatchHidden(true));
+    execute(queue.createMessage(id, body).withHide((100L)));
+    execute(queue.deleteMessage(id).withMatchHidden(true));
     try {
-      backend.execute(queue.deleteMessage(id).withMatchHidden(true));
+      execute(queue.deleteMessage(id).withMatchHidden(true));
       fail("deleteMessage should have failed");
     } catch (MessageNotFoundException e) {
       // This is expected.
@@ -134,11 +190,11 @@ abstract class ClientTest extends TestCase {
   /**
    * Create and then get a message.
    */
-  public void testCreateGetMessage() throws BurrowException {
+  public void testCreateGetMessage() throws Throwable {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
-    backend.execute(queue.createMessage(id, body));
-    Message message = backend.execute(queue.getMessage(id));
+    execute(queue.createMessage(id, body));
+    Message message = execute(queue.getMessage(id));
     assertEquals("Response Message has wrong id", id, message.getId());
     assertEquals("Response Message has wrong body", body, message.getBody());
   }
@@ -146,12 +202,12 @@ abstract class ClientTest extends TestCase {
   /**
    * Create two messages and then verify their presence in getMessages.
    */
-  public void testCreateGetMessages() throws BurrowException {
+  public void testCreateGetMessages() throws Throwable {
     String[] ids = {"testCreateGetMessages1", "testCreateGetMessages2"};
     String body = "testCreateGetMessagesBody";
-    backend.execute(queue.createMessage(ids[0], body));
-    backend.execute(queue.createMessage(ids[1], body));
-    List<Message> messages = backend.execute(queue.getMessages());
+    execute(queue.createMessage(ids[0], body));
+    execute(queue.createMessage(ids[1], body));
+    List<Message> messages = execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
     assertTrue("Expected to see both messages", seen[0] && seen[1]);
   }
@@ -159,12 +215,12 @@ abstract class ClientTest extends TestCase {
   /**
    * Create a message with a TTL.
    */
-  public void testCreateGetMessageWithTtl() throws BurrowException {
+  public void testCreateGetMessageWithTtl() throws Throwable {
     String id = "testCreateGetMessage";
     String body = "testCreateGetMessageBody";
     int ttl = 100;
-    backend.execute(queue.createMessage(id, body).withTtl(ttl));
-    Message message = backend.execute(queue.getMessage(id));
+    execute(queue.createMessage(id, body).withTtl(ttl));
+    Message message = execute(queue.getMessage(id));
     assertEquals("Response Message has wrong body", message.getBody(), body);
     assertTrue("Expected message.getTtl() <= ttl, found message.getTtl()=" + message.getTtl()
         + "  ttl=" + ttl, message.getTtl() <= ttl);
@@ -174,7 +230,7 @@ abstract class ClientTest extends TestCase {
    * Delete all accounts, then implicitly create two and delete them one at a
    * time.
    */
-  public void testDeleteAccounts() throws BurrowException {
+  public void testDeleteAccounts() throws Throwable {
     String messageId = "testDeleteAccountsMessageId";
     String messageBody = "testDeleteAccountsMessageBody";
     String queueId = "testDeleteAccountsQueueId";
@@ -183,20 +239,17 @@ abstract class ClientTest extends TestCase {
     Queue queues[] = {accounts[0].Queue(queueId), accounts[1].Queue(queueId)};
     boolean seen[];
     // Blindly nuke the entire server.
-    backend.execute(client.deleteAccounts());
+    execute(client.deleteAccounts());
     // Create the accounts by creating the messages.
-    backend.execute(queues[0].createMessage(messageId, messageBody));
-    backend.execute(queues[1].createMessage(messageId, messageBody));
+    execute(queues[0].createMessage(messageId, messageBody));
+    execute(queues[1].createMessage(messageId, messageBody));
     // Delete one account with detail=id.
-    seen =
-        scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("id")),
-            accountIds);
+    seen = scanAccounts(execute(client.deleteAccounts().withLimit(1).withDetail("id")), accountIds);
     assertTrue("Expected to see one message", seen[0] || seen[1]);
     assertFalse("Expected to not see both messages", seen[0] && seen[1]);
     // Delete one account with detail=all.
     seen =
-        scanAccounts(backend.execute(client.deleteAccounts().withLimit(1).withDetail("all")),
-            accountIds);
+        scanAccounts(execute(client.deleteAccounts().withLimit(1).withDetail("all")), accountIds);
     assertTrue("Expected to see one message", seen[0] || seen[1]);
     assertFalse("Expected to not see both messages", seen[0] && seen[1]);
   }
@@ -204,10 +257,10 @@ abstract class ClientTest extends TestCase {
   /**
    * Delete a message that does not exist.
    */
-  public void testDeleteAMessageThatDoesNotExist() throws BurrowException {
+  public void testDeleteAMessageThatDoesNotExist() throws Throwable {
     String id = "testDeleteAMessageThatDoesNotExist";
     try {
-      backend.execute(queue.deleteMessage(id));
+      execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed for a message that does not exist");
     } catch (MessageNotFoundException e) {
       // Expected.
@@ -218,20 +271,20 @@ abstract class ClientTest extends TestCase {
    * Create a visible and a hidden message, then delete all non-hidden messages
    * in the queue.
    */
-  public void testDeleteMessagesWithHide() throws BurrowException {
+  public void testDeleteMessagesWithHide() throws Throwable {
     String[] ids = {"testDeleteMessagesWithHide1", "testDeleteMessagesWithHide2"};
     String body = "testDeleteMessagesBodyWithHide";
     boolean[] seen;
-    backend.execute(queue.createMessage(ids[0], body).withHide(9999));
-    backend.execute(queue.createMessage(ids[1], body).withHide(0));
-    seen = scanMessages(backend.execute(queue.getMessages()), ids);
+    execute(queue.createMessage(ids[0], body).withHide(9999));
+    execute(queue.createMessage(ids[1], body).withHide(0));
+    seen = scanMessages(execute(queue.getMessages()), ids);
     assertFalse("Expected to not see hidden message", seen[0]);
     assertTrue("Expected to see non-hidden message", seen[1]);
-    backend.execute(queue.deleteMessages().withMatchHidden(false));
+    execute(queue.deleteMessages().withMatchHidden(false));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
+    execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(execute(queue.getMessages().withMatchHidden(true)), ids);
     assertTrue("Expected to see hidden message", seen[0]);
     assertFalse("Expected to not see deleted message", seen[1]);
   }
@@ -239,24 +292,24 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create two queues, then delete all queues on the account.
    */
-  public void testDeleteQueues() throws BurrowException {
+  public void testDeleteQueues() throws Throwable {
     String messageId = "testDeleteQueues";
     String queueIds[] = {"testDeleteQueues1", "testDeleteQueues2"};
     Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
     String body = "testDeleteQueuesMessageBody";
     boolean[] seenQueues;
     // Create the messages, implicitly creating the queues.
-    backend.execute(queues[0].createMessage(messageId, body));
-    backend.execute(queues[1].createMessage(messageId, body));
+    execute(queues[0].createMessage(messageId, body));
+    execute(queues[1].createMessage(messageId, body));
     // Verify that the queues now exist.
-    seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
+    seenQueues = scanQueues(execute(account.getQueues()), queueIds);
     assertTrue("Expected to see queue 0", seenQueues[0]);
     assertTrue("Expected to see queue 1", seenQueues[1]);
     // Delete all queues on the account.
-    backend.execute(account.deleteQueues());
+    execute(account.deleteQueues());
     // Verify that no queues exist on the account.
     try {
-      backend.execute(account.getQueues());
+      execute(account.getQueues());
       fail("getQueues should have raised AccountNotFoundException when no queues exist");
     } catch (AccountNotFoundException e) {
       // This is expected.
@@ -266,7 +319,7 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create two queues then delete them one at a time.
    */
-  public void testDeleteQueuesWithDetail() throws BurrowException {
+  public void testDeleteQueuesWithDetail() throws Throwable {
     String messageId = "testDeleteQueuesWithDetail";
     String messageBody = "testDeleteQueuesWithDetailMessageBody";
     String queueIds[] = {"testDeleteQueuesWithDetailQueue1", "testDeleteQueuesWithDetailQueue2"};
@@ -274,27 +327,27 @@ abstract class ClientTest extends TestCase {
     boolean[] seenQueues;
     // Blindly delete all queues to clear the account.
     try {
-      backend.execute(account.deleteQueues());
+      execute(account.deleteQueues());
     } catch (AccountNotFoundException e) {
       // This is okay.
     }
     // Create the messages, implicitly creating the queues.
-    backend.execute(queues[0].createMessage(messageId, messageBody));
-    backend.execute(queues[1].createMessage(messageId, messageBody));
+    execute(queues[0].createMessage(messageId, messageBody));
+    execute(queues[1].createMessage(messageId, messageBody));
     // Verify that the queues now exist.
-    seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
+    seenQueues = scanQueues(execute(account.getQueues()), queueIds);
     assertTrue("Expected to see queue 0", seenQueues[0]);
     assertTrue("Expected to see queue 1", seenQueues[1]);
     // Delete one queue with detail=id and scan for it being one of the queues
     // we just created.
     seenQueues =
-        scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
+        scanQueues(execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
     assertTrue("Expected to see one queue when deleting", seenQueues[0] || seenQueues[1]);
     assertFalse("Expected to not see both queues when deleting", seenQueues[0] && seenQueues[1]);
     // Delete one more queue with detail=all and scan for it being the other one
     // we just created.
     seenQueues =
-        scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
+        scanQueues(execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
     assertTrue("Expected to see one queue", seenQueues[0] || seenQueues[1]);
     assertFalse("Expected to not see both queues", seenQueues[0] && seenQueues[1]);
   }
@@ -302,24 +355,24 @@ abstract class ClientTest extends TestCase {
   /**
    * Implicitly create an account by creating a message.
    */
-  public void testGetAccounts() throws BurrowException {
+  public void testGetAccounts() throws Throwable {
     String messageId = "testGetAccountsMessageId";
     String messageBody = "testGetAccountsMessageBody";
     String accountIds[] = {account.getId()};
     boolean seen[];
     // Create a message to implicitly create the queue and account.
-    backend.execute(queue.createMessage(messageId, messageBody));
-    seen = scanAccounts(backend.execute(client.getAccounts()), accountIds);
+    execute(queue.createMessage(messageId, messageBody));
+    seen = scanAccounts(execute(client.getAccounts()), accountIds);
     assertTrue("Expected to see created message", seen[0]);
   }
 
   /**
    * Get a message that does not exist.
    */
-  public void testGetAMessageThatDoesNotExist() throws BurrowException {
+  public void testGetAMessageThatDoesNotExist() throws Throwable {
     String id = "testGetAMessageThatDoesNotExist";
     try {
-      backend.execute(queue.getMessage(id));
+      execute(queue.getMessage(id));
       fail("getMessage should have failed");
     } catch (MessageNotFoundException e) {
       // this is expected.
@@ -330,17 +383,17 @@ abstract class ClientTest extends TestCase {
    * Create a message, verify the queue exists, then delete all messages in the
    * queue and verify it goes away.
    */
-  public void testGetQueuesDeleteMessages() throws BurrowException {
+  public void testGetQueuesDeleteMessages() throws Throwable {
     String messageId = "testGetQueues";
     String messageBody = "testGetQueuesMessageBody";
     String queueIds[] = {queue.getId()};
     boolean[] seen;
-    backend.execute(queue.createMessage(messageId, messageBody));
-    seen = scanQueues(backend.execute(account.getQueues()), queueIds);
+    execute(queue.createMessage(messageId, messageBody));
+    seen = scanQueues(execute(account.getQueues()), queueIds);
     assertTrue("Expected to see queue", seen[0]);
     try {
-      backend.execute(queue.deleteMessages().withMatchHidden(true));
-      List<Queue> queues = backend.execute(account.getQueues());
+      execute(queue.deleteMessages().withMatchHidden(true));
+      List<Queue> queues = execute(account.getQueues());
       seen = scanQueues(queues, queueIds);
       assertFalse("Expected to not see queue", seen[0]);
     } catch (AccountNotFoundException e) {
@@ -351,20 +404,20 @@ abstract class ClientTest extends TestCase {
   /**
    * Create hidden messages then use updateMessages to reveal them.
    */
-  public void testMultipleUpdateHide() throws BurrowException {
+  public void testMultipleUpdateHide() throws Throwable {
     String[] ids = {"testMultipleUpdateHideMessage1", "testMultipleUpdateHideMessage2"};
     String body = "testMultipleUpdateHideMessageBody";
     boolean[] seen;
-    backend.execute(queue.createMessage(ids[0], body).withHide(9999));
-    backend.execute(queue.createMessage(ids[1], body).withHide(9999));
+    execute(queue.createMessage(ids[0], body).withHide(9999));
+    execute(queue.createMessage(ids[1], body).withHide(9999));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(backend.execute(queue.getMessages()), ids);
+    execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(execute(queue.getMessages()), ids);
     assertFalse("Expected to not see message 0", seen[0]);
     assertFalse("Expected to not see message 1", seen[1]);
-    backend.execute(queue.updateMessages().withHide(0).withMatchHidden(true));
-    seen = scanMessages(backend.execute(queue.getMessages()), ids);
+    execute(queue.updateMessages().withHide(0).withMatchHidden(true));
+    seen = scanMessages(execute(queue.getMessages()), ids);
     assertTrue("Expected to see message 0", seen[0]);
     assertTrue("Expected to see message 1", seen[1]);
   }
@@ -372,19 +425,18 @@ abstract class ClientTest extends TestCase {
   /**
    * Create a hidden message then use updateMessage to reveal it.
    */
-  public void testUpdateHide() throws BurrowException {
+  public void testUpdateHide() throws Throwable {
     String ids[] = {"testUpdateHideMessage"};
     String body = "testUpdateHideMessageBody";
     boolean[] seen;
-    backend.execute(queue.createMessage(ids[0], body).withHide(99999));
+    execute(queue.createMessage(ids[0], body).withHide(99999));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
-    backend.execute(queue.createMessage("404workaround", "404workaround"));
-    seen = scanMessages(backend.execute(queue.getMessages()), ids);
+    execute(queue.createMessage("404workaround", "404workaround"));
+    seen = scanMessages(execute(queue.getMessages()), ids);
     assertFalse("Expected to not see hidden message", seen[0]);
-    backend.execute(queue.updateMessage(ids[0]).withHide(0));
-    seen = scanMessages(backend.execute(queue.getMessages()), ids);
+    execute(queue.updateMessage(ids[0]).withHide(0));
+    seen = scanMessages(execute(queue.getMessages()), ids);
     assertTrue("Expected to see message", seen[0]);
   }
-
 }
