@@ -29,7 +29,6 @@ import org.openstack.burrow.client.Queue;
 public class GetMessage implements SingleMessageRequest {
   private String detail;
   private String id;
-  private Long hide;
   private Boolean matchHidden;
   private Queue queue;
   private Long wait;
@@ -42,7 +41,6 @@ public class GetMessage implements SingleMessageRequest {
   public GetMessage(Queue queue, String id) {
     this.queue = queue;
     this.id = id;
-    this.hide = null;
     this.matchHidden = null;
     this.detail = null;
     this.wait = null;
@@ -57,12 +55,10 @@ public class GetMessage implements SingleMessageRequest {
      * @param detail A String denoting which attributes of a message to return
      * @param wait   A Long denoting the amount of time to wait for a Message to show up in
      *               a queue
-     * @param hide  The message hide as a Long
      */
-  private GetMessage(Queue queue, String id, Long hide, Boolean matchHidden, String detail, Long wait) {
+  private GetMessage(Queue queue, String id, Boolean matchHidden, String detail, Long wait) {
     this.queue = queue;
     this.id = id;
-    this.hide = hide;
     this.matchHidden = matchHidden;
     this.detail = detail;
     this.wait = wait;
@@ -82,14 +78,6 @@ public class GetMessage implements SingleMessageRequest {
      */
   public String getId() {
     return id;
-  }
-
-    /**
-     * A getter function that returns the message's hide
-     * @return The message's hide as a Long
-     */
-  public Long getHide() {
-    return hide;
   }
 
     /**
@@ -117,15 +105,13 @@ public class GetMessage implements SingleMessageRequest {
     return wait;
   }
 
-
     /**
-     * Constructor for GetMessage with the hide time set
-     * @param hide The hide time for a message as a Long
-     * @return A GetMessage request object that will hide the message for the set amount
-     *         of time
+     * Constructor for GetMessage with detail set
+     * @param detail The detail as a string
+     * @return A GetMessage request object with matchHidden set
      */
-  public GetMessage withHide(long hide) {
-    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
+  public GetMessage withDetail(String detail) {
+    return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 
     /**
@@ -134,7 +120,7 @@ public class GetMessage implements SingleMessageRequest {
      * @return A GetMessage request object with matchHidden set
      */
   public GetMessage withMatchHidden(boolean matchHidden) {
-    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
+    return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 
     /**
@@ -143,6 +129,6 @@ public class GetMessage implements SingleMessageRequest {
      * @return A GetMessages request object with the wait set
      */
   public GetMessage withWait(long wait) {
-    return new GetMessage(queue, id, hide, matchHidden, detail, wait);
+    return new GetMessage(queue, id, matchHidden, detail, wait);
   }
 }
