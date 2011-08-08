@@ -23,6 +23,7 @@ import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Queue;
 import org.openstack.burrow.client.methods.*;
 
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class RequestObjectsTest {
@@ -82,6 +83,7 @@ public class RequestObjectsTest {
        stub(dms.getMarker()).toReturn("marker");
        try {
        backend.execute(dms);
+       fail();
        } catch (MessageNotFoundException m) {
           //Expected
        }
@@ -107,6 +109,7 @@ public class RequestObjectsTest {
        stub(gm.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gm);
+       fail();
        } catch (MessageNotFoundException m) {
           //Expected
        }
@@ -134,6 +137,7 @@ public class RequestObjectsTest {
        //stub(gms.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gms);
+       fail();
        } catch (MessageNotFoundException m) {
           //Expected
        }
@@ -163,6 +167,7 @@ public class RequestObjectsTest {
        stub(um.getId()).toReturn("msgId");
        try {
        backend.execute(um);
+       fail();
        } catch (MessageNotFoundException m) {
           //Expected
        }
@@ -194,6 +199,7 @@ public class RequestObjectsTest {
        stub(ums.getLimit()).toReturn(2L);
        try {
        backend.execute(ums);
+       fail();
        } catch (MessageNotFoundException m) {
           //Expected
        }
@@ -220,6 +226,7 @@ public class RequestObjectsTest {
         stub(das.getLimit()).toReturn(2L);
         try {
         backend.execute(das);
+        fail();
         } catch (HttpProtocolException m) {
            //Expected
         }
@@ -242,6 +249,7 @@ public class RequestObjectsTest {
         stub(gas.getLimit()).toReturn(2L);
         try {
         backend.execute(gas);
+        fail();
         } catch (HttpProtocolException m) {
            //Expected
         }
@@ -266,6 +274,7 @@ public class RequestObjectsTest {
         stub(dqs.getAccount()).toReturn(account);
         try {
         backend.execute(dqs);
+        fail();
         } catch (HttpProtocolException m) {
            //Expected
         }
@@ -289,6 +298,7 @@ public class RequestObjectsTest {
         stub(gqs.getAccount()).toReturn(account);
         try {
         backend.execute(gqs);
+        fail();
         } catch (QueueNotFoundException m) {
            //Expected
         }
