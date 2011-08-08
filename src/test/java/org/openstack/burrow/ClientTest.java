@@ -139,8 +139,8 @@ abstract class ClientTest extends TestCase {
     String body = "testCreateGetMessageBody";
     backend.execute(queue.createMessage(id, body));
     Message message = backend.execute(queue.getMessage(id));
-    assertEquals(id, message.getId());
-    assertEquals(body, message.getBody());
+    assertEquals("Response Message has wrong id", id, message.getId());
+    assertEquals("Response Message has wrong body", body, message.getBody());
   }
 
   /**
@@ -153,7 +153,7 @@ abstract class ClientTest extends TestCase {
     backend.execute(queue.createMessage(ids[1], body));
     List<Message> messages = backend.execute(queue.getMessages());
     boolean[] seen = scanMessages(messages, ids);
-    assertTrue(seen[0] && seen[1]);
+    assertTrue("Expected to see both messages", seen[0] && seen[1]);
   }
 
   /**
@@ -165,7 +165,7 @@ abstract class ClientTest extends TestCase {
     int ttl = 100;
     backend.execute(queue.createMessage(id, body).withTtl(ttl));
     Message message = backend.execute(queue.getMessage(id));
-    assertEquals(message.getBody(), body);
+    assertEquals("Response Message has wrong body", message.getBody(), body);
     assertTrue("Expected message.getTtl() <= ttl, found message.getTtl()=" + message.getTtl()
         + "  ttl=" + ttl, message.getTtl() <= ttl);
   }
@@ -225,15 +225,15 @@ abstract class ClientTest extends TestCase {
     backend.execute(queue.createMessage(ids[0], body).withHide(9999));
     backend.execute(queue.createMessage(ids[1], body).withHide(0));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
-    assertFalse(seen[0]);
-    assertTrue(seen[1]);
+    assertFalse("Expected to not see hidden message", seen[0]);
+    assertTrue("Expected to see non-hidden message", seen[1]);
     backend.execute(queue.deleteMessages().withMatchHidden(false));
     // TODO: Remove when getMessages no longer 404s on queues with only hidden
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
     seen = scanMessages(backend.execute(queue.getMessages().withMatchHidden(true)), ids);
-    assertTrue(seen[0]);
-    assertFalse(seen[1]);
+    assertTrue("Expected to see hidden message", seen[0]);
+    assertFalse("Expected to not see deleted message", seen[1]);
   }
 
   /**
@@ -295,8 +295,8 @@ abstract class ClientTest extends TestCase {
     // we just created.
     seenQueues =
         scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
-    assertTrue(seenQueues[0] || seenQueues[1]);
-    assertFalse(seenQueues[0] && seenQueues[1]);
+    assertTrue("Expected to see one queue", seenQueues[0] || seenQueues[1]);
+    assertFalse("Expected to not see both queues", seenQueues[0] && seenQueues[1]);
   }
 
   /**
@@ -310,7 +310,7 @@ abstract class ClientTest extends TestCase {
     // Create a message to implicitly create the queue and account.
     backend.execute(queue.createMessage(messageId, messageBody));
     seen = scanAccounts(backend.execute(client.getAccounts()), accountIds);
-    assertTrue(seen[0]);
+    assertTrue("Expected to see created message", seen[0]);
   }
 
   /**
@@ -337,12 +337,12 @@ abstract class ClientTest extends TestCase {
     boolean[] seen;
     backend.execute(queue.createMessage(messageId, messageBody));
     seen = scanQueues(backend.execute(account.getQueues()), queueIds);
-    assertTrue(seen[0]);
+    assertTrue("Expected to see queue", seen[0]);
     try {
       backend.execute(queue.deleteMessages().withMatchHidden(true));
       List<Queue> queues = backend.execute(account.getQueues());
       seen = scanQueues(queues, queueIds);
-      assertFalse(seen[0]);
+      assertFalse("Expected to not see queue", seen[0]);
     } catch (AccountNotFoundException e) {
       // Expected, if there are no other queues in the account.
     }
@@ -361,12 +361,12 @@ abstract class ClientTest extends TestCase {
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
-    assertFalse(seen[0]);
-    assertFalse(seen[1]);
+    assertFalse("Expected to not see message 0", seen[0]);
+    assertFalse("Expected to not see message 1", seen[1]);
     backend.execute(queue.updateMessages().withHide(0).withMatchHidden(true));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
-    assertTrue(seen[0]);
-    assertTrue(seen[1]);
+    assertTrue("Expected to see message 0", seen[0]);
+    assertTrue("Expected to see message 1", seen[1]);
   }
 
   /**
@@ -381,10 +381,10 @@ abstract class ClientTest extends TestCase {
     // messages!
     backend.execute(queue.createMessage("404workaround", "404workaround"));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
-    assertFalse(seen[0]);
+    assertFalse("Expected to not see hidden message", seen[0]);
     backend.execute(queue.updateMessage(ids[0]).withHide(0));
     seen = scanMessages(backend.execute(queue.getMessages()), ids);
-    assertTrue(seen[0]);
+    assertTrue("Expected to see message", seen[0]);
   }
 
 }
