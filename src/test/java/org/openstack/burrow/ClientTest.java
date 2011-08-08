@@ -16,28 +16,15 @@
 
 package org.openstack.burrow;
 
-import java.util.List;
-
 import junit.framework.TestCase;
-
-import org.openstack.burrow.backend.AccountNotFoundException;
-import org.openstack.burrow.backend.Backend;
-import org.openstack.burrow.backend.MessageNotFoundException;
+import org.openstack.burrow.backend.*;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.client.methods.*;
+
+import java.util.List;
 
 /**
  * Unit tests for the Burrow Client.
@@ -186,6 +173,88 @@ abstract class ClientTest extends TestCase {
       // This is expected.
     }
   }
+
+    /**
+     * Create message with a wrong Account
+     */
+    public void testGetMessageNotInQueue() throws Throwable {
+    String id = "testGetMessageMissingAccount";
+    String body = "testGetMessageMissingAccountBody";
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.getMessage(id));
+    fail();
+    } catch (MessageNotFoundException e){
+        //expected
+    }
+    }
+
+    /**
+     * Get messages not in Queue
+     */
+    public void testGetMessagesNotInQueue() throws Throwable {
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.getMessages());
+    fail();
+    } catch (QueueNotFoundException e){
+        //expected
+    }
+    }
+
+    /**
+     * Delete messages not in Queue
+     */
+    public void testDeleteMessageNotInQueue() throws Throwable {
+    String id = "testGetMessageMissingAccount";
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.deleteMessage(id));
+    fail();
+    } catch (MessageNotFoundException e){
+        //expected
+    }
+    }
+
+     /**
+     * Delete messages not in Queue
+     */
+    public void testDeleteMessagesNotInQueue() throws Throwable {
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.deleteMessages());
+    fail();
+    } catch (QueueNotFoundException e){
+        //expected
+    }
+    }
+
+     /**
+     * Update Message not in Queue
+     */
+    public void testUpdateMessageNotInQueue() throws Throwable {
+    String id = "testUpdateMessageMissingQueue";
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.updateMessage(id));
+    fail();
+    } catch (MessageNotFoundException e){
+        //expected
+    }
+    }
+
+     /**
+     * Update Messages not in Queue
+     */
+    public void testUpdateMessagesNotInQueue() throws Throwable {
+    Queue newQueue = new Queue(account, "newQueue");
+    try {
+       execute(newQueue.updateMessages());
+    fail();
+    } catch (QueueNotFoundException e){
+        //expected
+    }
+    }
 
   /**
    * Create and then get a message.
