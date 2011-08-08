@@ -16,6 +16,11 @@
 
 package org.openstack.burrow.backend.http;
 
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -32,36 +37,34 @@ import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.methods.AccountListRequest;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * AccountListResponseConsumer extends AsyncCharConsumer and helps with processing the
- * response asynchronously from the server.  Has a StringBuilder, an Exception, and a
- * String denoting mimeType as fields.
+ * AccountListResponseConsumer extends AsyncCharConsumer and helps with
+ * processing the response asynchronously from the server. Has a StringBuilder,
+ * an Exception, and a String denoting mimeType as fields.
  */
 public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>> {
   private StringBuilder accumulator = null;
   private Exception exception = null;
   private String mimeType = null;
 
-    /**
-     * Constructor for AccountListResponseConsumer that takes an AccountListRequest as
-     * a parameter.
-     * @param request An AccountListRequest object
-     */
+  /**
+   * Constructor for AccountListResponseConsumer that takes an
+   * AccountListRequest as a parameter.
+   * 
+   * @param request An AccountListRequest object
+   */
   AccountListResponseConsumer(AccountListRequest request) {
     super();
   }
 
-    /**
-     * Processes the response and builds a List of Accounts to be returned to the client
-     * @return A List of Account objects
-     * @throws Exception Arises if an issue has occurred with the response from the
-     *                   server
-     */
+  /**
+   * Processes the response and builds a List of Accounts to be returned to the
+   * client
+   * 
+   * @return A List of Account objects
+   * @throws Exception Arises if an issue has occurred with the response from
+   *           the server
+   */
   @Override
   protected List<Account> buildResult() throws Exception {
     if (exception != null) {
@@ -101,31 +104,35 @@ public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>
     }
   }
 
-    /**
-     * A function that helps with building the response
-     * @param buf A CharBuffer that holds the response received so far
-     * @param ioctrl An IOControl object
-     * @throws IOException Arises if an issue occurs with adding the received character
-     */
+  /**
+   * A function that helps with building the response
+   * 
+   * @param buf A CharBuffer that holds the response received so far
+   * @param ioctrl An IOControl object
+   * @throws IOException Arises if an issue occurs with adding the received
+   *           character
+   */
   @Override
   protected void onCharReceived(CharBuffer buf, IOControl ioctrl) throws IOException {
     if (accumulator != null)
       accumulator.append(buf);
   }
 
-    /**
-     * A helper function that clears the class's private StringBuilder field
-     */
+  /**
+   * A helper function that clears the class's private StringBuilder field
+   */
   @Override
   protected void onCleanup() {
     this.accumulator = null;
   }
 
-    /**
-     * Processes the response as it is received from the server and sets the class's
-     * exception field as needed
-     * @param response An HttpResponse object that contains the information requested
-     */
+  /**
+   * Processes the response as it is received from the server and sets the
+   * class's exception field as needed
+   * 
+   * @param response An HttpResponse object that contains the information
+   *          requested
+   */
   @Override
   protected void onResponseReceived(HttpResponse response) {
     StatusLine status = response.getStatusLine();
