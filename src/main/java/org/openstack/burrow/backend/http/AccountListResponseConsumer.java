@@ -30,8 +30,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.backend.AccountNotFoundException;
 import org.openstack.burrow.backend.BurrowRuntimeException;
+import org.openstack.burrow.backend.CommandException;
 import org.openstack.burrow.backend.HttpProtocolException;
 import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Account;
@@ -152,7 +152,7 @@ public class AccountListResponseConsumer extends AsyncCharConsumer<List<Account>
         return;
       case HttpStatus.SC_NOT_FOUND:
         // This is an error condition, and we do not care about the body.
-        exception = new AccountNotFoundException("No accounts exist on the server");
+        exception = new CommandException("No accounts exist on the server");
         return;
       default:
         // This is an error condition.
