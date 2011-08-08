@@ -75,11 +75,11 @@ public class Memory implements Backend {
 
         if (!accountMap.containsKey(account)
                 || accountMap.get(account).isEmpty())
-            throw new CommandException("No such account.");
+            throw new AccountNotFoundException("No such account.");
 
         if (!accountMap.get(account).containsKey(queue)
                 || accountMap.get(account).get(queue).isEmpty())
-            throw new CommandException("No such queue.");
+            throw new AccountNotFoundException("No such queue.");
 
         return accountMap.get(account).get(queue);
     }
