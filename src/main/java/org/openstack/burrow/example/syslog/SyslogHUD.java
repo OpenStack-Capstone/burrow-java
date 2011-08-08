@@ -1,5 +1,9 @@
 package org.openstack.burrow.example.syslog;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.json.Test;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -26,6 +30,8 @@ public class SyslogHUD {
         current = entries;
         messageList.setModel(entries);
         views = new LinkedList<ListView<LogEntry>>();
+        messageList.setCellRenderer(LogEntry.getRenderer());
+
 
         messageList.addKeyListener(new KeyAdapter() {
             @Override
@@ -44,18 +50,16 @@ public class SyslogHUD {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
 
-                current = views.remove(0);
+                current = views.pollFirst();
                 messageList.setModel(current);
 
                 if (current == entries) {
                     backButton.setEnabled(false);
-                    return;
                 }
 
                 messageList.updateUI();
             }
         });
-
         searchbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 String text = searchbox.getText();
@@ -63,10 +67,12 @@ public class SyslogHUD {
 
                 Pattern search1 = null;
                 try {
-                    search1 = Pattern.compile(text);
+                    search1 = Pattern.compile(".*" + text + ".*");
                 } catch (PatternSyntaxException pse) {
+                    System.out.println("Pattern parse fail");
                     info.setText("Error: Could not parse search regex.");
                     info.setBackground(Color.red);
+                    info.updateUI();
                     return;
                 }
                 final Pattern search = search1;
@@ -79,26 +85,14 @@ public class SyslogHUD {
                     }
                 });
 
-                views.add(current);
+                views.offerFirst(current);
                 messageList.setModel(view);
                 current = view;
+
                 backButton.setEnabled(true);
                 messageList.updateUI();
             }
         });
-        searchbox.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                info.setText("");
-                info.setBackground(new Color(214, 214, 214));//Gray used by UI designer
-            }
-        });
-    }
-
-    public synchronized void addEntry(LogEntry logEntry) {
-        entries.add(logEntry);
-        messageList.updateUI();
     }
 
     {
@@ -117,17 +111,17 @@ public class SyslogHUD {
         panel1 = new JPanel();
         panel1.setLayout(new BorderLayout(0, 0));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, BorderLayout.NORTH);
         searchbox = new JTextField();
-        panel2.add(searchbox, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(searchbox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         backButton = new JButton();
         backButton.setEnabled(false);
         backButton.setText("Back");
-        panel2.add(backButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(backButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         info = new JLabel();
         info.setText("");
-        panel2.add(info, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel2.add(info, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, BorderLayout.CENTER);
         messageList = new JList();
@@ -140,4 +134,28 @@ public class SyslogHUD {
     public JComponent $$$getRootComponent$$$() {
         return panel1;
     }
+
+
+    private class EntryAdder extends SwingWorker<Object, Object> {
+        private LogEntry logEntry;
+
+        public EntryAdder(LogEntry logEntry) {
+            this.logEntry = logEntry;
+        }
+
+        protected LogEntry doInBackground() throws Exception {
+            entries.add(logEntry);
+            //messageList.updateUI();
+            return null;
+        }
+    }
+
+    public void addEntry(LogEntry logEntry) {
+        new EntryAdder(logEntry).execute();
+    }
+
+
+    /** @noinspection ALL */
+
+
 }
