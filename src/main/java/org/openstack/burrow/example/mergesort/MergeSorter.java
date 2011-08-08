@@ -35,7 +35,7 @@ public class MergeSorter implements Runnable {
         while (true) {
             while (jobs.size() < 2) {
                 Future<List<Message>> future =
-                        back.executeAsync(inQueue.getMessages().withLimit(2).withMatchHidden(false).withHide(jobTimeout));
+                        back.executeAsync(inQueue.updateMessages().withLimit(2).withMatchHidden(false).withHide(jobTimeout));
                 try {
                     jobs.addAll(future.get());
                 } catch (InterruptedException ie) {

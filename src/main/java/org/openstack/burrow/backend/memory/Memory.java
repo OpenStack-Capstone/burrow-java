@@ -259,7 +259,7 @@ public class Memory implements Backend {
         String queue = request.getQueue().getId();
         MemoryQueue mq = ensurePresent(account, queue);
 
-        Message msg = mq.get(request.getId(), request.getHide());
+        Message msg = mq.get(request.getId());
         if (msg == null) throw new CommandException("No such message.");
 
         return msg;
@@ -283,7 +283,7 @@ public class Memory implements Backend {
         MemoryQueue mq = ensurePresent(account, queue);
 
         return mq.get(request.getMarker(), request.getLimit(), request.getMatchHidden(),
-                      request.getWait(), request.getHide());
+                      request.getWait());
     }
 
     /**
