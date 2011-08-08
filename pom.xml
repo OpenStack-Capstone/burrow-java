@@ -52,6 +52,12 @@
       <artifactId>httpasyncclient</artifactId>
       <version>4.0-alpha2</version>
     </dependency>
+    <dependency>
+        <groupId>com.intellij</groupId>
+        <artifactId>forms_rt</artifactId>
+        <version>7.0.3</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -75,6 +81,8 @@
           </execution>
         </executions>
       </plugin>
+
+
     </plugins>
   </build>
   
