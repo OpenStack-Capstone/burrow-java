@@ -1,5 +1,8 @@
 package org.openstack.burrow.example.syslog;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class LogEntry {
     public static final int DATE_WIDTH = 15;
     private String time;
@@ -17,6 +20,10 @@ public class LogEntry {
         if (split.length < 3) throw new MalformedEntryException();
 
         return new LogEntry(date, split[0], split[1], split[2]);
+    }
+
+    public static ListCellRenderer getRenderer() {
+        return new LogEntryRenderer();
     }
 
     public LogEntry(String time, String host, String tag, String body) {
@@ -44,5 +51,25 @@ public class LogEntry {
 
     public String getBody() {
         return body;
+    }
+
+    private static class LogEntryRenderer extends JLabel implements ListCellRenderer {
+
+        public Component getListCellRendererComponent(JList list, Object o, int index, boolean selected, boolean focus) {
+            setText("<HTML>" + o.toString() + "</HTML>");
+
+            if (selected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            setEnabled(list.isEnabled());
+            setFont(list.getFont());
+            setOpaque(true);
+
+            return this;
+        }
     }
 }

@@ -30,6 +30,8 @@ public class SyslogHUD {
         current = entries;
         messageList.setModel(entries);
         views = new LinkedList<ListView<LogEntry>>();
+        messageList.setCellRenderer(LogEntry.getRenderer());
+
 
         messageList.addKeyListener(new KeyAdapter() {
             @Override
@@ -48,21 +50,11 @@ public class SyslogHUD {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
 
-                System.out.println(entries + " 1=! " + current + " stack: " + views.size());
-
                 current = views.pollFirst();
                 messageList.setModel(current);
 
-                System.out.println(entries + " 2=! " + current + " stack: " + views.size() + "\n");
-
                 if (current == entries) {
                     backButton.setEnabled(false);
-                }
-
-                int i = 0;
-                for (ListView lv : views) {
-                    System.out.println(i + ": " + lv);
-                    i++;
                 }
 
                 messageList.updateUI();
@@ -72,7 +64,6 @@ public class SyslogHUD {
             public void actionPerformed(ActionEvent actionEvent) {
                 String text = searchbox.getText();
                 if ("".equals(text)) return;
-                System.out.println(entries + " 1=? " + current + " stack: " + views.size());
 
                 Pattern search1 = null;
                 try {
@@ -97,14 +88,6 @@ public class SyslogHUD {
                 views.offerFirst(current);
                 messageList.setModel(view);
                 current = view;
-
-                int i = 0;
-                for (ListView lv : views) {
-                    System.out.println(i + ": " + lv);
-                    i++;
-                }
-
-                System.out.println(entries + " 2=? " + current + " stack: " + views.size() + "\n");
 
                 backButton.setEnabled(true);
                 messageList.updateUI();
@@ -162,7 +145,7 @@ public class SyslogHUD {
 
         protected LogEntry doInBackground() throws Exception {
             entries.add(logEntry);
-            messageList.updateUI();
+            //messageList.updateUI();
             return null;
         }
     }
