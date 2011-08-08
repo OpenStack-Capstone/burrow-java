@@ -1,11 +1,10 @@
 package org.openstack.burrow.example.syslog;
 
-import com.sun.jmx.remote.internal.ArrayQueue;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.regex.Pattern;
+import java.util.LinkedList;
 import java.util.regex.PatternSyntaxException;
 
 public class SyslogHUD {
@@ -16,18 +15,17 @@ public class SyslogHUD {
     private JLabel info;
     private BaseList<LogEntry> entries;
     private ListView<LogEntry> current;
-    private ArrayQueue<ListView<LogEntry>> views;
+    private LinkedList<ListView<LogEntry>> views;
 
     public void embedIn(JFrame f) {
         f.add(panel1);
     }
 
     public SyslogHUD() {
-        System.out.print("lolwut\n");
         entries = new BaseList<LogEntry>();
         current = entries;
         messageList.setModel(entries);
-        views = new ArrayQueue<ListView<LogEntry>>(10);
+        views = new LinkedList<ListView<LogEntry>>();
 
         messageList.addKeyListener(new KeyAdapter() {
             @Override
