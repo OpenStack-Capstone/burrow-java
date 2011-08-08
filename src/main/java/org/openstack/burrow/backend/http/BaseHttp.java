@@ -16,18 +16,6 @@
 
 package org.openstack.burrow.backend.http;
 
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
-import static org.apache.http.HttpStatus.SC_OK;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -44,26 +32,20 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openstack.burrow.backend.AccountNotFoundException;
-import org.openstack.burrow.backend.BurrowRuntimeException;
-import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.HttpProtocolException;
-import org.openstack.burrow.backend.MessageNotFoundException;
-import org.openstack.burrow.backend.QueueNotFoundException;
+import org.openstack.burrow.backend.*;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.Queue;
-import org.openstack.burrow.client.methods.CreateMessage;
-import org.openstack.burrow.client.methods.DeleteAccounts;
-import org.openstack.burrow.client.methods.DeleteMessage;
-import org.openstack.burrow.client.methods.DeleteMessages;
-import org.openstack.burrow.client.methods.DeleteQueues;
-import org.openstack.burrow.client.methods.GetAccounts;
-import org.openstack.burrow.client.methods.GetMessage;
-import org.openstack.burrow.client.methods.GetMessages;
-import org.openstack.burrow.client.methods.GetQueues;
-import org.openstack.burrow.client.methods.UpdateMessage;
-import org.openstack.burrow.client.methods.UpdateMessages;
+import org.openstack.burrow.client.methods.*;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.http.HttpStatus.*;
 
 /**
  * BaseHttp is the Interface for Http functionality. Has methods that package
@@ -175,7 +157,7 @@ abstract class BaseHttp {
    *           found
    */
   static List<Message> handleMultipleMessageHttpResponse(HttpResponse response)
-      throws HttpProtocolException, MessageNotFoundException {
+          throws HttpProtocolException, CommandException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -238,7 +220,7 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new MessageNotFoundException();
+        throw new QueueNotFoundException();
       default:
         // This is probably an error.
         try {
@@ -264,7 +246,7 @@ abstract class BaseHttp {
    * @throws QueueNotFoundException Thrown if a requested Queue was not found
    */
   static List<Queue> handleMultipleQueueHttpResponse(Account account, HttpResponse response)
-      throws HttpProtocolException, QueueNotFoundException {
+          throws HttpProtocolException, AccountNotFoundException {
     StatusLine status = response.getStatusLine();
     HttpEntity entity = response.getEntity();
     if (entity == null)
@@ -331,7 +313,7 @@ abstract class BaseHttp {
           // If we ever stop throwing an exception in the outside block,
           // this needs to be handled.
         }
-        throw new QueueNotFoundException();
+        throw new AccountNotFoundException();
       default:
         // This is probably an error.
         try {
