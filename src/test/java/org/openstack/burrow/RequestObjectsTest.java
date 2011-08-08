@@ -84,7 +84,7 @@ public class RequestObjectsTest {
        try {
        backend.execute(dms);
        fail();
-       } catch (MessageNotFoundException m) {
+       } catch (QueueNotFoundException m) {
           //Expected
        }
        verify(dms).getDetail();
@@ -138,7 +138,7 @@ public class RequestObjectsTest {
        try {
        backend.execute(gms);
        fail();
-       } catch (MessageNotFoundException m) {
+       } catch (QueueNotFoundException m) {
           //Expected
        }
        verify(gms).getDetail();
@@ -200,7 +200,7 @@ public class RequestObjectsTest {
        try {
        backend.execute(ums);
        fail();
-       } catch (MessageNotFoundException m) {
+       } catch (QueueNotFoundException m) {
           //Expected
        }
        verify(ums).getDetail();
@@ -275,7 +275,7 @@ public class RequestObjectsTest {
         try {
         backend.execute(dqs);
         fail();
-        } catch (QueueNotFoundException m) {
+        } catch (AccountNotFoundException m) {
            //Expected
         }
         verify(dqs).getDetail();
@@ -299,7 +299,7 @@ public class RequestObjectsTest {
         try {
         backend.execute(gqs);
         fail();
-        } catch (QueueNotFoundException m) {
+        } catch (AccountNotFoundException m) {
            //Expected
         }
         verify(gqs).getLimit();
