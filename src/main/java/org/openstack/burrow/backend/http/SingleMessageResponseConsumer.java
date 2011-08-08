@@ -16,6 +16,9 @@
 
 package org.openstack.burrow.backend.http;
 
+import java.io.IOException;
+import java.nio.CharBuffer;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -30,13 +33,10 @@ import org.openstack.burrow.backend.ProtocolException;
 import org.openstack.burrow.client.Message;
 import org.openstack.burrow.client.methods.SingleMessageRequest;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-
 /**
- * SingleMessageResponseConsumer extends AsyncCharConsumer and helps with processing the
- * response asynchronously from the server.  Has a StringBuilder, an Exception, a
- * String denoting mimeType, and a SingMessageRequest as fields.
+ * SingleMessageResponseConsumer extends AsyncCharConsumer and helps with
+ * processing the response asynchronously from the server. Has a StringBuilder,
+ * an Exception, a String denoting mimeType, and a SingMessageRequest as fields.
  */
 public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
   private StringBuilder accumulator = null;
@@ -44,21 +44,23 @@ public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
   private String mimeType = null;
   private SingleMessageRequest request;
 
-    /**
-     * Constructor for SingleMessageResponse that takes a SingleMessageRequest object as an
-     * arguments
-     * @param request A SingleMessageRequest object
-     */
+  /**
+   * Constructor for SingleMessageResponse that takes a SingleMessageRequest
+   * object as an arguments
+   * 
+   * @param request A SingleMessageRequest object
+   */
   SingleMessageResponseConsumer(SingleMessageRequest request) {
     this.request = request;
   }
 
-    /**
-     * Processes the response and builds a Message to be returned to client
-     * @return A Message object
-     * @throws Exception Arises if an issue has occurred with the response from the
-     *                   server
-     */
+  /**
+   * Processes the response and builds a Message to be returned to client
+   * 
+   * @return A Message object
+   * @throws Exception Arises if an issue has occurred with the response from
+   *           the server
+   */
   @Override
   protected Message buildResult() throws Exception {
     if (exception != null) {
@@ -82,31 +84,35 @@ public class SingleMessageResponseConsumer extends AsyncCharConsumer<Message> {
     }
   }
 
-    /**
-     * A function that helps with building the response
-     * @param buf A CharBuffer that holds the response received so far
-     * @param ioctrl An IOControl object
-     * @throws IOException Arises if an issue occurs with adding the received character
-     */
+  /**
+   * A function that helps with building the response
+   * 
+   * @param buf A CharBuffer that holds the response received so far
+   * @param ioctrl An IOControl object
+   * @throws IOException Arises if an issue occurs with adding the received
+   *           character
+   */
   @Override
   protected void onCharReceived(CharBuffer buf, IOControl ioctrl) throws IOException {
     if (accumulator != null)
       accumulator.append(buf);
   }
 
-    /**
-     * A helper function that clears the class's private StringBuilder field
-     */
+  /**
+   * A helper function that clears the class's private StringBuilder field
+   */
   @Override
   protected void onCleanup() {
     this.accumulator = null;
   }
 
-    /**
-     * Processes the response as it is received from the server and sets the class's
-     * exception field as needed
-     * @param response An HttpResponse object that contains the information requested
-     */
+  /**
+   * Processes the response as it is received from the server and sets the
+   * class's exception field as needed
+   * 
+   * @param response An HttpResponse object that contains the information
+   *          requested
+   */
   @Override
   protected void onResponseReceived(HttpResponse response) {
     StatusLine status = response.getStatusLine();
