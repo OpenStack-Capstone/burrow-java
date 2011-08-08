@@ -78,7 +78,7 @@ public class RequestObjectsTest {
        Account account = new Account("acct");
        Queue queue = new Queue(account, "queue");
        DeleteMessages dms = mock(DeleteMessages.class);
-       stub(dms.getDetail()).toReturn("detail");
+       stub(dms.getDetail()).toReturn("none");
        stub(dms.getQueue()).toReturn(queue);
        stub(dms.getMarker()).toReturn("marker");
        try {
@@ -105,7 +105,7 @@ public class RequestObjectsTest {
        stub(gm.getId()).toReturn("msgId");
        stub(gm.getQueue()).toReturn(queue);
        stub(gm.getWait()).toReturn(100L);
-       stub(gm.getDetail()).toReturn("detail");
+       stub(gm.getDetail()).toReturn("none");
        stub(gm.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gm);
@@ -133,7 +133,7 @@ public class RequestObjectsTest {
        stub(gms.getMarker()).toReturn("marker");
        stub(gms.getQueue()).toReturn(queue);
        //stub(gms.getWait()).toReturn(100L);
-       stub(gms.getDetail()).toReturn("detail");
+       stub(gms.getDetail()).toReturn("none");
        //stub(gms.getMatchHidden()).toReturn(true);
        try {
        backend.execute(gms);
@@ -162,7 +162,7 @@ public class RequestObjectsTest {
        stub(um.getTtl()).toReturn(10L);
        stub(um.getQueue()).toReturn(queue);
        stub(um.getWait()).toReturn(0L);
-       stub(um.getDetail()).toReturn("detail");
+       stub(um.getDetail()).toReturn("none");
        stub(um.getMatchHidden()).toReturn(true);
        stub(um.getId()).toReturn("msgId");
        try {
@@ -192,7 +192,7 @@ public class RequestObjectsTest {
        stub(ums.getTtl()).toReturn(10L);
        stub(ums.getQueue()).toReturn(queue);
        stub(ums.getWait()).toReturn(0L);
-       stub(ums.getDetail()).toReturn("detail");
+       stub(ums.getDetail()).toReturn("none");
        stub(ums.getMatchHidden()).toReturn(true);
        stub(ums.getMarker()).toReturn("marker");
        stub(ums.getHide()).toReturn(2L);
@@ -221,7 +221,7 @@ public class RequestObjectsTest {
      public void testDeleteAccounts() throws BurrowException {
         Backend backend = new Http("localhost", 8080);
         DeleteAccounts das = mock(DeleteAccounts.class);
-        stub(das.getDetail()).toReturn("detail");
+        stub(das.getDetail()).toReturn("none");
         stub(das.getMarker()).toReturn("marker");
         stub(das.getLimit()).toReturn(2L);
         try {
@@ -244,7 +244,7 @@ public class RequestObjectsTest {
      public void testGetAccounts() throws BurrowException {
         Backend backend = new Http("localhost", 8080);
         GetAccounts gas = mock(GetAccounts.class);
-        stub(gas.getDetail()).toReturn("detail");
+        stub(gas.getDetail()).toReturn("none");
         stub(gas.getMarker()).toReturn("marker");
         stub(gas.getLimit()).toReturn(2L);
         try {
@@ -268,7 +268,7 @@ public class RequestObjectsTest {
         Backend backend = new Http("localhost", 8080);
         Account account = new Account("acct");
         DeleteQueues dqs = mock(DeleteQueues.class);
-        stub(dqs.getDetail()).toReturn("detail");
+        stub(dqs.getDetail()).toReturn("none");
         stub(dqs.getMarker()).toReturn("marker");
         stub(dqs.getLimit()).toReturn(2L);
         stub(dqs.getAccount()).toReturn(account);
