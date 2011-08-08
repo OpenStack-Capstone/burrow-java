@@ -227,7 +227,7 @@ public class RequestObjectsTest {
         try {
         backend.execute(das);
         fail();
-        } catch (HttpProtocolException m) {
+        } catch (AccountNotFoundException m) {
            //Expected
         }
         verify(das).getDetail();
@@ -250,7 +250,7 @@ public class RequestObjectsTest {
         try {
         backend.execute(gas);
         fail();
-        } catch (HttpProtocolException m) {
+        } catch (AccountNotFoundException m) {
            //Expected
         }
         verify(gas).getDetail();
@@ -275,7 +275,7 @@ public class RequestObjectsTest {
         try {
         backend.execute(dqs);
         fail();
-        } catch (HttpProtocolException m) {
+        } catch (QueueNotFoundException m) {
            //Expected
         }
         verify(dqs).getDetail();
