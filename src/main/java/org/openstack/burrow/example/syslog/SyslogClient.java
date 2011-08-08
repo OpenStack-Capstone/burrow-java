@@ -24,7 +24,7 @@ public class SyslogClient implements Runnable {
 
     public SyslogClient(Queue syslog, Backend back, ConcurrentLinkedQueue<LogEntry> channel, int waitTime) {
         this.syslog = syslog;
-             this.back = back;
+        this.back = back;
         this.channel = channel;
         //this.log = log
         this.waitTime = waitTime;
@@ -74,7 +74,7 @@ public class SyslogClient implements Runnable {
                     try {
                         channel.add(LogEntry.fromRawEntry(message.getBody()));
                     } catch (MalformedEntryException mfe) {
-                       //log.log(Level.WARNING, "Malformed Entry: " + message.getBody());
+                        //log.log(Level.WARNING, "Malformed Entry: " + message.getBody());
                     }
                 }
             }
