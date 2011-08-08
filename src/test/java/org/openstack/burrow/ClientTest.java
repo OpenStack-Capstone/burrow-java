@@ -20,10 +20,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.openstack.burrow.backend.AccountNotFoundException;
 import org.openstack.burrow.backend.Backend;
 import org.openstack.burrow.backend.BurrowException;
-import org.openstack.burrow.backend.CommandException;
-import org.openstack.burrow.backend.ProtocolException;
+import org.openstack.burrow.backend.MessageNotFoundException;
 import org.openstack.burrow.client.Account;
 import org.openstack.burrow.client.Client;
 import org.openstack.burrow.client.Message;
@@ -105,16 +105,12 @@ abstract class ClientTest extends TestCase {
   public void testCreateDeleteMessage() throws BurrowException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    try {
-        backend.execute(queue.createMessage(id, body));
-        backend.execute(queue.deleteMessage(id));
-    } catch (CommandException ce) {
-        fail("Initial create/delete should be successful.");
-    }
+    backend.execute(queue.createMessage(id, body));
+    backend.execute(queue.deleteMessage(id));
     try {
       backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed");
-    } catch (CommandException ce) {
+    } catch (MessageNotFoundException e) {
       // This is expected.
     }
   }
@@ -125,16 +121,12 @@ abstract class ClientTest extends TestCase {
   public void testCreateDeleteMessageWithMatchHidden() throws BurrowException {
     String id = "testCreateDeleteMessage";
     String body = "testCreateDeleteMessageBody";
-    try {
     backend.execute(queue.createMessage(id, body).withHide((100L)));
     backend.execute(queue.deleteMessage(id).withMatchHidden(true));
-    } catch (CommandException ce) {
-        fail("Initial create/delete should be successful.");
-    }
     try {
       backend.execute(queue.deleteMessage(id).withMatchHidden(true));
       fail("deleteMessage should have failed");
-    } catch (CommandException ce) {
+    } catch (MessageNotFoundException e) {
       // This is expected.
     }
   }
@@ -217,7 +209,7 @@ abstract class ClientTest extends TestCase {
     try {
       backend.execute(queue.deleteMessage(id));
       fail("deleteMessage should have failed for a message that does not exist");
-    } catch (CommandException e) {
+    } catch (MessageNotFoundException e) {
       // Expected.
     }
   }
@@ -253,24 +245,20 @@ abstract class ClientTest extends TestCase {
     Queue queues[] = {account.Queue(queueIds[0]), account.Queue(queueIds[1])};
     String body = "testDeleteQueuesMessageBody";
     boolean[] seenQueues;
-    try {
     // Create the messages, implicitly creating the queues.
     backend.execute(queues[0].createMessage(messageId, body));
     backend.execute(queues[1].createMessage(messageId, body));
     // Verify that the queues now exist.
     seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
-    assertTrue(seenQueues[0]);
-    assertTrue(seenQueues[1]);
+    assertTrue("Expected to see queue 0", seenQueues[0]);
+    assertTrue("Expected to see queue 1", seenQueues[1]);
     // Delete all queues on the account.
     backend.execute(account.deleteQueues());
     // Verify that no queues exist on the account.
-    } catch (CommandException ce) {
-        fail("Initial create/getQueues should be successful.");
-    }
     try {
       backend.execute(account.getQueues());
-      fail("getQueues should have raised CommandException when no queues exist");
-    } catch (CommandException e) {
+      fail("getQueues should have raised AccountNotFoundException when no queues exist");
+    } catch (AccountNotFoundException e) {
       // This is expected.
     }
   }
@@ -287,7 +275,7 @@ abstract class ClientTest extends TestCase {
     // Blindly delete all queues to clear the account.
     try {
       backend.execute(account.deleteQueues());
-    } catch (CommandException ce) {
+    } catch (AccountNotFoundException e) {
       // This is okay.
     }
     // Create the messages, implicitly creating the queues.
@@ -295,14 +283,14 @@ abstract class ClientTest extends TestCase {
     backend.execute(queues[1].createMessage(messageId, messageBody));
     // Verify that the queues now exist.
     seenQueues = scanQueues(backend.execute(account.getQueues()), queueIds);
-    assertTrue(seenQueues[0]);
-    assertTrue(seenQueues[1]);
+    assertTrue("Expected to see queue 0", seenQueues[0]);
+    assertTrue("Expected to see queue 1", seenQueues[1]);
     // Delete one queue with detail=id and scan for it being one of the queues
     // we just created.
     seenQueues =
         scanQueues(backend.execute(account.deleteQueues().withLimit(1).withDetail("id")), queueIds);
-    assertTrue(seenQueues[0] || seenQueues[1]);
-    assertFalse(seenQueues[0] && seenQueues[1]);
+    assertTrue("Expected to see one queue when deleting", seenQueues[0] || seenQueues[1]);
+    assertFalse("Expected to not see both queues when deleting", seenQueues[0] && seenQueues[1]);
     // Delete one more queue with detail=all and scan for it being the other one
     // we just created.
     seenQueues =
@@ -333,7 +321,7 @@ abstract class ClientTest extends TestCase {
     try {
       backend.execute(queue.getMessage(id));
       fail("getMessage should have failed");
-    } catch (CommandException ce) {
+    } catch (MessageNotFoundException e) {
       // this is expected.
     }
   }
@@ -347,19 +335,15 @@ abstract class ClientTest extends TestCase {
     String messageBody = "testGetQueuesMessageBody";
     String queueIds[] = {queue.getId()};
     boolean[] seen;
-    try {
     backend.execute(queue.createMessage(messageId, messageBody));
     seen = scanQueues(backend.execute(account.getQueues()), queueIds);
     assertTrue(seen[0]);
-    } catch (CommandException ce) {
-        fail("Initial create/delete should be successful.");
-    }
     try {
       backend.execute(queue.deleteMessages().withMatchHidden(true));
       List<Queue> queues = backend.execute(account.getQueues());
       seen = scanQueues(queues, queueIds);
       assertFalse(seen[0]);
-    } catch (CommandException ce) {
+    } catch (AccountNotFoundException e) {
       // Expected, if there are no other queues in the account.
     }
   }
